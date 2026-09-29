@@ -66,10 +66,10 @@ export default function HomePage() {
           </p>
 
           {/* Action CTAs - strictly without dashboard shortcut links as requested */}
-          <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
+          <div className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-3 sm:gap-4 pt-4 w-full">
             <Link
               href={getProtectedHref('/exam/tslprb-si-pwt-mock-01')}
-              className="px-6 py-3.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-sm uppercase tracking-wider transition-all shadow-md flex items-center gap-2 transform hover:-translate-y-0.5 cursor-pointer"
+              className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-sm uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2 transform hover:-translate-y-0.5 cursor-pointer text-center"
             >
               <span>Attempt PWT Grand Mock (200 M)</span>
               <ArrowRight className="w-4 h-4" />
@@ -77,7 +77,7 @@ export default function HomePage() {
 
             <Link
               href={getProtectedHref('/pet-tracker')}
-              className="px-6 py-3.5 rounded-xl bg-white hover:bg-slate-50 text-slate-800 font-bold text-sm border border-slate-300 transition-all flex items-center gap-2 shadow-sm cursor-pointer"
+              className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-white hover:bg-slate-50 text-slate-800 font-bold text-sm border border-slate-300 transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer text-center"
             >
               <Activity className="w-4 h-4 text-emerald-600" />
               <span>Track Physical Milestones (PET)</span>
@@ -85,7 +85,7 @@ export default function HomePage() {
 
             <Link
               href={user ? (role === 'ADMIN' ? '/admin' : '/dashboard') : '/auth'}
-              className="px-6 py-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm transition-all flex items-center gap-2 shadow-sm cursor-pointer"
+              className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer text-center"
             >
               <UserCheck className="w-4 h-4 text-amber-400" />
               <span>{user ? 'Open Portal Dashboard' : 'Candidate Portal Sign In'}</span>

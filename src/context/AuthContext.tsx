@@ -34,13 +34,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<UserProfile | null>(() => {
     if (typeof window !== 'undefined') {
       try {
+        const isLoggedOut = localStorage.getItem('police_si_logged_out') === 'true';
+        if (isLoggedOut) {
+          return null;
+        }
         const saved = localStorage.getItem('police_si_auth_user');
         if (saved) return JSON.parse(saved);
       } catch (e) {
         console.error(e);
       }
     }
-    return INITIAL_USER;
+    return null;
   });
   const [sessionExpired, setSessionExpired] = useState(false);
   const [sessionRemainingMs, setSessionRemainingMs] = useState(TWO_HOURS_MS);
@@ -50,6 +54,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(u);
     if (typeof window !== 'undefined') {
       if (u) {
+        localStorage.removeItem('police_si_logged_out');
         const serialized = JSON.stringify(u);
         localStorage.setItem('police_si_auth_user', serialized);
         localStorage.setItem('police_si_last_active', Date.now().toString());
@@ -59,25 +64,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         localStorage.removeItem('police_si_auth_user');
         localStorage.removeItem('police_si_last_active');
         localStorage.removeItem('police_si_token');
-        document.cookie = 'police_si_auth_user=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+        localStorage.removeItem('police_si_recent_attempt');
+        localStorage.setItem('police_si_logged_out', 'true');
+        document.cookie = 'police_si_auth_user=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; max-age=0; SameSite=Lax';
       }
     }
   };
 
   const logout = useCallback((reason?: string) => {
     persistUserSession(null);
-    if (reason === 'inactivity') {
-      setSessionExpired(true);
-      if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined') {
+      if (reason === 'inactivity') {
+        setSessionExpired(true);
         sessionStorage.setItem('police_si_logout_notice', 'Logged out due to 2 hours of inactivity. Please sign in again.');
-        if (!window.location.pathname.startsWith('/auth')) {
-          window.location.href = '/auth?reason=inactivity_timeout';
-        }
       }
-    } else {
-      if (typeof window !== 'undefined') {
-        window.location.href = '/auth';
-      }
+      // Redirect cleanly to the main home page (main page)
+      window.location.replace('/');
     }
   }, []);
 
@@ -96,11 +98,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
+    const isLoggedOut = localStorage.getItem('police_si_logged_out') === 'true';
+    if (isLoggedOut) {
+      setUser(null);
+      return;
+    }
+
     const saved = localStorage.getItem('police_si_auth_user');
     const lastActiveStr = localStorage.getItem('police_si_last_active');
 
     if (!saved) {
-      persistUserSession(INITIAL_USER);
+      setUser(null);
       return;
     }
 

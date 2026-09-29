@@ -94,10 +94,10 @@ export default function StudentDashboard() {
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2.5 sm:gap-3 w-full sm:w-auto">
             <Link
               href="/results"
-              className="px-4 py-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-300 font-bold text-xs uppercase tracking-wider transition-all shadow-sm flex items-center gap-2 cursor-pointer"
+              className="px-3.5 sm:px-4 py-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-300 font-bold text-xs uppercase tracking-wider transition-all shadow-sm flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer"
             >
               <Award className="w-4 h-4 text-emerald-700" />
               <span>Results Tool</span>
@@ -105,7 +105,7 @@ export default function StudentDashboard() {
 
             <Link
               href="/performance"
-              className="px-4 py-2.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-900 border border-purple-300 font-bold text-xs uppercase tracking-wider transition-all shadow-sm flex items-center gap-2 cursor-pointer"
+              className="px-3.5 sm:px-4 py-2.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-900 border border-purple-300 font-bold text-xs uppercase tracking-wider transition-all shadow-sm flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer"
             >
               <BarChart3 className="w-4 h-4 text-purple-700" />
               <span>Performance</span>
@@ -113,7 +113,7 @@ export default function StudentDashboard() {
 
             <Link
               href="/upgrade"
-              className="px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
+              className="col-span-2 sm:col-span-1 px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-sm flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <Crown className="w-4 h-4" />
               <span>{user?.subscriptionTier === 'PREMIUM' ? 'Pro Active' : 'Upgrade Plan'}</span>

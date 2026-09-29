@@ -41,27 +41,27 @@ export const Navbar: React.FC = () => {
         <div className="flex items-center justify-between h-20">
           
           {/* Logo and Brand (Always Present) */}
-          <Link href="/" className="flex items-center gap-3.5 group">
-            <div className="relative w-12 h-12 rounded-xl bg-amber-50/80 p-1 border border-amber-200 shadow-sm group-hover:border-amber-400 transition-all flex items-center justify-center shrink-0">
+          <Link href="/" className="flex items-center gap-2.5 sm:gap-3.5 group">
+            <div className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-amber-50/80 p-1 border border-amber-200 shadow-sm group-hover:border-amber-400 transition-all flex items-center justify-center shrink-0">
               <Image
                 src="/logo.png"
                 alt="Police SI Emblem Logo"
-                width={42}
-                height={42}
+                width={40}
+                height={40}
                 className="object-contain"
                 priority
               />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <span className="font-extrabold text-lg sm:text-xl tracking-tight text-slate-900 group-hover:text-amber-700 transition-colors">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <span className="font-extrabold text-base sm:text-xl tracking-tight text-slate-900 group-hover:text-amber-700 transition-colors">
                   POLICE <span className="text-amber-600">SI</span>
                 </span>
-                <span className="bg-amber-100 text-amber-800 border border-amber-300 text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider">
+                <span className="bg-amber-100 text-amber-800 border border-amber-300 text-[9px] sm:text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider">
                   TSLPRB & AP
                 </span>
               </div>
-              <p className="text-[11px] text-slate-500 tracking-wide font-medium">
+              <p className="text-[10px] sm:text-[11px] text-slate-500 tracking-wide font-medium truncate max-w-[130px] sm:max-w-none">
                 Recruitment Exam & PET Platform
               </p>
             </div>
@@ -319,10 +319,10 @@ export const Navbar: React.FC = () => {
             ) : (
               <Link
                 href="/auth"
-                className="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-sm flex items-center gap-1.5"
+                className="px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-sm flex items-center gap-1.5"
               >
                 <LogIn className="w-3.5 h-3.5" />
-                <span>Candidate / Admin Login</span>
+                <span><span className="hidden sm:inline">Candidate / Admin </span>Login</span>
               </Link>
             )}
 
@@ -330,9 +330,10 @@ export const Navbar: React.FC = () => {
               <div className="flex md:hidden items-center">
                 <button
                   onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                  className="p-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+                  aria-label="Toggle navigation menu"
+                  className="p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200"
                 >
-                  {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                  {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
                 </button>
               </div>
             )}
@@ -341,7 +342,85 @@ export const Navbar: React.FC = () => {
         </div>
       </div>
 
-      {/* Mobile Menu (Only when accessible keys are active) */}
+      {/* Mobile Horizontal Quick-Scroll Bar (for fast 1-tap navigation on small screens) */}
+      {showAccessibleKeys && !isAdminPage && (
+        <div className="md:hidden flex items-center gap-1.5 overflow-x-auto px-4 py-2 bg-slate-50 border-t border-slate-200 text-xs font-bold">
+          <Link
+            href="/dashboard"
+            className={`px-3 py-1.5 rounded-xl whitespace-nowrap transition-colors flex items-center gap-1.5 shrink-0 ${
+              pathname === '/dashboard' ? 'bg-amber-600 text-white shadow-sm' : 'bg-white text-slate-700 border border-slate-200'
+            }`}
+          >
+            <LayoutDashboard className="w-3.5 h-3.5" />
+            <span>Dashboard</span>
+          </Link>
+          <Link
+            href="/exam/tslprb-si-pwt-mock-01"
+            className={`px-3 py-1.5 rounded-xl whitespace-nowrap transition-colors flex items-center gap-1.5 shrink-0 ${
+              pathname.startsWith('/exam') ? 'bg-blue-600 text-white shadow-sm' : 'bg-white text-slate-700 border border-slate-200'
+            }`}
+          >
+            <FileText className="w-3.5 h-3.5" />
+            <span>Mocks</span>
+          </Link>
+          <Link
+            href="/previous-papers"
+            className={`px-3 py-1.5 rounded-xl whitespace-nowrap transition-colors flex items-center gap-1.5 shrink-0 ${
+              pathname === '/previous-papers' ? 'bg-amber-600 text-white shadow-sm' : 'bg-white text-slate-700 border border-slate-200'
+            }`}
+          >
+            <Archive className="w-3.5 h-3.5" />
+            <span>PYQs</span>
+          </Link>
+          <Link
+            href="/results"
+            className={`px-3 py-1.5 rounded-xl whitespace-nowrap transition-colors flex items-center gap-1.5 shrink-0 ${
+              pathname === '/results' ? 'bg-emerald-600 text-white shadow-sm' : 'bg-white text-slate-700 border border-slate-200'
+            }`}
+          >
+            <Award className="w-3.5 h-3.5" />
+            <span>Results</span>
+          </Link>
+          <Link
+            href="/performance"
+            className={`px-3 py-1.5 rounded-xl whitespace-nowrap transition-colors flex items-center gap-1.5 shrink-0 ${
+              pathname === '/performance' ? 'bg-purple-600 text-white shadow-sm' : 'bg-white text-slate-700 border border-slate-200'
+            }`}
+          >
+            <BarChart3 className="w-3.5 h-3.5" />
+            <span>Analytics</span>
+          </Link>
+          <Link
+            href="/pet-tracker"
+            className={`px-3 py-1.5 rounded-xl whitespace-nowrap transition-colors flex items-center gap-1.5 shrink-0 ${
+              pathname === '/pet-tracker' ? 'bg-emerald-600 text-white shadow-sm' : 'bg-white text-slate-700 border border-slate-200'
+            }`}
+          >
+            <Activity className="w-3.5 h-3.5" />
+            <span>PET</span>
+          </Link>
+          <Link
+            href="/descriptive"
+            className={`px-3 py-1.5 rounded-xl whitespace-nowrap transition-colors flex items-center gap-1.5 shrink-0 ${
+              pathname === '/descriptive' ? 'bg-purple-600 text-white shadow-sm' : 'bg-white text-slate-700 border border-slate-200'
+            }`}
+          >
+            <FileText className="w-3.5 h-3.5" />
+            <span>Descriptive</span>
+          </Link>
+          <Link
+            href="/leaderboard"
+            className={`px-3 py-1.5 rounded-xl whitespace-nowrap transition-colors flex items-center gap-1.5 shrink-0 ${
+              pathname === '/leaderboard' ? 'bg-amber-600 text-white shadow-sm' : 'bg-white text-slate-700 border border-slate-200'
+            }`}
+          >
+            <Award className="w-3.5 h-3.5" />
+            <span>Rank</span>
+          </Link>
+        </div>
+      )}
+
+      {/* Mobile Menu Drawer */}
       {showAccessibleKeys && mobileMenuOpen && (
         <div className="md:hidden border-t border-slate-200 bg-white/98 px-4 pt-3 pb-6 space-y-2 shadow-lg">
           <Link
@@ -442,10 +521,10 @@ export const Navbar: React.FC = () => {
                   setMobileMenuOpen(false);
                   logout();
                 }}
-                className="w-full py-2.5 px-3 rounded-xl bg-red-50 text-red-700 font-bold text-xs flex items-center justify-center gap-1.5"
+                className="w-full py-3 px-4 rounded-xl bg-red-50 text-red-700 hover:bg-red-100 font-bold text-xs flex items-center justify-center gap-2 cursor-pointer shadow-sm"
               >
                 <LogOut className="w-4 h-4" />
-                <span>Logout ({user.name.split(' ')[0]})</span>
+                <span>Log Out & Exit to Home</span>
               </button>
             )}
           </div>
