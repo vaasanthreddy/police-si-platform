@@ -31,7 +31,17 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<UserProfile | null>(null);
+  const [user, setUser] = useState<UserProfile | null>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('police_si_auth_user');
+        if (saved) return JSON.parse(saved);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    return INITIAL_USER;
+  });
   const [sessionExpired, setSessionExpired] = useState(false);
   const [sessionRemainingMs, setSessionRemainingMs] = useState(TWO_HOURS_MS);
 
@@ -89,23 +99,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const saved = localStorage.getItem('police_si_auth_user');
     const lastActiveStr = localStorage.getItem('police_si_last_active');
 
-    if (saved && lastActiveStr) {
+    if (!saved) {
+      persistUserSession(INITIAL_USER);
+      return;
+    }
+
+    if (lastActiveStr) {
       const lastActive = parseInt(lastActiveStr, 10);
       const elapsed = Date.now() - lastActive;
 
       if (elapsed > TWO_HOURS_MS) {
-        // Session has expired (> 2 hours without access)
         logout('inactivity');
         return;
       }
 
-      try {
-        const parsed = JSON.parse(saved);
-        setUser(parsed);
-        setSessionRemainingMs(Math.max(0, TWO_HOURS_MS - elapsed));
-      } catch {
-        logout();
-      }
+      setSessionRemainingMs(Math.max(0, TWO_HOURS_MS - elapsed));
     }
 
     // Attach user activity listeners

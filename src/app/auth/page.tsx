@@ -39,13 +39,15 @@ function AuthContent() {
     loginAdminWithOtp
   } = useAuth();
 
-  // If already logged in, instantly redirect to respective dashboard
+  // If already logged in, redirect to respective dashboard (only when not explicitly blocked or timed out)
   useEffect(() => {
-    if (user) {
+    if (user && !reasonParam && !blockedParam) {
       const destination = redirectParam || (role === 'ADMIN' ? '/admin' : '/dashboard');
-      window.location.href = destination;
+      if (destination && !destination.startsWith('/auth')) {
+        router.replace(destination);
+      }
     }
-  }, [user, role, redirectParam]);
+  }, [user, role, redirectParam, reasonParam, blockedParam, router]);
 
   // Portal selector: 'STUDENT' or 'ADMIN'
   const [portal, setPortal] = useState<'STUDENT' | 'ADMIN'>(
