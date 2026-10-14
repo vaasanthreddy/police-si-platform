@@ -18,7 +18,8 @@ import {
   Send, 
   RotateCcw,
   Sparkles,
-  Award
+  Award,
+  AlertCircle
 } from 'lucide-react';
 
 interface ExamPlayerProps {
@@ -37,10 +38,58 @@ export const ExamPlayer: React.FC<ExamPlayerProps> = ({ exam }) => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [tabSwitchCount, setTabSwitchCount] = useState(0);
   const [securityWarning, setSecurityWarning] = useState<string | null>(null);
+  const [showSubmitModal, setShowSubmitModal] = useState(false);
+  const [restoreNotice, setRestoreNotice] = useState<string | null>(null);
 
   // User responses: questionId -> { selectedOption, markedForReview }
   const [answers, setAnswers] = useState<Record<string, { selectedOption?: 'A' | 'B' | 'C' | 'D'; markedForReview: boolean }>>({});
   const [visited, setVisited] = useState<Record<string, boolean>>({ [exam.questions[0]?.id || '']: true });
+
+  // Progress Auto-Save: Restore on component mount (Item 10)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem(`police_si_exam_autosave_${exam.id}`);
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          if (parsed.answers && Object.keys(parsed.answers).length > 0) {
+            setAnswers(parsed.answers);
+          }
+          if (parsed.visited) {
+            setVisited(parsed.visited);
+          }
+          if (typeof parsed.currentIndex === 'number' && parsed.currentIndex < exam.questions.length) {
+            setCurrentIndex(parsed.currentIndex);
+          }
+          if (typeof parsed.timeLeft === 'number' && parsed.timeLeft > 10) {
+            setTimeLeft(parsed.timeLeft);
+          }
+          if (parsed.languageMode) {
+            setLanguageMode(parsed.languageMode);
+          }
+          setRestoreNotice('Progress Auto-Saved: Loaded your existing answer selections and exam timer.');
+          setTimeout(() => setRestoreNotice(null), 5000);
+        } catch {
+          // ignore corrupted JSON
+        }
+      }
+    }
+  }, [exam.id, exam.questions.length]);
+
+  // Progress Auto-Save: Store state to localStorage on every change (Item 10)
+  useEffect(() => {
+    if (typeof window !== 'undefined' && !isSubmitted && timeLeft > 0) {
+      const stateToPersist = {
+        answers,
+        visited,
+        currentIndex,
+        timeLeft,
+        languageMode,
+        timestamp: Date.now(),
+      };
+      localStorage.setItem(`police_si_exam_autosave_${exam.id}`, JSON.stringify(stateToPersist));
+    }
+  }, [answers, visited, currentIndex, timeLeft, languageMode, exam.id, isSubmitted]);
 
   const currentQ: Question = exam.questions[currentIndex] || exam.questions[0];
 
@@ -163,8 +212,10 @@ export const ExamPlayer: React.FC<ExamPlayerProps> = ({ exam }) => {
 
   const handleFinalSubmit = () => {
     setIsSubmitted(true);
-    // Persist attempt to localStorage for the Results page
+    setShowSubmitModal(false);
+    // Clear autosave and persist attempt to localStorage for the Results page
     if (typeof window !== 'undefined') {
+      localStorage.removeItem(`police_si_exam_autosave_${exam.id}`);
       let correct = 0;
       let wrong = 0;
       exam.questions.forEach((q) => {
@@ -199,9 +250,13 @@ export const ExamPlayer: React.FC<ExamPlayerProps> = ({ exam }) => {
   let correctCount = 0;
   let wrongCount = 0;
   let unattemptedCount = 0;
+  let reviewCount = 0;
 
   exam.questions.forEach((q) => {
     const userSelected = answers[q.id]?.selectedOption;
+    if (answers[q.id]?.markedForReview) {
+      reviewCount++;
+    }
     if (!userSelected) {
       unattemptedCount++;
     } else if (userSelected === q.correctAnswer) {
@@ -316,12 +371,8 @@ export const ExamPlayer: React.FC<ExamPlayerProps> = ({ exam }) => {
           {!isSubmitted && (
             <button
               type="button"
-              onClick={() => {
-                if (confirm('Are you sure you want to finish and submit this test?')) {
-                  handleFinalSubmit();
-                }
-              }}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs uppercase tracking-wide transition-all shadow-sm cursor-pointer"
+              onClick={() => setShowSubmitModal(true)}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs uppercase tracking-wide transition-all shadow-sm cursor-pointer focus:ring-2 focus:ring-red-400 focus:outline-none"
             >
               <Send className="w-3.5 h-3.5" />
               <span>Submit Exam</span>
@@ -330,6 +381,17 @@ export const ExamPlayer: React.FC<ExamPlayerProps> = ({ exam }) => {
         </div>
       </div>
 
+      {/* Auto-Save Restoration Banner */}
+      {restoreNotice && (
+        <div className="mb-4 p-3 bg-emerald-50 border border-emerald-300 rounded-2xl text-emerald-900 text-xs flex items-center justify-between shadow-sm animate-in fade-in duration-200">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+            <span>{restoreNotice}</span>
+          </div>
+          <button onClick={() => setRestoreNotice(null)} className="text-slate-400 hover:text-slate-700 text-xs font-bold">✕</button>
+        </div>
+      )}
+
       {/* Main Examination Grid */}
       {!isSubmitted ? (
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 relative z-20">
@@ -337,14 +399,33 @@ export const ExamPlayer: React.FC<ExamPlayerProps> = ({ exam }) => {
           {/* Question Viewport (Left 3 Columns) */}
           <div className="lg:col-span-3 bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm flex flex-col justify-between min-h-[520px]">
             
-            {/* Question Header */}
+            {/* Question Header with Status Badges (Item 10) */}
             <div>
-              <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3 mb-4">
                 <div className="flex items-center gap-2">
-                  <span className="font-bold text-xs text-amber-800 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200">
+                  <span className="font-bold text-xs text-amber-900 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200">
                     Question {currentIndex + 1} of {totalQuestions}
                   </span>
-                  <span className="text-xs text-slate-500 font-medium">Subject: {currentQ.subject}</span>
+                  
+                  {/* Dual Icon+Text Status Marker */}
+                  {answers[currentQ.id]?.selectedOption ? (
+                    <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>Answered (Opt {answers[currentQ.id]?.selectedOption})</span>
+                    </span>
+                  ) : answers[currentQ.id]?.markedForReview ? (
+                    <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-purple-100 text-purple-800 border border-purple-200">
+                      <Bookmark className="w-3.5 h-3.5 text-purple-600" />
+                      <span>Marked For Review</span>
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200">
+                      <HelpCircle className="w-3.5 h-3.5 text-amber-600" />
+                      <span>Unanswered</span>
+                    </span>
+                  )}
+
+                  <span className="text-xs text-slate-500 font-medium hidden sm:inline">Subject: {currentQ.subject}</span>
                 </div>
                 <div className="text-xs font-mono text-slate-500">
                   Marks: <span className="font-bold text-emerald-700">+{currentQ.marks}</span> / <span className="font-bold text-red-600">-{currentQ.negativeMarks}</span>
@@ -447,19 +528,23 @@ export const ExamPlayer: React.FC<ExamPlayerProps> = ({ exam }) => {
                 Question Palette
               </h3>
 
-              {/* Status Legend */}
-              <div className="grid grid-cols-2 gap-2 text-[11px] mb-4 text-slate-600">
+              {/* Status Legend with Dual Icon + Text Markers (Item 10 & 17) */}
+              <div className="grid grid-cols-2 gap-2 text-[11px] mb-4 text-slate-700 font-medium">
                 <div className="flex items-center gap-1.5">
-                  <span className="w-3 h-3 rounded bg-emerald-500"></span> Answered
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                  <span>Answered</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <span className="w-3 h-3 rounded bg-amber-500"></span> Not Answered
+                  <HelpCircle className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                  <span>Unanswered</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <span className="w-3 h-3 rounded bg-purple-600"></span> Review
+                  <Bookmark className="w-3.5 h-3.5 text-purple-600 shrink-0" />
+                  <span>Review</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <span className="w-3 h-3 rounded bg-slate-200"></span> Not Visited
+                  <span className="w-3 h-3 rounded-full bg-slate-300 shrink-0"></span>
+                  <span>Not Visited</span>
                 </div>
               </div>
 
@@ -472,12 +557,16 @@ export const ExamPlayer: React.FC<ExamPlayerProps> = ({ exam }) => {
                   const hasVisited = visited[q.id];
 
                   let colorClass = 'bg-slate-100 text-slate-600 border-slate-200'; // Not visited
+                  let statusDesc = 'Not Visited';
                   if (isMarked) {
                     colorClass = 'bg-purple-600 text-white border-purple-600 font-bold';
+                    statusDesc = 'Marked for Review';
                   } else if (hasAnswered) {
                     colorClass = 'bg-emerald-600 text-white border-emerald-600 font-bold';
+                    statusDesc = `Answered Option ${ans.selectedOption}`;
                   } else if (hasVisited) {
                     colorClass = 'bg-amber-500 text-white border-amber-500 font-bold';
+                    statusDesc = 'Unanswered';
                   }
 
                   if (idx === currentIndex) {
@@ -488,7 +577,8 @@ export const ExamPlayer: React.FC<ExamPlayerProps> = ({ exam }) => {
                     <button
                       key={q.id}
                       onClick={() => handleJumpTo(idx)}
-                      className={`h-9 rounded-xl text-xs font-mono flex items-center justify-center border transition-all ${colorClass}`}
+                      aria-label={`Question ${idx + 1}: ${statusDesc}`}
+                      className={`h-9 rounded-xl text-xs font-mono flex items-center justify-center border transition-all focus:ring-2 focus:ring-amber-500 focus:outline-none ${colorClass}`}
                     >
                       {idx + 1}
                     </button>
@@ -621,6 +711,70 @@ export const ExamPlayer: React.FC<ExamPlayerProps> = ({ exam }) => {
             >
               Return to Student Dashboard
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Submission Confirmation / Unanswered Warning Modal (Item 10) */}
+      {showSubmitModal && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 duration-150 space-y-4">
+            <div className="flex items-center gap-2.5 pb-3 border-b border-slate-100">
+              <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${
+                unattemptedCount > 0 ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'
+              }`}>
+                {unattemptedCount > 0 ? <AlertCircle className="w-5 h-5 text-amber-600" /> : <CheckCircle2 className="w-5 h-5 text-emerald-600" />}
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-slate-900">
+                  {unattemptedCount > 0 ? 'Unanswered Questions Warning' : 'Ready to Submit Exam?'}
+                </h3>
+                <p className="text-[11px] text-slate-500">TSLPRB CBT Exam Session</p>
+              </div>
+            </div>
+
+            {unattemptedCount > 0 ? (
+              <p className="text-xs text-slate-700 leading-relaxed">
+                You currently have <strong className="text-amber-800">{unattemptedCount} unanswered question{unattemptedCount > 1 ? 's' : ''}</strong> out of {totalQuestions}. Are you sure you want to proceed with final submission?
+              </p>
+            ) : (
+              <p className="text-xs text-slate-700 leading-relaxed">
+                Great job! You have answered all {totalQuestions} questions. Would you like to submit your answers and generate your scorecard?
+              </p>
+            )}
+
+            {/* Answer Summary Card */}
+            <div className="grid grid-cols-3 gap-2 p-3 bg-slate-50 rounded-2xl border border-slate-200 text-center text-xs">
+              <div className="p-2 bg-white rounded-xl border border-slate-100">
+                <span className="text-[10px] text-slate-500 uppercase font-bold">Answered</span>
+                <p className="text-sm font-black text-emerald-700 font-mono mt-0.5">{totalQuestions - unattemptedCount}</p>
+              </div>
+              <div className="p-2 bg-white rounded-xl border border-slate-100">
+                <span className="text-[10px] text-slate-500 uppercase font-bold">Unanswered</span>
+                <p className="text-sm font-black text-amber-700 font-mono mt-0.5">{unattemptedCount}</p>
+              </div>
+              <div className="p-2 bg-white rounded-xl border border-slate-100">
+                <span className="text-[10px] text-slate-500 uppercase font-bold">Review</span>
+                <p className="text-sm font-black text-purple-700 font-mono mt-0.5">{reviewCount}</p>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={() => setShowSubmitModal(false)}
+                className="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 transition-colors"
+              >
+                Return to Exam
+              </button>
+              <button
+                type="button"
+                onClick={handleFinalSubmit}
+                className="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-sm"
+              >
+                Confirm Final Submit
+              </button>
+            </div>
           </div>
         </div>
       )}

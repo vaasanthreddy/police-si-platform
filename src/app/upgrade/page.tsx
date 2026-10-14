@@ -118,43 +118,77 @@ export default function UpgradePage() {
           {/* Plan Summary (Left 1 Col) */}
           <div className="bg-gradient-to-b from-amber-50 to-white border-2 border-amber-400 rounded-3xl p-6 shadow-md flex flex-col justify-between">
             <div>
-              <span className="px-3 py-1 rounded-full bg-amber-600 text-white text-[10px] font-bold uppercase tracking-wider">
-                Full Year Plan
-              </span>
+              <div className="flex items-center justify-between">
+                <span className="px-3 py-1 rounded-full bg-amber-600 text-white text-[10px] font-bold uppercase tracking-wider">
+                  12-Month Pro Plan
+                </span>
+                <span className="text-[10px] font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded-full">
+                  No Hidden Fees
+                </span>
+              </div>
               <h3 className="text-xl font-black text-slate-900 mt-3">SI Pro Pass 2026</h3>
-              <p className="text-xs text-slate-500 mt-1">Complete 3-Stage Police Preparation Suite</p>
+              <p className="text-xs text-slate-500 mt-0.5">Complete 3-Stage Police Preparation Suite</p>
 
-              <div className="text-3xl font-black text-amber-700 font-mono my-4">
-                ₹999 <span className="text-xs font-normal text-slate-500">/ 1 Year</span>
+              <div className="my-4 pb-3 border-b border-amber-200">
+                <div className="text-3xl font-black text-amber-700 font-mono">
+                  ₹999 <span className="text-xs font-normal text-slate-600">/ 12 Months Validity</span>
+                </div>
+                <p className="text-[11px] text-emerald-700 font-semibold mt-1">
+                  ✓ Price is inclusive of 18% GST (Total: ₹999.00)
+                </p>
               </div>
 
               <ul className="space-y-2.5 text-xs text-slate-700">
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>25+ PWT Grand CBT Mocks (200 M)</span>
+                  <span><strong>12-Month Full Validity</strong> from activation date</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>Descriptive Paper Faculty Evaluation</span>
+                  <span>25+ PWT Grand CBT Mocks (200 M with timers)</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>Previous 10 Years Solved Question Papers</span>
+                  <span>Descriptive Paper Grading (<strong>48–72h Turnaround</strong>)</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>Official PET 1600m / 800m Benchmark Log</span>
+                  <span>Verified PYQs (TSLPRB & AP Police 2018–2023)</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>State-wide Live Weekend Rankings</span>
+                  <span>PET 1600m / 800m Benchmark Milestones</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span>Bilingual Questions & Solutions (English & Telugu)</span>
                 </li>
               </ul>
+
+              {/* 7-Day Money Back Guarantee */}
+              <div className="mt-4 p-3 rounded-2xl bg-emerald-50 border border-emerald-200 text-[11px] text-emerald-900 space-y-1">
+                <div className="flex items-center gap-1.5 font-bold">
+                  <ShieldCheck className="w-4 h-4 text-emerald-700" />
+                  <span>7-Day Money-Back Guarantee</span>
+                </div>
+                <p className="text-[10px] text-emerald-800 leading-relaxed">
+                  Full refund within 7 days of subscription if fewer than 2 full-length mocks have been submitted. Zero cancellation fees.
+                </p>
+              </div>
             </div>
 
-            <div className="mt-6 pt-4 border-t border-amber-200 text-[11px] text-slate-500 flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-emerald-600" />
-              <span>100% Secure 256-Bit SSL Encrypted Checkout</span>
+            <div className="mt-6 pt-4 border-t border-amber-200 text-[11px] text-slate-500 space-y-2">
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                <span>100% Secure 256-Bit SSL Encrypted Checkout</span>
+              </div>
+              <div className="flex items-center gap-3 text-[10px] text-slate-400">
+                <Link href="/terms" className="underline hover:text-slate-700">Terms of Service</Link>
+                <span>•</span>
+                <Link href="/privacy" className="underline hover:text-slate-700">Privacy Policy</Link>
+                <span>•</span>
+                <Link href="/refund" className="underline hover:text-slate-700">Refund Policy</Link>
+              </div>
             </div>
           </div>
 

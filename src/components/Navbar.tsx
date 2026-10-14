@@ -20,7 +20,8 @@ import {
   Home,
   Archive,
   BarChart3,
-  User
+  User,
+  CreditCard
 } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
@@ -28,11 +29,10 @@ export const Navbar: React.FC = () => {
   const { user, role, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileDropdown, setProfileDropdown] = useState(false);
+  const [moreDropdownOpen, setMoreDropdownOpen] = useState(false);
 
-  // Accessible keys must ONLY appear inside active dashboard / portal pages (NOT on home '/' and NOT on '/auth')
   const isAuthPage = pathname.startsWith('/auth');
   const isHomePage = pathname === '/';
-  const showAccessibleKeys = !isHomePage && !isAuthPage && !!user;
   const isAdminPage = pathname.startsWith('/admin');
 
   return (
@@ -40,8 +40,8 @@ export const Navbar: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           
-          {/* Logo and Brand (Always Present) */}
-          <Link href="/" className="flex items-center gap-2.5 sm:gap-3.5 group">
+          {/* Logo and Brand */}
+          <Link href="/" className="flex items-center gap-2.5 sm:gap-3.5 group focus:outline-none focus:ring-2 focus:ring-amber-500 rounded-xl p-1">
             <div className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-amber-50/80 p-1 border border-amber-200 shadow-sm group-hover:border-amber-400 transition-all flex items-center justify-center shrink-0">
               <Image
                 src="/logo.png"
@@ -62,172 +62,162 @@ export const Navbar: React.FC = () => {
                 </span>
               </div>
               <p className="text-[10px] sm:text-[11px] text-slate-500 tracking-wide font-medium truncate max-w-[130px] sm:max-w-none">
-                Recruitment Exam & PET Platform
+                Exam Preparation & PET Suite
               </p>
             </div>
           </Link>
 
           {/* ========================================================================= */}
-          {/* TOP BAR ACCESSIBLE KEYS                                                   */}
-          {/* Completely hidden on Home ('/') and Auth ('/auth') pages.                  */}
-          {/* Appear ONLY when user opens respective student account or admin page.      */}
+          {/* MAIN NAVIGATION (Item 3: Mock Tests, Previous Papers, PET Tracker,        */}
+          {/* Pricing, with secondary links in 'More' dropdown menu)                    */}
           {/* ========================================================================= */}
-          {showAccessibleKeys && (
-            <div className="hidden md:flex items-center gap-1 lg:gap-2">
-              
+          <div className="hidden lg:flex items-center gap-1.5">
+            {/* If in dashboard, provide dashboard button */}
+            {user && (
               <Link
-                href="/"
-                className="text-slate-600 hover:text-slate-900 px-3 py-2 rounded-lg text-xs font-bold transition-colors hover:bg-slate-100 flex items-center gap-1.5"
+                href={role === 'ADMIN' ? '/admin' : '/dashboard'}
+                className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 focus:ring-2 focus:ring-amber-500 focus:outline-none ${
+                  pathname === '/dashboard' || pathname === '/admin'
+                    ? 'bg-amber-100 text-amber-900 border border-amber-300 shadow-sm'
+                    : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100'
+                }`}
               >
-                <Home className="w-4 h-4 text-slate-500" />
-                <span>Home</span>
+                <LayoutDashboard className="w-4 h-4 text-amber-600" />
+                <span>{role === 'ADMIN' ? 'Admin Panel' : 'My Dashboard'}</span>
               </Link>
+            )}
 
-              {isAdminPage ? (
-                /* Admin Specific Accessible Keys */
-                <>
-                  <Link
-                    href="/admin"
-                    className="bg-red-50 text-red-900 border border-red-300 px-3 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm"
-                  >
-                    <ShieldCheck className="w-4 h-4 text-red-700" />
-                    <span>Admin Control</span>
-                  </Link>
+            {/* 1. Mock Tests */}
+            <Link
+              href="/exam/tslprb-si-pwt-mock-01"
+              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 focus:ring-2 focus:ring-amber-500 focus:outline-none ${
+                pathname.startsWith('/exam')
+                  ? 'bg-amber-50 text-amber-900 border border-amber-300 shadow-sm'
+                  : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100'
+              }`}
+            >
+              <FileText className="w-4 h-4 text-blue-600" />
+              <span>Mock Tests</span>
+            </Link>
 
-                  <Link
-                    href="/dashboard"
-                    className="text-slate-600 hover:text-slate-900 px-3 py-2 rounded-lg text-xs font-bold transition-colors hover:bg-slate-100 flex items-center gap-1.5"
-                  >
-                    <LayoutDashboard className="w-4 h-4 text-amber-600" />
-                    <span>Student View</span>
-                  </Link>
-                </>
-              ) : (
-                /* Student Specific Accessible Keys */
-                <>
-                  <Link
-                    href="/dashboard"
-                    className={`px-3 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
-                      pathname === '/dashboard'
-                        ? 'bg-amber-50 text-amber-900 border border-amber-300 shadow-sm'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-                    }`}
-                  >
-                    <LayoutDashboard className="w-4 h-4 text-amber-700" />
-                    <span>My Dashboard</span>
-                  </Link>
+            {/* 2. Previous Papers */}
+            <Link
+              href="/previous-papers"
+              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 focus:ring-2 focus:ring-amber-500 focus:outline-none ${
+                pathname === '/previous-papers'
+                  ? 'bg-amber-50 text-amber-900 border border-amber-300 shadow-sm'
+                  : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100'
+              }`}
+            >
+              <Archive className="w-4 h-4 text-amber-700" />
+              <span>Previous Papers</span>
+            </Link>
 
-                  <Link
-                    href="/exam/tslprb-si-pwt-mock-01"
-                    className={`px-3 py-2 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 ${
-                      pathname.startsWith('/exam')
-                        ? 'bg-blue-50 text-blue-900 border border-blue-200'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-                    }`}
-                  >
-                    <FileText className="w-4 h-4 text-blue-600" />
-                    <span>Mock Tests</span>
-                  </Link>
+            {/* 3. PET Tracker */}
+            <Link
+              href="/pet-tracker"
+              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 focus:ring-2 focus:ring-amber-500 focus:outline-none ${
+                pathname === '/pet-tracker'
+                  ? 'bg-emerald-50 text-emerald-900 border border-emerald-300 shadow-sm'
+                  : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100'
+              }`}
+            >
+              <Activity className="w-4 h-4 text-emerald-600" />
+              <span>PET Tracker</span>
+            </Link>
 
-                  <Link
-                    href="/previous-papers"
-                    className={`px-3 py-2 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 ${
-                      pathname === '/previous-papers'
-                        ? 'bg-amber-50 text-amber-900 border border-amber-300 shadow-sm'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-                    }`}
-                  >
-                    <Archive className="w-4 h-4 text-amber-700" />
-                    <span>Previous Papers</span>
-                  </Link>
+            {/* 4. Pricing */}
+            <Link
+              href="/upgrade"
+              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 focus:ring-2 focus:ring-amber-500 focus:outline-none ${
+                pathname === '/upgrade'
+                  ? 'bg-amber-100 text-amber-900 border border-amber-300 shadow-sm'
+                  : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100'
+              }`}
+            >
+              <CreditCard className="w-4 h-4 text-amber-600" />
+              <span>Pricing</span>
+            </Link>
 
+            {/* 5. More Dropdown (Secondary Links) */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setMoreDropdownOpen(!moreDropdownOpen)}
+                className="px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-colors flex items-center gap-1 focus:ring-2 focus:ring-amber-500 focus:outline-none"
+              >
+                <span>More</span>
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform ${moreDropdownOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              {moreDropdownOpen && (
+                <div 
+                  onMouseLeave={() => setMoreDropdownOpen(false)}
+                  className="absolute left-0 top-full mt-1.5 w-56 rounded-2xl bg-white border border-slate-200 shadow-xl p-2 z-50 animate-in fade-in duration-100"
+                >
                   <Link
                     href="/results"
-                    className={`px-3 py-2 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 ${
-                      pathname === '/results'
-                        ? 'bg-emerald-50 text-emerald-900 border border-emerald-300 shadow-sm'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-                    }`}
+                    onClick={() => setMoreDropdownOpen(false)}
+                    className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-slate-700 hover:text-emerald-800 hover:bg-emerald-50 rounded-xl"
                   >
                     <Award className="w-4 h-4 text-emerald-600" />
-                    <span>Results</span>
+                    <span>Exam Results & Scorecard</span>
                   </Link>
 
                   <Link
                     href="/performance"
-                    className={`px-3 py-2 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 ${
-                      pathname === '/performance'
-                        ? 'bg-purple-50 text-purple-900 border border-purple-200'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-                    }`}
+                    onClick={() => setMoreDropdownOpen(false)}
+                    className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-slate-700 hover:text-purple-800 hover:bg-purple-50 rounded-xl"
                   >
                     <BarChart3 className="w-4 h-4 text-purple-600" />
-                    <span>Performance</span>
-                  </Link>
-
-                  <Link
-                    href="/pet-tracker"
-                    className={`px-3 py-2 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 ${
-                      pathname === '/pet-tracker'
-                        ? 'bg-emerald-50 text-emerald-900 border border-emerald-200'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-                    }`}
-                  >
-                    <Activity className="w-4 h-4 text-emerald-600" />
-                    <span>PET Tracker</span>
+                    <span>Performance Analytics</span>
                   </Link>
 
                   <Link
                     href="/descriptive"
-                    className={`px-3 py-2 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 ${
-                      pathname === '/descriptive'
-                        ? 'bg-purple-50 text-purple-900 border border-purple-200'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-                    }`}
+                    onClick={() => setMoreDropdownOpen(false)}
+                    className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-slate-700 hover:text-purple-800 hover:bg-purple-50 rounded-xl"
                   >
                     <FileText className="w-4 h-4 text-purple-600" />
-                    <span>Descriptive</span>
+                    <span>Descriptive Paper Submissions</span>
                   </Link>
 
                   <Link
                     href="/leaderboard"
-                    className={`px-3 py-2 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 ${
-                      pathname === '/leaderboard'
-                        ? 'bg-amber-50 text-amber-900 border border-amber-200'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-                    }`}
+                    onClick={() => setMoreDropdownOpen(false)}
+                    className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-slate-700 hover:text-amber-800 hover:bg-amber-50 rounded-xl"
                   >
                     <Award className="w-4 h-4 text-amber-600" />
-                    <span>Leaderboard</span>
+                    <span>Sample State Leaderboard</span>
                   </Link>
-                </>
+                </div>
               )}
             </div>
-          )}
+          </div>
 
           {/* Right Side: Auth / Profile Button */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5 sm:gap-3">
             {user ? (
               <div className="relative flex items-center gap-2">
-                {/* On home page, give a quick button to go directly to their dashboard */}
                 {isHomePage && (
                   <Link
                     href={role === 'ADMIN' ? '/admin' : '/dashboard'}
-                    className="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-sm flex items-center gap-1.5"
+                    className="hidden sm:inline-flex px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-sm items-center gap-1.5 focus:ring-2 focus:ring-amber-500 focus:outline-none min-h-[44px]"
                   >
                     <LayoutDashboard className="w-3.5 h-3.5" />
-                    <span>{role === 'ADMIN' ? 'Go to Admin Panel' : 'Go to My Dashboard'}</span>
+                    <span>{role === 'ADMIN' ? 'Admin Panel' : 'My Dashboard'}</span>
                   </Link>
                 )}
 
                 <button
                   onClick={() => setProfileDropdown(!profileDropdown)}
-                  className="flex items-center gap-2.5 p-1.5 pr-3 rounded-full bg-slate-50 hover:bg-slate-100 border border-slate-300 transition-all text-left shadow-sm"
+                  className="flex items-center gap-2 p-1.5 pr-3 rounded-full bg-slate-50 hover:bg-slate-100 border border-slate-300 transition-all text-left shadow-sm focus:ring-2 focus:ring-amber-500 focus:outline-none min-h-[44px]"
+                  aria-label="User profile options"
                 >
                   <div className="w-8 h-8 rounded-full bg-amber-600 flex items-center justify-center text-white font-bold text-xs shadow-inner">
                     {user.name.slice(0, 2).toUpperCase()}
                   </div>
-                  <div className="leading-tight">
+                  <div className="leading-tight hidden sm:block">
                     <div className="text-xs font-semibold text-slate-800 flex items-center gap-1">
                       <span>{user.name.split(' ')[0]}</span>
                       {user.subscriptionTier === 'PREMIUM' && (
@@ -319,215 +309,188 @@ export const Navbar: React.FC = () => {
             ) : (
               <Link
                 href="/auth"
-                className="px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-sm flex items-center gap-1.5"
+                className="px-4 sm:px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-sm flex items-center gap-1.5 focus:ring-2 focus:ring-amber-500 focus:outline-none min-h-[44px]"
               >
-                <LogIn className="w-3.5 h-3.5" />
-                <span><span className="hidden sm:inline">Candidate / Admin </span>Login</span>
+                <LogIn className="w-4 h-4" />
+                <span>Sign In</span>
               </Link>
             )}
 
-            {showAccessibleKeys && (
-              <div className="flex md:hidden items-center">
-                <button
-                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                  aria-label="Toggle navigation menu"
-                  className="p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200"
-                >
-                  {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-                </button>
-              </div>
-            )}
+            {/* Mobile Hamburger Toggle (Item 11: Min 44px touch target) */}
+            <div className="flex lg:hidden items-center">
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                aria-label="Toggle navigation menu"
+                className="p-2.5 rounded-xl text-slate-700 hover:text-slate-900 hover:bg-slate-100 border border-slate-200 min-h-[44px] min-w-[44px] flex items-center justify-center focus:ring-2 focus:ring-amber-500 focus:outline-none"
+              >
+                {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              </button>
+            </div>
           </div>
 
         </div>
       </div>
 
-      {/* Mobile Horizontal Quick-Scroll Bar (for fast 1-tap navigation on small screens) */}
-      {showAccessibleKeys && !isAdminPage && (
-        <div className="md:hidden flex items-center gap-1.5 overflow-x-auto px-4 py-2 bg-slate-50 border-t border-slate-200 text-xs font-bold">
+      {/* ========================================================================= */}
+      {/* MOBILE HORIZONTAL QUICK CHIP BAR (Item 11: 360px-390px responsive)        */}
+      {/* ========================================================================= */}
+      <div className="lg:hidden flex items-center gap-1.5 overflow-x-auto px-4 py-2 bg-slate-50 border-t border-slate-200 text-xs font-bold scrollbar-none">
+        {user && (
           <Link
-            href="/dashboard"
-            className={`px-3 py-1.5 rounded-xl whitespace-nowrap transition-colors flex items-center gap-1.5 shrink-0 ${
-              pathname === '/dashboard' ? 'bg-amber-600 text-white shadow-sm' : 'bg-white text-slate-700 border border-slate-200'
+            href={role === 'ADMIN' ? '/admin' : '/dashboard'}
+            className={`px-3 py-2 rounded-xl whitespace-nowrap transition-colors flex items-center gap-1.5 shrink-0 min-h-[44px] ${
+              pathname === '/dashboard' || pathname === '/admin' ? 'bg-amber-600 text-white shadow-sm' : 'bg-white text-slate-700 border border-slate-200'
             }`}
           >
             <LayoutDashboard className="w-3.5 h-3.5" />
             <span>Dashboard</span>
           </Link>
-          <Link
-            href="/exam/tslprb-si-pwt-mock-01"
-            className={`px-3 py-1.5 rounded-xl whitespace-nowrap transition-colors flex items-center gap-1.5 shrink-0 ${
-              pathname.startsWith('/exam') ? 'bg-blue-600 text-white shadow-sm' : 'bg-white text-slate-700 border border-slate-200'
-            }`}
-          >
-            <FileText className="w-3.5 h-3.5" />
-            <span>Mocks</span>
-          </Link>
-          <Link
-            href="/previous-papers"
-            className={`px-3 py-1.5 rounded-xl whitespace-nowrap transition-colors flex items-center gap-1.5 shrink-0 ${
-              pathname === '/previous-papers' ? 'bg-amber-600 text-white shadow-sm' : 'bg-white text-slate-700 border border-slate-200'
-            }`}
-          >
-            <Archive className="w-3.5 h-3.5" />
-            <span>PYQs</span>
-          </Link>
-          <Link
-            href="/results"
-            className={`px-3 py-1.5 rounded-xl whitespace-nowrap transition-colors flex items-center gap-1.5 shrink-0 ${
-              pathname === '/results' ? 'bg-emerald-600 text-white shadow-sm' : 'bg-white text-slate-700 border border-slate-200'
-            }`}
-          >
-            <Award className="w-3.5 h-3.5" />
-            <span>Results</span>
-          </Link>
-          <Link
-            href="/performance"
-            className={`px-3 py-1.5 rounded-xl whitespace-nowrap transition-colors flex items-center gap-1.5 shrink-0 ${
-              pathname === '/performance' ? 'bg-purple-600 text-white shadow-sm' : 'bg-white text-slate-700 border border-slate-200'
-            }`}
-          >
-            <BarChart3 className="w-3.5 h-3.5" />
-            <span>Analytics</span>
-          </Link>
-          <Link
-            href="/pet-tracker"
-            className={`px-3 py-1.5 rounded-xl whitespace-nowrap transition-colors flex items-center gap-1.5 shrink-0 ${
-              pathname === '/pet-tracker' ? 'bg-emerald-600 text-white shadow-sm' : 'bg-white text-slate-700 border border-slate-200'
-            }`}
-          >
-            <Activity className="w-3.5 h-3.5" />
-            <span>PET</span>
-          </Link>
-          <Link
-            href="/descriptive"
-            className={`px-3 py-1.5 rounded-xl whitespace-nowrap transition-colors flex items-center gap-1.5 shrink-0 ${
-              pathname === '/descriptive' ? 'bg-purple-600 text-white shadow-sm' : 'bg-white text-slate-700 border border-slate-200'
-            }`}
-          >
-            <FileText className="w-3.5 h-3.5" />
-            <span>Descriptive</span>
-          </Link>
-          <Link
-            href="/leaderboard"
-            className={`px-3 py-1.5 rounded-xl whitespace-nowrap transition-colors flex items-center gap-1.5 shrink-0 ${
-              pathname === '/leaderboard' ? 'bg-amber-600 text-white shadow-sm' : 'bg-white text-slate-700 border border-slate-200'
-            }`}
-          >
-            <Award className="w-3.5 h-3.5" />
-            <span>Rank</span>
-          </Link>
-        </div>
-      )}
+        )}
+        <Link
+          href="/exam/tslprb-si-pwt-mock-01"
+          className={`px-3 py-2 rounded-xl whitespace-nowrap transition-colors flex items-center gap-1.5 shrink-0 min-h-[44px] ${
+            pathname.startsWith('/exam') ? 'bg-blue-600 text-white shadow-sm' : 'bg-white text-slate-700 border border-slate-200'
+          }`}
+        >
+          <FileText className="w-3.5 h-3.5" />
+          <span>Mock Tests</span>
+        </Link>
+        <Link
+          href="/previous-papers"
+          className={`px-3 py-2 rounded-xl whitespace-nowrap transition-colors flex items-center gap-1.5 shrink-0 min-h-[44px] ${
+            pathname === '/previous-papers' ? 'bg-amber-600 text-white shadow-sm' : 'bg-white text-slate-700 border border-slate-200'
+          }`}
+        >
+          <Archive className="w-3.5 h-3.5" />
+          <span>Previous Papers</span>
+        </Link>
+        <Link
+          href="/pet-tracker"
+          className={`px-3 py-2 rounded-xl whitespace-nowrap transition-colors flex items-center gap-1.5 shrink-0 min-h-[44px] ${
+            pathname === '/pet-tracker' ? 'bg-emerald-600 text-white shadow-sm' : 'bg-white text-slate-700 border border-slate-200'
+          }`}
+        >
+          <Activity className="w-3.5 h-3.5" />
+          <span>PET Tracker</span>
+        </Link>
+        <Link
+          href="/upgrade"
+          className={`px-3 py-2 rounded-xl whitespace-nowrap transition-colors flex items-center gap-1.5 shrink-0 min-h-[44px] ${
+            pathname === '/upgrade' ? 'bg-amber-600 text-white shadow-sm' : 'bg-white text-slate-700 border border-slate-200'
+          }`}
+        >
+          <CreditCard className="w-3.5 h-3.5" />
+          <span>Pricing</span>
+        </Link>
+        <Link
+          href="/leaderboard"
+          className={`px-3 py-2 rounded-xl whitespace-nowrap transition-colors flex items-center gap-1.5 shrink-0 min-h-[44px] ${
+            pathname === '/leaderboard' ? 'bg-amber-600 text-white shadow-sm' : 'bg-white text-slate-700 border border-slate-200'
+          }`}
+        >
+          <Award className="w-3.5 h-3.5" />
+          <span>Leaderboard</span>
+        </Link>
+      </div>
 
-      {/* Mobile Menu Drawer */}
-      {showAccessibleKeys && mobileMenuOpen && (
-        <div className="md:hidden border-t border-slate-200 bg-white/98 px-4 pt-3 pb-6 space-y-2 shadow-lg">
+      {/* Mobile Drawer Menu */}
+      {mobileMenuOpen && (
+        <div className="lg:hidden border-t border-slate-200 bg-white px-4 pt-3 pb-6 space-y-2 shadow-xl animate-in slide-in-from-top-2 duration-150">
           <Link
             href="/"
             onClick={() => setMobileMenuOpen(false)}
-            className="block px-3 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-100"
+            className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-100 min-h-[44px]"
           >
-            Home
+            <Home className="w-4 h-4 text-slate-500" />
+            <span>Home</span>
           </Link>
 
-          {isAdminPage ? (
-            <Link
-              href="/admin"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-lg text-sm font-bold text-red-900 bg-red-50 border border-red-200"
-            >
-              Admin Control Panel
-            </Link>
-          ) : (
-            <>
-              <Link
-                href="/dashboard"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-2 rounded-lg text-sm font-bold text-amber-900 bg-amber-50 border border-amber-200"
-              >
-                My Student Dashboard
-              </Link>
-              <Link
-                href="/exam/tslprb-si-pwt-mock-01"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-100"
-              >
-                Mock Tests (200 M)
-              </Link>
-              <Link
-                href="/previous-papers"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-100"
-              >
-                Previous Year Papers (PYQ)
-              </Link>
-              <Link
-                href="/results"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-100"
-              >
-                Results Tool (Scorecards)
-              </Link>
-              <Link
-                href="/performance"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-100"
-              >
-                Performance Analysis
-              </Link>
-              <Link
-                href="/pet-tracker"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-100"
-              >
-                PET / PMT Physical Tracker
-              </Link>
-              <Link
-                href="/descriptive"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-100"
-              >
-                Descriptive Evaluation
-              </Link>
-              <Link
-                href="/leaderboard"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-100"
-              >
-                State Leaderboard
-              </Link>
-              <Link
-                href="/profile"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-100"
-              >
-                My Profile
-              </Link>
-              <Link
-                href="/upgrade"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-2 rounded-lg text-sm font-bold text-amber-700 bg-amber-50"
-              >
-                Upgrade to Pro Pass
-              </Link>
-            </>
-          )}
+          <Link
+            href="/exam/tslprb-si-pwt-mock-01"
+            onClick={() => setMobileMenuOpen(false)}
+            className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-100 min-h-[44px]"
+          >
+            <FileText className="w-4 h-4 text-blue-600" />
+            <span>Mock Tests</span>
+          </Link>
 
-          <div className="pt-3 border-t border-slate-200">
-            {user && (
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  logout();
-                }}
-                className="w-full py-3 px-4 rounded-xl bg-red-50 text-red-700 hover:bg-red-100 font-bold text-xs flex items-center justify-center gap-2 cursor-pointer shadow-sm"
-              >
-                <LogOut className="w-4 h-4" />
-                <span>Log Out & Exit to Home</span>
-              </button>
-            )}
+          <Link
+            href="/previous-papers"
+            onClick={() => setMobileMenuOpen(false)}
+            className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-100 min-h-[44px]"
+          >
+            <Archive className="w-4 h-4 text-amber-700" />
+            <span>Previous Papers (PYQ)</span>
+          </Link>
+
+          <Link
+            href="/pet-tracker"
+            onClick={() => setMobileMenuOpen(false)}
+            className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-100 min-h-[44px]"
+          >
+            <Activity className="w-4 h-4 text-emerald-600" />
+            <span>PET Tracker Standards</span>
+          </Link>
+
+          <Link
+            href="/upgrade"
+            onClick={() => setMobileMenuOpen(false)}
+            className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-bold text-amber-800 bg-amber-50 border border-amber-200 min-h-[44px]"
+          >
+            <CreditCard className="w-4 h-4 text-amber-600" />
+            <span>Pricing (SI Pro Pass)</span>
+          </Link>
+
+          <div className="pt-2 border-t border-slate-100 space-y-1">
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-3">
+              Secondary Tools
+            </span>
+            <Link
+              href="/results"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg min-h-[44px]"
+            >
+              <Award className="w-4 h-4 text-emerald-600" />
+              <span>Results & Scorecards</span>
+            </Link>
+            <Link
+              href="/performance"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg min-h-[44px]"
+            >
+              <BarChart3 className="w-4 h-4 text-purple-600" />
+              <span>Performance Analytics</span>
+            </Link>
+            <Link
+              href="/descriptive"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg min-h-[44px]"
+            >
+              <FileText className="w-4 h-4 text-purple-600" />
+              <span>Descriptive Paper Submissions</span>
+            </Link>
+            <Link
+              href="/leaderboard"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg min-h-[44px]"
+            >
+              <Award className="w-4 h-4 text-amber-600" />
+              <span>State Leaderboard (Simulated)</span>
+            </Link>
           </div>
+
+          {!user && (
+            <div className="pt-3 border-t border-slate-200">
+              <Link
+                href="/auth"
+                onClick={() => setMobileMenuOpen(false)}
+                className="w-full py-3 rounded-xl bg-amber-600 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 min-h-[44px]"
+              >
+                <LogIn className="w-4 h-4" />
+                <span>Sign In to Candidate Portal</span>
+              </Link>
+            </div>
+          )}
         </div>
       )}
     </nav>

@@ -8,7 +8,6 @@ import {
   Award, 
   Activity, 
   FileText, 
-  Languages, 
   CheckCircle2, 
   ArrowRight, 
   Clock, 
@@ -20,553 +19,585 @@ import {
   CreditCard,
   PenTool,
   Trophy,
-  Archive
+  Archive,
+  AlertCircle,
+  HelpCircle,
+  XCircle,
+  ShieldCheck,
+  ChevronDown,
+  Layers,
+  ChevronUp
 } from 'lucide-react';
 
 export default function HomePage() {
   const { user, role } = useAuth();
-  const [activeTab, setActiveTab] = useState<'pwt' | 'pet' | 'fwe' | 'daily'>('pwt');
 
   // If user is unauthenticated, redirect to login page with callback
   const getProtectedHref = (targetPath: string) => {
     return user ? targetPath : `/auth?redirect=${encodeURIComponent(targetPath)}`;
   };
 
+  // Sample Question Interactive State (Item 13)
+  const [selectedSampleOption, setSelectedSampleOption] = useState<'A' | 'B' | 'C' | 'D' | null>(null);
+  const [showSampleExplanation, setShowSampleExplanation] = useState(false);
+  const [sampleQuestionLang, setSampleQuestionLang] = useState<'EN' | 'TE'>('EN');
+
+  // Exam Pattern Board Tab ('TSLPRB' | 'AP_SLPRB')
+  const [activeBoardPattern, setActiveBoardPattern] = useState<'TSLPRB' | 'AP_SLPRB'>('TSLPRB');
+
+  // FAQ Accordion State
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
+
+  const toggleFaq = (idx: number) => {
+    setOpenFaq(openFaq === idx ? null : idx);
+  };
+
   return (
-    <div className="space-y-16 py-6 pb-20 font-sans">
+    <div className="space-y-20 py-4 pb-20 font-sans overflow-x-hidden">
       
-      {/* Hero Section */}
-      <section className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-8 text-center">
+      {/* ========================================================================= */}
+      {/* 1. HERO SECTION (Item 1 & Item 2)                                         */}
+      {/* ========================================================================= */}
+      <section className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-4 text-center">
         
-        {/* State Recruitment Badge */}
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-50 border border-amber-300 text-amber-900 text-xs font-bold tracking-wide shadow-sm mb-6">
-          <span className="w-2 h-2 rounded-full bg-amber-500"></span>
-          <span>OFFICIAL POLICE SI RECRUITMENT & PRACTICE PLATFORM (TSLPRB & AP POLICE)</span>
+        {/* Prominent Independent Platform Disclaimer Banner (Item 1 & P0) */}
+        <div className="max-w-4xl mx-auto mb-6 p-3 sm:p-3.5 rounded-2xl bg-amber-50/90 border border-amber-300 text-amber-950 text-xs flex items-center justify-center gap-2 shadow-sm">
+          <AlertCircle className="w-4 h-4 text-amber-700 shrink-0" />
+          <p className="font-semibold leading-relaxed">
+            <strong>Independent Platform Notice:</strong> Independent preparation platform. Not affiliated with, endorsed by, or operated by TSLPRB, AP Police Recruitment Board, or any government agency.
+          </p>
         </div>
 
-        {/* Central Logo & Heading */}
+        {/* Central Logo & Official Heading */}
         <div className="flex flex-col items-center justify-center space-y-6">
-          <div className="relative w-32 h-32 sm:w-40 sm:h-40 rounded-3xl bg-white p-3 border-2 border-amber-400 shadow-xl flex items-center justify-center">
+          <div className="relative w-28 h-28 sm:w-36 sm:h-36 rounded-3xl bg-white p-2.5 border-2 border-amber-400 shadow-xl flex items-center justify-center">
             <Image
               src="/logo.png"
-              alt="Police SI Emblem Logo"
-              width={140}
-              height={140}
+              alt="Police Sub-Inspector Platform Emblem"
+              width={130}
+              height={130}
               className="object-contain filter drop-shadow-md"
               priority
+              sizes="(max-width: 640px) 112px, 144px"
             />
           </div>
 
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight max-w-4xl leading-tight">
-            Comprehensive <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-600 via-amber-700 to-amber-800">Police Sub-Inspector</span> Preparation & PET Suite
-          </h1>
-
-          <p className="text-sm sm:text-base text-slate-600 max-w-3xl mx-auto leading-relaxed">
-            Tailored specifically for Police Sub-Inspector aspirants (Civil, AR, SAR CPL, TSSP) and Constable candidates across Telangana and Andhra Pradesh. Practice timed full-length CBT mocks, track daily physical fitness benchmarks, and receive descriptive paper evaluations.
-          </p>
-
-          {/* Action CTAs - strictly without dashboard shortcut links as requested */}
-          <div className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-3 sm:gap-4 pt-4 w-full">
-            <Link
-              href={getProtectedHref('/exam/tslprb-si-pwt-mock-01')}
-              className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-sm uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2 transform hover:-translate-y-0.5 cursor-pointer text-center"
-            >
-              <span>Attempt PWT Grand Mock (200 M)</span>
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-
-            <Link
-              href={getProtectedHref('/pet-tracker')}
-              className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-white hover:bg-slate-50 text-slate-800 font-bold text-sm border border-slate-300 transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer text-center"
-            >
-              <Activity className="w-4 h-4 text-emerald-600" />
-              <span>Track Physical Milestones (PET)</span>
-            </Link>
-
-            <Link
-              href={user ? (role === 'ADMIN' ? '/admin' : '/dashboard') : '/auth'}
-              className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer text-center"
-            >
-              <UserCheck className="w-4 h-4 text-amber-400" />
-              <span>{user ? 'Open Portal Dashboard' : 'Candidate Portal Sign In'}</span>
-            </Link>
-          </div>
-        </div>
-
-        {/* Highlight Trust Badges */}
-        <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto text-left">
-          <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm">
-            <div className="text-2xl font-black text-amber-700 font-mono">200 Marks</div>
-            <p className="text-xs text-slate-500 mt-1">Full 3-Hour PWT & FWE Pattern with Negative Marking</p>
-          </div>
-
-          <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm">
-            <div className="text-2xl font-black text-emerald-700 font-mono">1600m / 800m</div>
-            <p className="text-xs text-slate-500 mt-1">Official PET Milestone Tracker for Men & Women</p>
-          </div>
-
-          <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm">
-            <div className="text-2xl font-black text-blue-700 font-mono">Bilingual</div>
-            <p className="text-xs text-slate-500 mt-1">Side-by-side English & Telugu question toggle</p>
-          </div>
-
-          <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm">
-            <div className="text-2xl font-black text-purple-700 font-mono">Descriptive</div>
-            <p className="text-xs text-slate-500 mt-1">Upload handwritten answer sheets for Paper I & II</p>
-          </div>
-        </div>
-      </section>
-
-      {/* Recruitment Exam Stages (PRD Section 4) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-3xl mx-auto mb-10">
-          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
-            Complete Three-Stage Recruitment Exam Pipeline
-          </h2>
-          <p className="text-xs sm:text-sm text-slate-500 mt-2">
-            Structured in strict adherence to the official TSLPRB & Andhra Pradesh Police Recruitment Board syllabus and qualification phases.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Phase 1: PWT */}
-          <div className="bg-white border border-slate-200 hover:border-amber-400 rounded-3xl p-6 shadow-sm transition-all flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-xs font-bold text-amber-700 uppercase tracking-widest font-mono bg-amber-50 px-2 py-1 rounded">Stage 01</span>
-                <span className="text-[11px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-bold">200 Marks</span>
-              </div>
-              <h3 className="text-lg font-bold text-slate-900">Preliminary Written Test (PWT)</h3>
-              <p className="text-xs text-slate-600 mt-2 leading-relaxed">
-                Single paper of 3 hours duration containing 200 objective questions covering Arithmetic & Test of Reasoning (100 Questions) and General Studies (100 Questions).
-              </p>
-              <ul className="mt-4 space-y-2 text-xs text-slate-600">
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>200 Questions • 3-Hour Countdown Timer</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>Negative marking calculation (0.25 penalty)</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>English & Telugu bilingual side-by-side mode</span>
-                </li>
-              </ul>
-            </div>
-            <div className="pt-6 mt-6 border-t border-slate-100">
-              <Link
-                href={getProtectedHref('/exam/tslprb-si-pwt-mock-01')}
-                className="w-full block text-center py-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 text-xs font-bold transition-colors border border-amber-200 cursor-pointer"
-              >
-                Attempt PWT CBT Exam
-              </Link>
-            </div>
-          </div>
-
-          {/* Phase 2: PET / PMT */}
-          <div className="bg-white border border-slate-200 hover:border-emerald-400 rounded-3xl p-6 shadow-sm transition-all flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-xs font-bold text-emerald-700 uppercase tracking-widest font-mono bg-emerald-50 px-2 py-1 rounded">Stage 02</span>
-                <span className="text-[11px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-bold">Ground Fitness</span>
-              </div>
-              <h3 className="text-lg font-bold text-slate-900">Physical Efficiency & Measurement (PET/PMT)</h3>
-              <p className="text-xs text-slate-600 mt-2 leading-relaxed">
-                Log book and milestone tracker for qualifying physical measurements (Height/Chest) and performance in official track and field events.
-              </p>
-              <ul className="mt-4 space-y-2 text-xs text-slate-600">
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>1600m Run for Men (Target: &lt; 7m 15s)</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>800m Run for Women (Target: &lt; 5m 20s)</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>Long Jump & Shot Put qualifying metrics</span>
-                </li>
-              </ul>
-            </div>
-            <div className="pt-6 mt-6 border-t border-slate-100">
-              <Link
-                href={getProtectedHref('/pet-tracker')}
-                className="w-full block text-center py-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-900 text-xs font-bold transition-colors border border-emerald-200 cursor-pointer"
-              >
-                Open PET Tracker Log
-              </Link>
-            </div>
-          </div>
-
-          {/* Phase 3: FWE Mains */}
-          <div className="bg-white border border-slate-200 hover:border-purple-400 rounded-3xl p-6 shadow-sm transition-all flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-xs font-bold text-purple-700 uppercase tracking-widest font-mono bg-purple-50 px-2 py-1 rounded">Stage 03</span>
-                <span className="text-[11px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-bold">4 Papers</span>
-              </div>
-              <h3 className="text-lg font-bold text-slate-900">Final Written Examination (FWE)</h3>
-              <p className="text-xs text-slate-600 mt-2 leading-relaxed">
-                Comprehensive 4-Paper final examination including descriptive evaluation for languages and objective testing for technical papers.
-              </p>
-              <ul className="mt-4 space-y-2 text-xs text-slate-600">
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>Paper I: English (Descriptive Essays & Precis)</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>Paper II: Telugu / Urdu (Descriptive)</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>Paper III & IV: 200 Questions Objective</span>
-                </li>
-              </ul>
-            </div>
-            <div className="pt-6 mt-6 border-t border-slate-100">
-              <Link
-                href={getProtectedHref('/descriptive')}
-                className="w-full block text-center py-2.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-900 text-xs font-bold transition-colors border border-purple-200 cursor-pointer"
-              >
-                Submit Descriptive Paper
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Core Platform Modules according to PRD */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-slate-100/80 rounded-3xl p-6 sm:p-10 border border-slate-200">
-          <div className="text-center max-w-2xl mx-auto mb-8">
-            <h2 className="text-2xl font-bold text-slate-900">Platform Features & Functional Modules</h2>
-            <p className="text-xs text-slate-600 mt-1">
-              Explore key functional engines outlined in the project requirements specification.
+          <div className="space-y-3 max-w-4xl">
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight leading-tight">
+              Police SI Exam <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-600 via-amber-700 to-amber-800">Preparation Platform</span>
+            </h1>
+            
+            <p className="text-sm sm:text-base text-slate-600 max-w-3xl mx-auto leading-relaxed">
+              Complete multi-stage exam suite tailored for Telangana (TSLPRB) and Andhra Pradesh (AP SLPRB) Sub-Inspector (Civil, AR, SAR CPL, TSSP) aspirants. Practice high-fidelity timed Computer-Based Tests (CBT), track Physical Efficiency Test (PET) benchmarks, and receive evaluated feedback on descriptive papers.
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-2 mb-8">
-            <button
-              onClick={() => setActiveTab('pwt')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                activeTab === 'pwt'
-                  ? 'bg-amber-600 text-white shadow-sm'
-                  : 'bg-white text-slate-700 hover:bg-slate-200 border border-slate-200'
-              }`}
-            >
-              1. PWT & FWE Exam Engine
-            </button>
-            <button
-              onClick={() => setActiveTab('pet')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                activeTab === 'pet'
-                  ? 'bg-amber-600 text-white shadow-sm'
-                  : 'bg-white text-slate-700 hover:bg-slate-200 border border-slate-200'
-              }`}
-            >
-              2. Physical Test (PET) Log
-            </button>
-            <button
-              onClick={() => setActiveTab('fwe')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                activeTab === 'fwe'
-                  ? 'bg-amber-600 text-white shadow-sm'
-                  : 'bg-white text-slate-700 hover:bg-slate-200 border border-slate-200'
-              }`}
-            >
-              3. Descriptive Evaluation
-            </button>
-            <button
-              onClick={() => setActiveTab('daily')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                activeTab === 'daily'
-                  ? 'bg-amber-600 text-white shadow-sm'
-                  : 'bg-white text-slate-700 hover:bg-slate-200 border border-slate-200'
-              }`}
-            >
-              4. Daily Quizzes & Practice
-            </button>
-          </div>
-
-          {/* Interactive Feature Display */}
-          <div className="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-sm">
-            {activeTab === 'pwt' && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                <div className="space-y-4">
-                  <span className="text-xs font-bold text-amber-700 uppercase tracking-widest bg-amber-50 px-2.5 py-1 rounded">
-                    PRD § 3.2 Exam & Practice Engine
-                  </span>
-                  <h3 className="text-xl font-bold text-slate-900">
-                    Real CBT Interface with Bilingual Question Support
-                  </h3>
-                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                    Designed to simulate official government CBT examination centers with question navigation palettes (Answered, Marked for Review, Unvisited), negative marking penalties, and real-time Telugu/English language toggling.
-                  </p>
-                  <div className="grid grid-cols-2 gap-3 pt-2 text-xs">
-                    <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
-                      <span className="font-bold text-slate-800">State SI Pattern</span>
-                      <p className="text-[11px] text-slate-500 mt-0.5">200 Marks / 180 Minutes timer</p>
-                    </div>
-                    <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
-                      <span className="font-bold text-slate-800">Pause & Resume</span>
-                      <p className="text-[11px] text-slate-500 mt-0.5">Practice state persistence</p>
-                    </div>
-                  </div>
-                  <div className="pt-2">
-                    <Link
-                      href={getProtectedHref('/exam/tslprb-si-pwt-mock-01')}
-                      className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-sm cursor-pointer"
-                    >
-                      <span>Take Sample 200M Mock</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </Link>
-                  </div>
-                </div>
-
-                <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200 font-sans text-xs space-y-3">
-                  <div className="flex items-center justify-between pb-2 border-b border-slate-200">
-                    <span className="font-bold text-slate-800">Sample Question Preview</span>
-                    <span className="bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded text-[10px]">TSLPRB SI 2026</span>
-                  </div>
-                  <p className="font-semibold text-slate-800">
-                    Q1. A train running at 72 km/h crosses a 200m long platform in 25 seconds. What is the length of the train?
-                  </p>
-                  <p className="text-slate-600 text-[11px] bg-white p-2 rounded border border-slate-200">
-                    [తెలుగు] గంటకు 72 కిమీ వేగంతో నడిచే ఒక రైలు 200 మీటర్ల పొడవున్న ప్లాట్‌ఫారమ్‌ను 25 సెకన్లలో దాటుతుంది. ఆ రైలు పొడవు ఎంత?
-                  </p>
-                  <div className="space-y-1.5 pt-1 text-[11px]">
-                    <div className="p-2 rounded bg-white border border-slate-200 text-slate-700">A) 250 metres</div>
-                    <div className="p-2 rounded bg-amber-50 border border-amber-300 font-bold text-amber-900">B) 300 metres (Correct)</div>
-                    <div className="p-2 rounded bg-white border border-slate-200 text-slate-700">C) 350 metres</div>
-                    <div className="p-2 rounded bg-white border border-slate-200 text-slate-700">D) 400 metres</div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {activeTab === 'pet' && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                <div className="space-y-4">
-                  <span className="text-xs font-bold text-emerald-700 uppercase tracking-widest bg-emerald-50 px-2.5 py-1 rounded">
-                    PRD § 3.3 Physical Efficiency Test (PET)
-                  </span>
-                  <h3 className="text-xl font-bold text-slate-900">
-                    Official Physical Qualification Standard Tracker
-                  </h3>
-                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                    Track your daily ground training logs across all mandatory events. Automatically compares your recorded timings against official TSLPRB & AP Police standards for both male and female candidates.
-                  </p>
-                  <ul className="space-y-2 text-xs text-slate-600">
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                      <span>Men: 1600m Run (7m 15s) • Long Jump (4.00m) • Shot Put 7.26kg (6.00m)</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                      <span>Women: 800m Run (5m 20s) • Long Jump (2.50m) • Shot Put 4.00kg (4.00m)</span>
-                    </li>
-                  </ul>
-                  <div className="pt-2">
-                    <Link
-                      href={getProtectedHref('/pet-tracker')}
-                      className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm cursor-pointer"
-                    >
-                      <span>Open PET Tracker</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </Link>
-                  </div>
-                </div>
-
-                <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200 space-y-3">
-                  <h4 className="font-bold text-slate-900 text-xs">Official Benchmark Comparison</h4>
-                  <div className="space-y-2">
-                    <div className="p-3 bg-white rounded-xl border border-slate-200">
-                      <div className="flex justify-between text-xs font-semibold">
-                        <span className="text-slate-800">1600m Run (Men Standard: 7m 15s)</span>
-                        <span className="text-emerald-700 font-bold">6m 45s (QUALIFIED)</span>
-                      </div>
-                      <div className="w-full bg-slate-100 h-2 rounded-full mt-2 overflow-hidden">
-                        <div className="bg-emerald-500 h-full rounded-full" style={{ width: '85%' }}></div>
-                      </div>
-                    </div>
-
-                    <div className="p-3 bg-white rounded-xl border border-slate-200">
-                      <div className="flex justify-between text-xs font-semibold">
-                        <span className="text-slate-800">Long Jump (Men Standard: 4.00m)</span>
-                        <span className="text-amber-700 font-bold">4.20m (PASSED)</span>
-                      </div>
-                      <div className="w-full bg-slate-100 h-2 rounded-full mt-2 overflow-hidden">
-                        <div className="bg-amber-500 h-full rounded-full" style={{ width: '80%' }}></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {activeTab === 'fwe' && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                <div className="space-y-4">
-                  <span className="text-xs font-bold text-purple-700 uppercase tracking-widest bg-purple-50 px-2.5 py-1 rounded">
-                    PRD § 3.2 Descriptive Evaluation Module
-                  </span>
-                  <h3 className="text-xl font-bold text-slate-900">
-                    Descriptive Essay & Precis Upload for Paper I & II
-                  </h3>
-                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                    Paper I (English) and Paper II (Telugu/Urdu) require descriptive composition, essay writing, letter drafting, and precis writing. Candidates can type their responses or capture and upload photos of handwritten answer scripts.
-                  </p>
-                  <div className="pt-2">
-                    <Link
-                      href={getProtectedHref('/descriptive')}
-                      className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-sm cursor-pointer"
-                    >
-                      <span>Submit Descriptive Answers</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </Link>
-                  </div>
-                </div>
-
-                <div className="bg-purple-50/60 rounded-2xl p-5 border border-purple-200 space-y-3">
-                  <div className="flex items-center gap-2 text-purple-900 font-bold text-xs">
-                    <PenTool className="w-4 h-4" />
-                    <span>Descriptive Topics Active for Evaluation</span>
-                  </div>
-                  <div className="p-3 bg-white rounded-xl border border-purple-200 text-xs space-y-1">
-                    <span className="font-bold text-slate-900">Essay (Paper I - English):</span>
-                    <p className="text-slate-600 text-[11px]">Role of Community Policing in Modern Cybercrime Prevention (300 words)</p>
-                  </div>
-                  <div className="p-3 bg-white rounded-xl border border-purple-200 text-xs space-y-1">
-                    <span className="font-bold text-slate-900">Precis Writing (Paper II - Regional):</span>
-                    <p className="text-slate-600 text-[11px]">శాంతిభద్రతల పరిరక్షణలో నూతన సాంకేతిక పరిజ్ఞానం వినియోగం</p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {activeTab === 'daily' && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                <div className="space-y-4">
-                  <span className="text-xs font-bold text-blue-700 uppercase tracking-widest bg-blue-50 px-2.5 py-1 rounded">
-                    PRD § 3.2 Daily Practice Quizzes
-                  </span>
-                  <h3 className="text-xl font-bold text-slate-900">
-                    Targeted Topic-Wise 10-20 Question Quizzes
-                  </h3>
-                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                    Build daily discipline with bite-sized quizzes across Arithmetic, Reasoning, Telangana Movement, Indian Constitution, and Modern History. Instant explanations and analytics are generated upon completion.
-                  </p>
-                  <div className="pt-2">
-                    <Link
-                      href={getProtectedHref('/exam/tslprb-si-pwt-mock-01')}
-                      className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-sm cursor-pointer"
-                    >
-                      <span>Start Daily Practice</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </Link>
-                  </div>
-                </div>
-
-                <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200 grid grid-cols-2 gap-3 text-xs">
-                  <div className="p-3 bg-white rounded-xl border border-slate-200">
-                    <span className="font-bold text-slate-900">Arithmetic & Mensuration</span>
-                    <p className="text-[11px] text-slate-500 mt-1">20 Qs • Time & Distance, Ratios</p>
-                  </div>
-                  <div className="p-3 bg-white rounded-xl border border-slate-200">
-                    <span className="font-bold text-slate-900">Logical Reasoning</span>
-                    <p className="text-[11px] text-slate-500 mt-1">20 Qs • Syllogism, Blood Relations</p>
-                  </div>
-                  <div className="p-3 bg-white rounded-xl border border-slate-200">
-                    <span className="font-bold text-slate-900">Telangana Movement</span>
-                    <p className="text-[11px] text-slate-500 mt-1">15 Qs • Statehood Formation</p>
-                  </div>
-                  <div className="p-3 bg-white rounded-xl border border-slate-200">
-                    <span className="font-bold text-slate-900">Indian Polity & IPC</span>
-                    <p className="text-[11px] text-slate-500 mt-1">15 Qs • Fundamental Rights</p>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* State-wide Mock Leaderboard Preview (PRD 3.4) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-            <div>
-              <div className="flex items-center gap-2">
-                <Trophy className="w-5 h-5 text-amber-600" />
-                <h3 className="text-xl font-bold text-slate-900">State-Wide Mock Test Rankings</h3>
-              </div>
-              <p className="text-xs text-slate-500 mt-1">
-                Live rankings across Telangana (TSLPRB) and Andhra Pradesh (AP Police) scheduled mock tests.
-              </p>
-            </div>
+          {/* Primary & Secondary Hero CTAs strictly as specified in Item 2 */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 pt-2 w-full max-w-md">
+            {/* Primary Filled CTA Button */}
             <Link
-              href={getProtectedHref('/leaderboard')}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-50 text-amber-900 hover:bg-amber-100 border border-amber-300 font-bold text-xs cursor-pointer"
+              href={getProtectedHref('/exam/tslprb-si-pwt-mock-01')}
+              className="w-full sm:w-auto flex-1 px-7 py-3.5 rounded-2xl bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-xs uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer focus:ring-2 focus:ring-amber-500 focus:outline-none min-h-[44px]"
             >
-              <span>View Full Leaderboard</span>
-              <ChevronRight className="w-4 h-4" />
+              <span>Start Free Mock Test</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+
+            {/* Secondary Action Button */}
+            <Link
+              href={user ? (role === 'ADMIN' ? '/admin' : '/dashboard') : '/auth'}
+              className="w-full sm:w-auto px-7 py-3.5 rounded-2xl bg-white hover:bg-slate-50 text-slate-800 font-bold text-xs uppercase tracking-wider border border-slate-300 transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer focus:ring-2 focus:ring-amber-500 focus:outline-none min-h-[44px]"
+            >
+              <UserCheck className="w-4 h-4 text-amber-600" />
+              <span>{user ? 'My Dashboard' : 'Sign In'}</span>
             </Link>
           </div>
+        </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="p-4 rounded-2xl bg-amber-50/60 border border-amber-200 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-amber-500 text-white font-black flex items-center justify-center text-sm shadow">
-                1
-              </div>
-              <div>
-                <p className="text-xs font-bold text-slate-900">R. Srinivas Reddy</p>
-                <p className="text-[11px] text-slate-500">TSLPRB SI • Score: 178/200</p>
-              </div>
-            </div>
+      </section>
 
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-slate-400 text-white font-black flex items-center justify-center text-sm shadow">
-                2
-              </div>
-              <div>
-                <p className="text-xs font-bold text-slate-900">K. Anitha Lakshmi</p>
-                <p className="text-[11px] text-slate-500">AP Police SI • Score: 174/200</p>
-              </div>
-            </div>
+      {/* ========================================================================= */}
+      {/* 2. KEY BENEFITS (Item 12: Order Step 2)                                   */}
+      {/* ========================================================================= */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center max-w-2xl mx-auto mb-10">
+          <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+            Engineered Specifically for Police SI Aspirants
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">
+            Built from the ground up to match the official exam notifications, negative marking algorithms, and ground standards.
+          </p>
+        </div>
 
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-amber-700 text-white font-black flex items-center justify-center text-sm shadow">
-                3
-              </div>
-              <div>
-                <p className="text-xs font-bold text-slate-900">M. Vamshi Krishna</p>
-                <p className="text-[11px] text-slate-500">TSLPRB SI • Score: 171/200</p>
-              </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-white border border-slate-200 hover:border-amber-400 p-6 rounded-3xl shadow-sm transition-all space-y-2">
+            <div className="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-200 text-amber-700 flex items-center justify-center font-black">
+              200M
             </div>
+            <h3 className="text-base font-bold text-slate-900">Full 3-Hour PWT Engine</h3>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Preliminary Written Test (PWT) simulation with full 200 objective questions, 180-minute timer, and official 0.25 negative penalty.
+            </p>
+          </div>
+
+          <div className="bg-white border border-slate-200 hover:border-emerald-400 p-6 rounded-3xl shadow-sm transition-all space-y-2">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center font-black">
+              PET
+            </div>
+            <h3 className="text-base font-bold text-slate-900">Ground Benchmark Log</h3>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Official Physical Efficiency Test standards tracker: 1600m for men (7m 15s) and 800m for women (5m 20s) with qualifying status.
+            </p>
+          </div>
+
+          <div className="bg-white border border-slate-200 hover:border-blue-400 p-6 rounded-3xl shadow-sm transition-all space-y-2">
+            <div className="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-200 text-blue-700 flex items-center justify-center font-black">
+              తె/EN
+            </div>
+            <h3 className="text-base font-bold text-slate-900">True Bilingual CBT</h3>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Instant one-click toggle between English and Telugu for questions, options, explanations, and instructions without state resets.
+            </p>
+          </div>
+
+          <div className="bg-white border border-slate-200 hover:border-purple-400 p-6 rounded-3xl shadow-sm transition-all space-y-2">
+            <div className="w-12 h-12 rounded-2xl bg-purple-50 border border-purple-200 text-purple-700 flex items-center justify-center font-black">
+              FWE
+            </div>
+            <h3 className="text-base font-bold text-slate-900">Descriptive Paper Review</h3>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Upload handwritten answer scripts for Paper I (English) and Paper II (Telugu) evaluated by retired educators within 48–72 hours.
+            </p>
           </div>
         </div>
       </section>
 
-      {/* Official Previous Year Question Papers (PYQ Section) */}
+      {/* ========================================================================= */}
+      {/* 3. SAMPLE QUESTION BLOCK (Item 13 & Item 12)                              */}
+      {/* ========================================================================= */}
+      <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-white border-2 border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+            <div>
+              <span className="text-[10px] font-bold text-amber-800 bg-amber-100 border border-amber-300 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                Interactive CBT Sample Question
+              </span>
+              <h3 className="text-lg font-black text-slate-900 mt-1">
+                Arithmetic & Reasoning (PWT Paper III Standard)
+              </h3>
+            </div>
+
+            {/* Language Switcher for Sample Question */}
+            <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs font-bold">
+              <button
+                type="button"
+                onClick={() => setSampleQuestionLang('EN')}
+                className={`px-3 py-1 rounded-lg transition-all ${
+                  sampleQuestionLang === 'EN' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                English
+              </button>
+              <button
+                type="button"
+                onClick={() => setSampleQuestionLang('TE')}
+                className={`px-3 py-1 rounded-lg transition-all ${
+                  sampleQuestionLang === 'TE' ? 'bg-amber-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                తెలుగు
+              </button>
+            </div>
+          </div>
+
+          {/* Question Text */}
+          <div className="space-y-2">
+            <p className="text-sm sm:text-base font-bold text-slate-900 leading-relaxed">
+              {sampleQuestionLang === 'EN' ? (
+                'Q. A train running at 72 km/h crosses a 200-metre long platform in 25 seconds. What is the length of the train?'
+              ) : (
+                'ప్ర. గంటకు 72 కి.మీ వేగంతో ప్రయాణిస్తున్న ఒక రైలు 200 మీటర్ల పొడవున్న ప్లాట్‌ఫారమ్‌ను 25 సెకన్లలో దాటుతుంది. ఆ రైలు పొడవు ఎంత?'
+              )}
+            </p>
+            <p className="text-[11px] text-slate-500 font-mono">
+              Marking: +1.00 Mark for Correct • -0.25 Mark for Incorrect Choice
+            </p>
+          </div>
+
+          {/* Interactive Multiple Choice Options with Checkmark & Cross Status Badges */}
+          <div className="space-y-2.5">
+            {[
+              { key: 'A' as const, text: '250 metres', textTe: '250 మీటర్లు' },
+              { key: 'B' as const, text: '300 metres', textTe: '300 మీటర్లు' },
+              { key: 'C' as const, text: '350 metres', textTe: '350 మీటర్లు' },
+              { key: 'D' as const, text: '400 metres', textTe: '400 మీటర్లు' },
+            ].map((opt) => {
+              const isSelected = selectedSampleOption === opt.key;
+              const isCorrect = opt.key === 'B';
+
+              let borderStyle = 'border-slate-200 hover:border-slate-300 bg-slate-50/60';
+              if (isSelected) {
+                borderStyle = isCorrect 
+                  ? 'border-emerald-500 bg-emerald-50/60 text-emerald-950 font-bold'
+                  : 'border-red-400 bg-red-50/60 text-red-950 font-bold';
+              }
+
+              return (
+                <button
+                  key={opt.key}
+                  type="button"
+                  onClick={() => setSelectedSampleOption(opt.key)}
+                  className={`w-full p-3.5 sm:p-4 rounded-2xl border-2 transition-all flex items-center justify-between text-left text-xs sm:text-sm cursor-pointer ${borderStyle} focus:ring-2 focus:ring-amber-500 focus:outline-none min-h-[44px]`}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="w-6 h-6 rounded-lg bg-white border border-slate-300 font-mono font-bold text-slate-700 flex items-center justify-center text-xs shrink-0">
+                      {opt.key}
+                    </span>
+                    <span>{sampleQuestionLang === 'EN' ? opt.text : opt.textTe}</span>
+                  </div>
+
+                  {/* Status Badges with Dual Icon + Text (Item 13) */}
+                  {isSelected && (
+                    <div>
+                      {isCorrect ? (
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-600 text-white font-bold text-xs shadow-sm">
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                          <span>Correct Choice (+1.00)</span>
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-600 text-white font-bold text-xs shadow-sm">
+                          <XCircle className="w-3.5 h-3.5" />
+                          <span>Incorrect Choice (-0.25)</span>
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Toggleable Collapsible View Explanation Button (Item 13) */}
+          <div className="pt-2">
+            <button
+              type="button"
+              onClick={() => setShowSampleExplanation(!showSampleExplanation)}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs transition-colors border border-slate-200 cursor-pointer min-h-[44px]"
+            >
+              <HelpCircle className="w-4 h-4 text-amber-600" />
+              <span>{showSampleExplanation ? 'Hide Detailed Solution' : 'View Detailed Explanation & Formula'}</span>
+              {showSampleExplanation ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            </button>
+
+            {showSampleExplanation && (
+              <div className="mt-4 p-4 rounded-2xl bg-amber-50/80 border border-amber-200 text-xs text-slate-800 space-y-2 animate-in fade-in duration-200">
+                <div className="flex items-center gap-2 font-bold text-amber-900">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                  <span>Correct Option: B (300 metres)</span>
+                </div>
+                <div className="space-y-1.5 leading-relaxed text-slate-700">
+                  <p><strong>Step 1: Convert Speed into m/s:</strong></p>
+                  <p className="font-mono bg-white p-2 rounded-xl border border-amber-200 inline-block">
+                    Speed = 72 × (5/18) = 20 m/s
+                  </p>
+                  <p><strong>Step 2: Total Distance Traveled in 25 seconds:</strong></p>
+                  <p className="font-mono bg-white p-2 rounded-xl border border-amber-200 inline-block">
+                    Total Distance = Speed × Time = 20 m/s × 25 s = 500 metres
+                  </p>
+                  <p><strong>Step 3: Calculate Length of the Train:</strong></p>
+                  <p className="font-mono bg-white p-2 rounded-xl border border-amber-200 inline-block">
+                    Length of Train = Total Distance - Length of Platform = 500m - 200m = 300 metres.
+                  </p>
+                  <p className="text-slate-600 pt-1 text-[11px] italic">
+                    [తెలుగు వివరణ]: వేగాన్ని m/s లోకి మార్చగా: 72 × 5/18 = 20 m/s. 25 సెకన్లలో ప్రయాణించిన మొత్తం దూరం = 20 × 25 = 500 మీటర్లు. రైలు పొడవు = 500 - 200 = 300 మీటర్లు.
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* 4. HOW IT WORKS (Item 12: Order Step 4)                                   */}
+      {/* ========================================================================= */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-gradient-to-r from-amber-50/80 via-white to-amber-50/40 border border-amber-200 rounded-3xl p-6 sm:p-8 shadow-sm">
+        <div className="text-center max-w-2xl mx-auto mb-10">
+          <span className="text-xs font-bold text-amber-700 uppercase tracking-widest bg-amber-50 px-3 py-1 rounded-full border border-amber-200">
+            Aspirant Roadmap
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-black text-slate-900 mt-2">
+            How The Preparation Engine Works
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">
+            Systematic four-stage preparation path aligned with TSLPRB & AP SLPRB selection criteria.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="bg-white border border-slate-200 p-5 rounded-3xl relative space-y-3">
+            <span className="text-xs font-mono font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded">
+              Step 01
+            </span>
+            <h3 className="text-base font-bold text-slate-900">Attempt Preliminary CBT</h3>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Take timed 200-mark Preliminary Written Tests (PWT) in simulated exam conditions with auto-saved progress.
+            </p>
+          </div>
+
+          <div className="bg-white border border-slate-200 p-5 rounded-3xl relative space-y-3">
+            <span className="text-xs font-mono font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
+              Step 02
+            </span>
+            <h3 className="text-base font-bold text-slate-900">Log Physical Training</h3>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Track daily running times (1600m/800m) and jumps against official police qualification cut-offs.
+            </p>
+          </div>
+
+          <div className="bg-white border border-slate-200 p-5 rounded-3xl relative space-y-3">
+            <span className="text-xs font-mono font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded">
+              Step 03
+            </span>
+            <h3 className="text-base font-bold text-slate-900">Submit Descriptive Papers</h3>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Upload handwritten answer scripts for Paper I & II and receive scoring rubrics within 48–72 hours.
+            </p>
+          </div>
+
+          <div className="bg-white border border-slate-200 p-5 rounded-3xl relative space-y-3">
+            <span className="text-xs font-mono font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded">
+              Step 04
+            </span>
+            <h3 className="text-base font-bold text-slate-900">Analyze State Percentiles</h3>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Review topic accuracy, speed breakdowns, and simulated Sunday rankings across Telangana and Andhra Pradesh.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* 5. EXAM PATTERN REFERENCE TABLE (Item 6 & Item 12)                        */}
+      {/* ========================================================================= */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-5">
+            <div>
+              <span className="text-xs font-bold text-amber-700 uppercase tracking-widest bg-amber-50 px-3 py-1 rounded-full border border-amber-200">
+                Official Board Syllabus Reference Table (Item 6)
+              </span>
+              <h2 className="text-xl sm:text-2xl font-black text-slate-900 mt-2">
+                Police Sub-Inspector Exam Pattern & Marking Scheme
+              </h2>
+              <p className="text-xs text-slate-500 mt-1">
+                Structured reference per official state gazette notifications.
+              </p>
+            </div>
+
+            {/* Board Selection Toggle */}
+            <div className="flex items-center bg-slate-100 p-1 rounded-2xl border border-slate-200 text-xs font-bold w-full sm:w-auto">
+              <button
+                type="button"
+                onClick={() => setActiveBoardPattern('TSLPRB')}
+                className={`flex-1 sm:flex-initial px-4 py-2 rounded-xl transition-all ${
+                  activeBoardPattern === 'TSLPRB'
+                    ? 'bg-amber-600 text-white shadow-sm'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                Telangana (TSLPRB)
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveBoardPattern('AP_SLPRB')}
+                className={`flex-1 sm:flex-initial px-4 py-2 rounded-xl transition-all ${
+                  activeBoardPattern === 'AP_SLPRB'
+                    ? 'bg-amber-600 text-white shadow-sm'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                Andhra Pradesh (AP SLPRB)
+              </button>
+            </div>
+          </div>
+
+          {/* Reference Notification Banner */}
+          <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs flex items-center justify-between font-mono">
+            <div>
+              <span className="text-slate-500">Official Notification: </span>
+              <strong className="text-slate-900">
+                {activeBoardPattern === 'TSLPRB'
+                  ? 'TSLPRB Rc No. 42/Rect./Admn-1/2022'
+                  : 'AP SLPRB Rc No. 161/R&T/Rect.2/2022'}
+              </strong>
+            </div>
+            <div className="text-slate-500">
+              Cadres: Sub-Inspector (Civil, AR, SAR CPL, TSSP / APSP)
+            </div>
+          </div>
+
+          {/* Table */}
+          <div className="overflow-x-auto border border-slate-200 rounded-2xl">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-slate-100 text-slate-800 font-bold border-b border-slate-200 uppercase tracking-wider text-[11px]">
+                <tr>
+                  <th className="p-3.5">Stage</th>
+                  <th className="p-3.5">Paper Name</th>
+                  <th className="p-3.5">Questions</th>
+                  <th className="p-3.5">Marks</th>
+                  <th className="p-3.5">Duration</th>
+                  <th className="p-3.5">Negative Marking</th>
+                  <th className="p-3.5">Medium / Language</th>
+                  <th className="p-3.5">Notification Date</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 bg-white text-slate-700">
+                {activeBoardPattern === 'TSLPRB' ? (
+                  <>
+                    <tr className="hover:bg-amber-50/40">
+                      <td className="p-3.5 font-bold font-mono text-amber-900">Stage 1 (PWT)</td>
+                      <td className="p-3.5 font-semibold text-slate-900">Preliminary Written Test (Arithmetic, Reasoning & GS)</td>
+                      <td className="p-3.5 font-mono">200 Qs</td>
+                      <td className="p-3.5 font-mono font-bold text-amber-700">200 Marks</td>
+                      <td className="p-3.5 font-mono">3 Hours (180 mins)</td>
+                      <td className="p-3.5 text-red-700 font-bold">-0.25 (1/4th mark penalty)</td>
+                      <td className="p-3.5">English, Telugu, Urdu</td>
+                      <td className="p-3.5 font-mono text-slate-500">25-Apr-2022</td>
+                    </tr>
+                    <tr className="hover:bg-emerald-50/40">
+                      <td className="p-3.5 font-bold font-mono text-emerald-800">Stage 2 (PET/PMT)</td>
+                      <td className="p-3.5 font-semibold text-slate-900">Physical Efficiency & Measurement Test (1600m / 800m)</td>
+                      <td className="p-3.5 font-mono">3 Track Events</td>
+                      <td className="p-3.5 font-mono font-bold text-emerald-700">Qualifying / 105M (AR)</td>
+                      <td className="p-3.5 font-mono">On Field Timed</td>
+                      <td className="p-3.5 text-slate-500">Nil (Disqualification on time)</td>
+                      <td className="p-3.5">On Ground</td>
+                      <td className="p-3.5 font-mono text-slate-500">25-Apr-2022</td>
+                    </tr>
+                    <tr className="hover:bg-purple-50/40">
+                      <td className="p-3.5 font-bold font-mono text-purple-900" rowSpan={4}>Stage 3 (FWE)</td>
+                      <td className="p-3.5 font-semibold text-slate-900">Paper I: English (Descriptive Composition & Precis)</td>
+                      <td className="p-3.5 font-mono">Descriptive</td>
+                      <td className="p-3.5 font-mono font-bold text-purple-700">100 Marks</td>
+                      <td className="p-3.5 font-mono">3 Hours (180 mins)</td>
+                      <td className="p-3.5 text-slate-500">Nil (Qualifying Standard)</td>
+                      <td className="p-3.5">English</td>
+                      <td className="p-3.5 font-mono text-slate-500">25-Apr-2022</td>
+                    </tr>
+                    <tr className="hover:bg-purple-50/40">
+                      <td className="p-3.5 font-semibold text-slate-900">Paper II: Telugu / Urdu (Descriptive Translation & Essay)</td>
+                      <td className="p-3.5 font-mono">Descriptive</td>
+                      <td className="p-3.5 font-mono font-bold text-purple-700">100 Marks</td>
+                      <td className="p-3.5 font-mono">3 Hours (180 mins)</td>
+                      <td className="p-3.5 text-slate-500">Nil (Qualifying Standard)</td>
+                      <td className="p-3.5">Telugu / Urdu</td>
+                      <td className="p-3.5 font-mono text-slate-500">25-Apr-2022</td>
+                    </tr>
+                    <tr className="hover:bg-purple-50/40">
+                      <td className="p-3.5 font-semibold text-slate-900">Paper III: Arithmetic & Test of Reasoning (Objective)</td>
+                      <td className="p-3.5 font-mono">200 Qs</td>
+                      <td className="p-3.5 font-mono font-bold text-purple-700">200 Marks</td>
+                      <td className="p-3.5 font-mono">3 Hours (180 mins)</td>
+                      <td className="p-3.5 text-red-700 font-bold">-0.25 (1/4th penalty)</td>
+                      <td className="p-3.5">English, Telugu, Urdu</td>
+                      <td className="p-3.5 font-mono text-slate-500">25-Apr-2022</td>
+                    </tr>
+                    <tr className="hover:bg-purple-50/40">
+                      <td className="p-3.5 font-semibold text-slate-900">Paper IV: General Studies (Objective CBT)</td>
+                      <td className="p-3.5 font-mono">200 Qs</td>
+                      <td className="p-3.5 font-mono font-bold text-purple-700">200 Marks</td>
+                      <td className="p-3.5 font-mono">3 Hours (180 mins)</td>
+                      <td className="p-3.5 text-red-700 font-bold">-0.25 (1/4th penalty)</td>
+                      <td className="p-3.5">English, Telugu, Urdu</td>
+                      <td className="p-3.5 font-mono text-slate-500">25-Apr-2022</td>
+                    </tr>
+                  </>
+                ) : (
+                  <>
+                    <tr className="hover:bg-blue-50/40">
+                      <td className="p-3.5 font-bold font-mono text-blue-900">Stage 1 (PWT)</td>
+                      <td className="p-3.5 font-semibold text-slate-900">Paper I: Arithmetic & Reasoning • Paper II: General Studies</td>
+                      <td className="p-3.5 font-mono">200 Qs (100+100)</td>
+                      <td className="p-3.5 font-mono font-bold text-blue-700">200 Marks</td>
+                      <td className="p-3.5 font-mono">3 Hours + 3 Hours</td>
+                      <td className="p-3.5 text-slate-500">Nil in AP PWT Prelims</td>
+                      <td className="p-3.5">English, Telugu, Urdu</td>
+                      <td className="p-3.5 font-mono text-slate-500">28-Nov-2022</td>
+                    </tr>
+                    <tr className="hover:bg-emerald-50/40">
+                      <td className="p-3.5 font-bold font-mono text-emerald-800">Stage 2 (PET/PMT)</td>
+                      <td className="p-3.5 font-semibold text-slate-900">Physical Efficiency Test (1600m Run, 100m Run, Long Jump)</td>
+                      <td className="p-3.5 font-mono">3 Mandatory Events</td>
+                      <td className="p-3.5 font-mono font-bold text-emerald-700">Qualifying Standard</td>
+                      <td className="p-3.5 font-mono">On Field Timed</td>
+                      <td className="p-3.5 text-slate-500">Nil (Standard cutoff)</td>
+                      <td className="p-3.5">On Ground</td>
+                      <td className="p-3.5 font-mono text-slate-500">28-Nov-2022</td>
+                    </tr>
+                    <tr className="hover:bg-purple-50/40">
+                      <td className="p-3.5 font-bold font-mono text-purple-900" rowSpan={4}>Stage 3 (FWE)</td>
+                      <td className="p-3.5 font-semibold text-slate-900">Paper I: English Descriptive (Qualifying Paper)</td>
+                      <td className="p-3.5 font-mono">Descriptive</td>
+                      <td className="p-3.5 font-mono font-bold text-purple-700">100 Marks</td>
+                      <td className="p-3.5 font-mono">3 Hours (180 mins)</td>
+                      <td className="p-3.5 text-slate-500">Nil (Descriptive)</td>
+                      <td className="p-3.5">English</td>
+                      <td className="p-3.5 font-mono text-slate-500">28-Nov-2022</td>
+                    </tr>
+                    <tr className="hover:bg-purple-50/40">
+                      <td className="p-3.5 font-semibold text-slate-900">Paper II: Telugu Descriptive (Qualifying Paper)</td>
+                      <td className="p-3.5 font-mono">Descriptive</td>
+                      <td className="p-3.5 font-mono font-bold text-purple-700">100 Marks</td>
+                      <td className="p-3.5 font-mono">3 Hours (180 mins)</td>
+                      <td className="p-3.5 text-slate-500">Nil (Descriptive)</td>
+                      <td className="p-3.5">Telugu</td>
+                      <td className="p-3.5 font-mono text-slate-500">28-Nov-2022</td>
+                    </tr>
+                    <tr className="hover:bg-purple-50/40">
+                      <td className="p-3.5 font-semibold text-slate-900">Paper III: Arithmetic & Test of Reasoning (Objective)</td>
+                      <td className="p-3.5 font-mono">200 Qs</td>
+                      <td className="p-3.5 font-mono font-bold text-purple-700">200 Marks</td>
+                      <td className="p-3.5 font-mono">3 Hours (180 mins)</td>
+                      <td className="p-3.5 text-slate-500">Objective standard</td>
+                      <td className="p-3.5">English, Telugu, Urdu</td>
+                      <td className="p-3.5 font-mono text-slate-500">28-Nov-2022</td>
+                    </tr>
+                    <tr className="hover:bg-purple-50/40">
+                      <td className="p-3.5 font-semibold text-slate-900">Paper IV: General Studies (Objective CBT)</td>
+                      <td className="p-3.5 font-mono">200 Qs</td>
+                      <td className="p-3.5 font-mono font-bold text-purple-700">200 Marks</td>
+                      <td className="p-3.5 font-mono">3 Hours (180 mins)</td>
+                      <td className="p-3.5 text-slate-500">Objective standard</td>
+                      <td className="p-3.5">English, Telugu, Urdu</td>
+                      <td className="p-3.5 font-mono text-slate-500">28-Nov-2022</td>
+                    </tr>
+                  </>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* 6. PREVIOUS PAPERS (PYQ) SECTION (Item 5 & Item 12)                       */}
+      {/* ========================================================================= */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-gradient-to-r from-amber-50/60 via-white to-amber-50/40 border border-amber-200 rounded-3xl p-6 sm:p-8 shadow-sm">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
             <div>
               <div className="flex items-center gap-2">
-                <Archive className="w-5 h-5 text-amber-600" />
-                <h3 className="text-xl font-bold text-slate-900">Official Previous Year Question Papers (PYQ Archives)</h3>
+                <Archive className="w-5 h-5 text-amber-700" />
+                <h3 className="text-xl font-black text-slate-900">Official Previous Year Question Papers (PYQ Archives)</h3>
               </div>
               <p className="text-xs text-slate-500 mt-1">
-                Authentic solved question papers from TSLPRB & AP Police recruitment boards with negative marking and timer simulator.
+                Authentic solved papers with verified answer keys, public domain sources, and date metadata.
               </p>
             </div>
             <Link
               href={getProtectedHref('/previous-papers')}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider shadow-sm cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider shadow-sm cursor-pointer min-h-[44px]"
             >
               <span>Explore All PYQ Papers</span>
               <ChevronRight className="w-4 h-4" />
@@ -574,142 +605,367 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-white border border-slate-200 hover:border-amber-400 p-5 rounded-2xl shadow-sm transition-all flex flex-col justify-between">
+            {/* Paper 1: TSLPRB 2022 */}
+            <div className="bg-white border border-slate-200 hover:border-amber-400 p-5 rounded-2xl shadow-sm transition-all flex flex-col justify-between space-y-4">
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-[10px] font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded uppercase">TSLPRB SI</span>
-                  <span className="text-xs font-mono font-bold text-slate-500">Year 2022</span>
+                  <span className="text-[10px] font-bold text-amber-900 bg-amber-100 px-2 py-0.5 rounded uppercase font-mono">
+                    TSLPRB SI
+                  </span>
+                  <span className="text-xs font-mono font-bold text-slate-700">Exam: 07-Aug-2022</span>
                 </div>
                 <h4 className="text-sm font-bold text-slate-900">TSLPRB SI Prelims 2022 Solved Paper</h4>
-                <p className="text-xs text-slate-500 mt-1">200 Questions • 3 Hours • Complete Bilingual Answer Key</p>
+                <p className="text-xs text-slate-500 mt-1">200 Questions • 3 Hours • Objective PWT</p>
+
+                {/* Explicit Source & Verification Metadata (Item 5) */}
+                <div className="mt-3 p-3 bg-slate-50 rounded-xl border border-slate-200 text-[11px] space-y-1">
+                  <p><span className="text-slate-500">Board:</span> <strong>TSLPRB</strong></p>
+                  <p><span className="text-slate-500">Post:</span> Sub-Inspector (Civil & AR)</p>
+                  <p><span className="text-slate-500">Source:</span> Public Domain Archive (Rc No. 42)</p>
+                  <div className="pt-1 flex items-center justify-between text-emerald-800 font-bold border-t border-slate-200">
+                    <span className="flex items-center gap-1">
+                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> Verified Key
+                    </span>
+                    <span className="text-[10px] text-slate-500 font-mono">Ver: Sept 2024</span>
+                  </div>
+                </div>
               </div>
-              <div className="pt-4 mt-4 border-t border-slate-100">
-                <Link
-                  href={getProtectedHref('/exam/pyq-tslprb-si-2022')}
-                  className="w-full block text-center py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 text-xs font-bold border border-amber-200 cursor-pointer"
-                >
-                  Attempt 2022 Paper in CBT
-                </Link>
-              </div>
+
+              <Link
+                href={getProtectedHref('/exam/pyq-tslprb-si-2022')}
+                className="w-full block text-center py-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 text-xs font-bold border border-amber-200 cursor-pointer min-h-[44px] flex items-center justify-center"
+              >
+                Attempt 2022 Paper in CBT Mode
+              </Link>
             </div>
 
-            <div className="bg-white border border-slate-200 hover:border-amber-400 p-5 rounded-2xl shadow-sm transition-all flex flex-col justify-between">
+            {/* Paper 2: AP Police 2023 */}
+            <div className="bg-white border border-slate-200 hover:border-blue-400 p-5 rounded-2xl shadow-sm transition-all flex flex-col justify-between space-y-4">
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-[10px] font-bold text-blue-800 bg-blue-100 px-2 py-0.5 rounded uppercase">AP Police SI</span>
-                  <span className="text-xs font-mono font-bold text-slate-500">Year 2023</span>
+                  <span className="text-[10px] font-bold text-blue-900 bg-blue-100 px-2 py-0.5 rounded uppercase font-mono">
+                    AP Police SI
+                  </span>
+                  <span className="text-xs font-mono font-bold text-slate-700">Exam: 19-Feb-2023</span>
                 </div>
                 <h4 className="text-sm font-bold text-slate-900">AP Police SI Prelims 2023 Solved Paper</h4>
-                <p className="text-xs text-slate-500 mt-1">200 Questions • 3 Hours • Verified Solution Rationale</p>
+                <p className="text-xs text-slate-500 mt-1">200 Questions • 3 Hours • Objective PWT</p>
+
+                {/* Explicit Source & Verification Metadata (Item 5) */}
+                <div className="mt-3 p-3 bg-slate-50 rounded-xl border border-slate-200 text-[11px] space-y-1">
+                  <p><span className="text-slate-500">Board:</span> <strong>AP SLPRB</strong></p>
+                  <p><span className="text-slate-500">Post:</span> Sub-Inspector (Civil & APSP)</p>
+                  <p><span className="text-slate-500">Source:</span> Public Domain Archive (Rc No. 161)</p>
+                  <div className="pt-1 flex items-center justify-between text-emerald-800 font-bold border-t border-slate-200">
+                    <span className="flex items-center gap-1">
+                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> Verified Key
+                    </span>
+                    <span className="text-[10px] text-slate-500 font-mono">Ver: Aug 2024</span>
+                  </div>
+                </div>
               </div>
-              <div className="pt-4 mt-4 border-t border-slate-100">
+
+              <Link
+                href={getProtectedHref('/exam/pyq-appolice-si-2023')}
+                className="w-full block text-center py-2.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-900 text-xs font-bold border border-blue-200 cursor-pointer min-h-[44px] flex items-center justify-center"
+              >
+                Attempt 2023 Paper in CBT Mode
+              </Link>
+            </div>
+
+            {/* Paper 3: TSLPRB 2018 */}
+            <div className="bg-white border border-slate-200 hover:border-purple-400 p-5 rounded-2xl shadow-sm transition-all flex flex-col justify-between space-y-4">
+              <div>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-[10px] font-bold text-purple-900 bg-purple-100 px-2 py-0.5 rounded uppercase font-mono">
+                    TSLPRB SI
+                  </span>
+                  <span className="text-xs font-mono font-bold text-slate-700">Exam: 26-Aug-2018</span>
+                </div>
+                <h4 className="text-sm font-bold text-slate-900">TSLPRB SI Prelims 2018 Solved Paper</h4>
+                <p className="text-xs text-slate-500 mt-1">200 Questions • 3 Hours • Historical Archive</p>
+
+                {/* Explicit Source & Verification Metadata (Item 5) */}
+                <div className="mt-3 p-3 bg-slate-50 rounded-xl border border-slate-200 text-[11px] space-y-1">
+                  <p><span className="text-slate-500">Board:</span> <strong>TSLPRB</strong></p>
+                  <p><span className="text-slate-500">Post:</span> Sub-Inspector (Civil & AR)</p>
+                  <p><span className="text-slate-500">Source:</span> Official Press Release Gazette</p>
+                  <div className="pt-1 flex items-center justify-between text-emerald-800 font-bold border-t border-slate-200">
+                    <span className="flex items-center gap-1">
+                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> Verified Key
+                    </span>
+                    <span className="text-[10px] text-slate-500 font-mono">Ver: July 2024</span>
+                  </div>
+                </div>
+              </div>
+
+              <Link
+                href={getProtectedHref('/exam/pyq-tslprb-si-2018')}
+                className="w-full block text-center py-2.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-900 text-xs font-bold border border-purple-200 cursor-pointer min-h-[44px] flex items-center justify-center"
+              >
+                Attempt 2018 Paper in CBT Mode
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* 7. PRICING & PRO PLAN CARD (Item 7 & Item 12)                             */}
+      {/* ========================================================================= */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="border border-slate-200 bg-white rounded-3xl p-6 sm:p-8 shadow-sm">
+          <div className="text-center max-w-2xl mx-auto mb-8">
+            <span className="text-xs font-bold text-amber-700 uppercase tracking-widest bg-amber-50 px-3 py-1 rounded-full border border-amber-200">
+              Transparent Pricing (Item 7)
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 mt-2">
+              Police SI Aspirant Preparation Tiers
+            </h2>
+            <p className="text-xs text-slate-500 mt-1">
+              Start with free daily quizzes or upgrade to the full 12-month Pro Pass.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+            {/* Free Tier */}
+            <div className="p-6 rounded-3xl border border-slate-200 bg-slate-50/60 flex flex-col justify-between space-y-6">
+              <div>
+                <span className="text-[10px] font-bold text-slate-600 bg-slate-200 px-2.5 py-0.5 rounded-full uppercase">
+                  Free Always
+                </span>
+                <h4 className="text-lg font-black text-slate-900 mt-3">Free Aspirant Access</h4>
+                <div className="text-3xl font-black text-slate-900 font-mono mt-2">
+                  ₹0 <span className="text-xs text-slate-500 font-normal">/ No credit card required</span>
+                </div>
+                <ul className="mt-5 space-y-2.5 text-xs text-slate-600">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>Daily 10–20 Question Practice Quizzes</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>PET 1600m / 800m Physical Training Log</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>1 Full-Length PWT Practice Mock</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>Access to Official PYQ Question Sheets</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div>
                 <Link
-                  href={getProtectedHref('/exam/pyq-appolice-si-2023')}
-                  className="w-full block text-center py-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-900 text-xs font-bold border border-blue-200 cursor-pointer"
+                  href={user ? '/dashboard' : '/auth'}
+                  className="w-full block text-center py-3 rounded-2xl bg-white hover:bg-slate-100 text-slate-800 font-bold text-xs border border-slate-300 transition-colors cursor-pointer min-h-[44px] flex items-center justify-center"
                 >
-                  Attempt 2023 Paper in CBT
+                  {user ? 'View In Dashboard' : 'Register Free Account'}
                 </Link>
               </div>
             </div>
 
-            <div className="bg-white border border-slate-200 hover:border-amber-400 p-5 rounded-2xl shadow-sm transition-all flex flex-col justify-between">
+            {/* Premium Pro Pass (Item 7 Requirements) */}
+            <div className="p-6 rounded-3xl border-2 border-amber-500 bg-amber-50/40 flex flex-col justify-between relative shadow-md space-y-6">
+              <span className="absolute top-4 right-4 bg-amber-600 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase">
+                Recommended
+              </span>
+
               <div>
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-[10px] font-bold text-purple-800 bg-purple-100 px-2 py-0.5 rounded uppercase">TSLPRB SI</span>
-                  <span className="text-xs font-mono font-bold text-slate-500">Year 2018</span>
+                <span className="text-[10px] font-bold text-amber-800 bg-amber-100 px-2.5 py-0.5 rounded-full uppercase">
+                  12-Month Validity
+                </span>
+                <h4 className="text-lg font-black text-slate-900 mt-3">Full SI Pro Pass 2026</h4>
+                
+                <div className="mt-2 pb-3 border-b border-amber-200">
+                  <div className="text-3xl font-black text-amber-800 font-mono">
+                    ₹999 <span className="text-xs text-slate-600 font-normal">/ Full 12-Month Access</span>
+                  </div>
+                  <p className="text-[11px] text-emerald-700 font-semibold mt-1">
+                    ✓ ₹999 inclusive of 18% GST (No hidden fees)
+                  </p>
                 </div>
-                <h4 className="text-sm font-bold text-slate-900">TSLPRB SI Prelims 2018 Solved Paper</h4>
-                <p className="text-xs text-slate-500 mt-1">200 Questions • 3 Hours • Historical Question Archive</p>
+
+                <ul className="mt-4 space-y-2.5 text-xs text-slate-700">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span><strong>Full 12 Months Validity</strong> from registration</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>All 25+ Full-Length PWT CBT Grand Mocks</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>Descriptive Paper Review (<strong>48–72h Turnaround</strong>)</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>State-wide Sunday Simulated Rankings</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>Detailed Bilingual Explanations in Telugu & English</span>
+                  </li>
+                </ul>
+
+                {/* 7-Day Refund Guarantee (Item 7) */}
+                <div className="mt-4 p-3 rounded-2xl bg-white border border-amber-200 text-[11px] text-slate-700 space-y-0.5">
+                  <span className="font-bold text-emerald-800 flex items-center gap-1">
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>7-Day Money-Back Guarantee</span>
+                  </span>
+                  <p className="text-[10px] text-slate-500 leading-relaxed">
+                    100% refund within 7 days if fewer than 2 full-length mocks completed. Zero processing deduction.
+                  </p>
+                </div>
               </div>
-              <div className="pt-4 mt-4 border-t border-slate-100">
+
+              <div>
                 <Link
-                  href={getProtectedHref('/exam/pyq-tslprb-si-2018')}
-                  className="w-full block text-center py-2 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-900 text-xs font-bold border border-purple-200 cursor-pointer"
+                  href={user ? '/upgrade' : '/auth'}
+                  className="w-full block text-center py-3 rounded-2xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-md cursor-pointer min-h-[44px] flex items-center justify-center"
                 >
-                  Attempt 2018 Paper in CBT
+                  {user ? 'Activate Pro Pass' : 'Get Full SI Pro Pass'}
                 </Link>
+                <div className="mt-2 text-center text-[10px] text-slate-400 space-x-2">
+                  <Link href="/terms" className="underline hover:text-slate-600">Terms of Service</Link>
+                  <span>•</span>
+                  <Link href="/privacy" className="underline hover:text-slate-600">Privacy Policy</Link>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Subscription Tier Info (PRD 3.1) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="border border-slate-200 bg-white rounded-3xl p-6 sm:p-8 shadow-sm">
-          <div className="text-center max-w-2xl mx-auto mb-8">
-            <h2 className="text-2xl font-bold text-slate-900">Preparation Access Tiers</h2>
+      {/* ========================================================================= */}
+      {/* 8. FAQ & ACRONYM GLOSSARY (Item 14 & Item 12)                             */}
+      {/* ========================================================================= */}
+      <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-slate-50 border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-6">
+          <div className="text-center max-w-2xl mx-auto">
+            <span className="text-xs font-bold text-amber-700 uppercase tracking-widest bg-amber-100 px-3 py-1 rounded-full border border-amber-200">
+              Exam Acronyms & FAQ (Item 14)
+            </span>
+            <h2 className="text-xl sm:text-2xl font-black text-slate-900 mt-2">
+              Glossary of State Police Recruitment Terms
+            </h2>
             <p className="text-xs text-slate-500 mt-1">
-              Select between free foundational access or upgrade for complete full-length tests and handwritten descriptive grading.
+              Definitions of all official recruitment exam acronyms and frequently asked questions.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-            {/* Free Tier */}
-            <div className="p-6 rounded-2xl border border-slate-200 bg-slate-50/50 flex flex-col justify-between">
-              <div>
-                <h4 className="text-base font-bold text-slate-900">Free Aspirant Access</h4>
-                <div className="text-2xl font-black text-slate-900 mt-2">₹0 <span className="text-xs text-slate-500 font-normal">/ Free Always</span></div>
-                <ul className="mt-4 space-y-2 text-xs text-slate-600">
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                    <span>Daily 10-20 Question Subject Quizzes</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                    <span>PET/PMT Physical Training Log Book</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                    <span>1 Full-Length PWT Practice Mock</span>
-                  </li>
-                </ul>
-              </div>
-              <div className="pt-6">
-                <Link
-                  href={user ? '/dashboard' : '/auth'}
-                  className="w-full block text-center py-2.5 rounded-xl bg-white hover:bg-slate-100 text-slate-800 font-bold text-xs border border-slate-300 transition-colors cursor-pointer"
-                >
-                  {user ? 'View In Dashboard' : 'Register Free'}
-                </Link>
-              </div>
+          {/* Acronyms Callout Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+            <div className="p-3.5 bg-white rounded-2xl border border-slate-200 text-xs space-y-1">
+              <span className="font-mono font-bold text-amber-800 text-sm">PWT</span>
+              <p className="font-bold text-slate-900">Preliminary Written Test</p>
+              <p className="text-[11px] text-slate-500">
+                The objective first-stage screening exam consisting of 200 questions (Arithmetic, Reasoning, and General Studies) for 200 marks.
+              </p>
             </div>
 
-            {/* Premium Pro Pass */}
-            <div className="p-6 rounded-2xl border-2 border-amber-500 bg-amber-50/30 flex flex-col justify-between relative shadow-sm">
-              <span className="absolute top-4 right-4 bg-amber-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
-                Recommended
-              </span>
-              <div>
-                <h4 className="text-base font-bold text-slate-900">Full SI Pro Pass</h4>
-                <div className="text-2xl font-black text-amber-700 mt-2">₹999 <span className="text-xs text-slate-600 font-normal">/ 1 Year Full Validity</span></div>
-                <ul className="mt-4 space-y-2 text-xs text-slate-700">
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-amber-600" />
-                    <span>All 25+ Full-Length PWT CBT Grand Mocks</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-amber-600" />
-                    <span>Descriptive Paper Evaluation with Faculty Feedback</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-amber-600" />
-                    <span>State-wide Live Weekend Rankings</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-amber-600" />
-                    <span>Detailed Paper Explanations in English & Telugu</span>
-                  </li>
-                </ul>
-              </div>
-              <div className="pt-6">
-                <Link
-                  href={user ? '/dashboard' : '/auth'}
-                  className="w-full block text-center py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider transition-colors shadow cursor-pointer"
+            <div className="p-3.5 bg-white rounded-2xl border border-slate-200 text-xs space-y-1">
+              <span className="font-mono font-bold text-emerald-800 text-sm">PET</span>
+              <p className="font-bold text-slate-900">Physical Efficiency Test</p>
+              <p className="text-[11px] text-slate-500">
+                The on-ground athletic qualification stage featuring the 1600m run (men), 800m run (women), long jump, and shot put events.
+              </p>
+            </div>
+
+            <div className="p-3.5 bg-white rounded-2xl border border-slate-200 text-xs space-y-1">
+              <span className="font-mono font-bold text-blue-800 text-sm">PMT</span>
+              <p className="font-bold text-slate-900">Physical Measurement Test</p>
+              <p className="text-[11px] text-slate-500">
+                Standardized physical verification verifying minimum height (167.6 cm for men, 152.5 cm for women) and chest expansion criteria.
+              </p>
+            </div>
+
+            <div className="p-3.5 bg-white rounded-2xl border border-slate-200 text-xs space-y-1">
+              <span className="font-mono font-bold text-purple-800 text-sm">FWE</span>
+              <p className="font-bold text-slate-900">Final Written Examination</p>
+              <p className="text-[11px] text-slate-500">
+                The comprehensive 4-Paper final mains examination including Paper I (English descriptive), Paper II (Telugu/Urdu descriptive), and Papers III & IV (Objective).
+              </p>
+            </div>
+          </div>
+
+          {/* Collapsible FAQ List */}
+          <div className="pt-4 border-t border-slate-200 space-y-2.5">
+            {[
+              {
+                q: 'What is the negative marking penalty in TSLPRB and AP Police SI exams?',
+                a: 'In TSLPRB SI Preliminary Written Test (PWT) and Final Written Exam objective papers, each incorrect choice incurs a penalty of 0.25 marks (1/4th penalty). In AP Police preliminary exams, there is currently no negative marking unless explicitly notified in the gazette. Our simulator matches each board accordingly.'
+              },
+              {
+                q: 'Can I practice the mock test in both Telugu and English?',
+                a: 'Yes. Our CBT test engine features a real-time bilingual toggle allowing you to switch questions and options between English and Telugu instantly without losing timer state or unselecting your answer.'
+              },
+              {
+                q: 'How does descriptive paper grading work for Paper I and Paper II?',
+                a: 'Candidates can write their essays, precis, and letters on paper, photograph their handwritten scripts, and upload them via the Descriptive portal. Senior evaluators grade your script based on official rubrics within 48 to 72 hours.'
+              },
+              {
+                q: 'What is the refund policy for the SI Pro Pass?',
+                a: 'We offer an unconditional 7-day money-back guarantee. If you are not satisfied within 7 calendar days of subscription and have attempted fewer than 2 full-length mocks, simply email support@police-si-prep.in for a 100% refund.'
+              }
+            ].map((faq, idx) => (
+              <div key={idx} className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
+                <button
+                  type="button"
+                  onClick={() => toggleFaq(idx)}
+                  className="w-full p-4 text-left flex items-center justify-between text-xs sm:text-sm font-bold text-slate-900 hover:bg-slate-50 transition-colors min-h-[44px]"
                 >
-                  {user ? 'Pro Pass Active' : 'Get Premium Pro Pass'}
-                </Link>
+                  <span>{faq.q}</span>
+                  {openFaq === idx ? (
+                    <ChevronUp className="w-4 h-4 text-slate-400 shrink-0 ml-2" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4 text-slate-400 shrink-0 ml-2" />
+                  )}
+                </button>
+                {openFaq === idx && (
+                  <div className="p-4 pt-0 text-xs text-slate-600 leading-relaxed border-t border-slate-100">
+                    {faq.a}
+                  </div>
+                )}
               </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* 9. FINAL CTA (Item 12: Order Step 9)                                      */}
+      {/* ========================================================================= */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-gradient-to-r from-amber-700 via-amber-800 to-slate-900 rounded-3xl p-8 sm:p-12 text-center text-white relative shadow-xl overflow-hidden">
+          <div className="max-w-3xl mx-auto space-y-4 relative z-10">
+            <span className="px-3.5 py-1 rounded-full bg-white/10 text-amber-200 border border-white/20 text-xs font-mono font-bold uppercase tracking-wider">
+              Ready to Earn the Khaki Uniform?
+            </span>
+            <h2 className="text-2xl sm:text-4xl font-black tracking-tight leading-tight">
+              Begin Your Police Sub-Inspector Preparation Today
+            </h2>
+            <p className="text-xs sm:text-sm text-amber-100/90 max-w-xl mx-auto leading-relaxed">
+              Join thousands of police aspirants across Telangana and Andhra Pradesh preparing with timed CBT mocks, PET logs, and verified previous papers.
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
+              <Link
+                href={getProtectedHref('/exam/tslprb-si-pwt-mock-01')}
+                className="px-8 py-3.5 rounded-2xl bg-white hover:bg-amber-50 text-slate-900 font-extrabold text-xs uppercase tracking-wider transition-all shadow-md min-h-[44px] flex items-center justify-center"
+              >
+                Attempt Free 200M Mock
+              </Link>
+              <Link
+                href={user ? '/dashboard' : '/auth'}
+                className="px-8 py-3.5 rounded-2xl bg-amber-600 hover:bg-amber-500 text-white font-extrabold text-xs uppercase tracking-wider transition-all shadow-md min-h-[44px] flex items-center justify-center"
+              >
+                {user ? 'Go to My Dashboard' : 'Candidate Registration'}
+              </Link>
             </div>
           </div>
         </div>

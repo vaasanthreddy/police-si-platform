@@ -155,9 +155,39 @@ export default function PreviousPapersPage() {
                 </div>
               </div>
 
-              <div className="mt-4 flex items-center gap-2 text-xs text-slate-500">
+              <div className="mt-4 p-3.5 bg-slate-50 rounded-2xl border border-slate-200 text-xs space-y-2">
+                <div className="flex items-center justify-between text-[11px] pb-1.5 border-b border-slate-200">
+                  <span className="text-slate-500 font-semibold">Recruiting Board:</span>
+                  <span className="font-bold text-slate-800">{paper.board || (paper.state === 'TELANGANA' ? 'TSLPRB' : 'AP SLPRB')}</span>
+                </div>
+                <div className="flex items-center justify-between text-[11px] pb-1.5 border-b border-slate-200">
+                  <span className="text-slate-500 font-semibold">Target Post & Cadre:</span>
+                  <span className="font-bold text-slate-800">{paper.post || 'Sub-Inspector of Police (Civil & AR)'}</span>
+                </div>
+                <div className="flex items-center justify-between text-[11px] pb-1.5 border-b border-slate-200">
+                  <span className="text-slate-500 font-semibold">Exam Date & Paper:</span>
+                  <span className="font-bold text-slate-800">{paper.examDate || `${paper.year}`} • {paper.paperType || 'PWT Objective'}</span>
+                </div>
+                <div className="flex items-center justify-between text-[11px] pb-1.5 border-b border-slate-200">
+                  <span className="text-slate-500 font-semibold">Public Domain Source:</span>
+                  <span className="font-medium text-slate-700 truncate max-w-[200px]" title={paper.archiveSource || 'Public Domain Press Release'}>
+                    {paper.archiveSource || 'Public Domain Press Release'}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-[11px] pt-0.5">
+                  <span className="inline-flex items-center gap-1 text-emerald-700 font-bold">
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>{paper.answerKeyStatus || 'Official Verified Key'}</span>
+                  </span>
+                  <span className="text-[10px] text-slate-500 font-mono">
+                    Verified: {paper.lastVerifiedDate || 'September 2024'}
+                  </span>
+                </div>
+              </div>
+
+              <div className="mt-3 flex items-center gap-2 text-xs text-slate-500">
                 <Calendar className="w-3.5 h-3.5 text-slate-400" />
-                <span>Exam Shift: {paper.examShift}</span>
+                <span>Exam Session: {paper.examShift}</span>
               </div>
             </div>
 

@@ -22,16 +22,44 @@ export default function LeaderboardPage() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 font-sans">
       
       {/* Header */}
-      <div className="text-center space-y-3 max-w-2xl mx-auto">
-        <div className="inline-flex p-3 rounded-2xl bg-amber-50 border border-amber-200 text-amber-600 shadow-sm">
-          <Trophy className="w-8 h-8" />
+      <div className="text-center space-y-3 max-w-3xl mx-auto">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-50 border border-amber-300 text-amber-900 text-xs font-bold tracking-wide shadow-sm">
+          <Trophy className="w-4 h-4 text-amber-600" />
+          <span>SAMPLE LEADERBOARD (SIMULATED MOCK RANKING)</span>
         </div>
+        
         <h1 className="text-2xl sm:text-3xl font-black text-slate-900">
-          State-Wide Aspirant Leaderboard
+          State-Wide Candidate Mock Rankings
         </h1>
-        <p className="text-xs sm:text-sm text-slate-500">
-          Real-time standardized rankings from the weekly TSLPRB & AP Police SI Grand Mock Examinations (200 Marks).
+        
+        <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+          Simulated state-level percentile and performance benchmarks computed after each weekly full-length 200-mark Preliminary Written Test (PWT).
         </p>
+
+        {/* Scoring & Ranking Rules Disclosure Box */}
+        <div className="p-4 rounded-2xl bg-amber-50/60 border border-amber-200 text-left text-xs space-y-2 mt-4 text-slate-700">
+          <div className="flex items-center gap-2 font-bold text-amber-900">
+            <Award className="w-4 h-4 text-amber-600" />
+            <span>Ranking Rules & Evaluation Mechanics:</span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1 text-[11px]">
+            <div className="bg-white p-2.5 rounded-xl border border-amber-100">
+              <span className="font-bold text-slate-800">Ranking Period:</span>
+              <p className="text-slate-500 mt-0.5">Weekly Sunday Grand Mock Window (10:00 AM – 1:00 PM IST)</p>
+            </div>
+            <div className="bg-white p-2.5 rounded-xl border border-amber-100">
+              <span className="font-bold text-slate-800">Scoring Formula:</span>
+              <p className="text-slate-500 mt-0.5">+1.0 mark per correct answer; -0.25 penalty for wrong choices</p>
+            </div>
+            <div className="bg-white p-2.5 rounded-xl border border-amber-100">
+              <span className="font-bold text-slate-800">Tiebreaker:</span>
+              <p className="text-slate-500 mt-0.5">Higher accuracy percentage followed by lower exam time elapsed</p>
+            </div>
+          </div>
+          <p className="text-[10px] text-slate-500 italic pt-1 border-t border-amber-200/60">
+            Disclaimer: These rankings are calculated strictly for mock practice comparison among registered platform users. They do not constitute official TSLPRB or AP SLPRB recruitment board merit lists.
+          </p>
+        </div>
       </div>
 
       {/* Filters and Search Bar */}
@@ -139,8 +167,8 @@ export default function LeaderboardPage() {
       {/* Full Leaderboard Table */}
       <div className="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
         <div className="p-4 border-b border-slate-100 flex items-center justify-between">
-          <h3 className="text-sm font-bold text-slate-900">Rank List ({filteredRanks.length} Aspirants)</h3>
-          <span className="text-xs text-slate-500">Updated after Sunday Grand Mock Evaluation</span>
+          <h3 className="text-sm font-bold text-slate-900">Sample Rank List ({filteredRanks.length} Simulated Candidates)</h3>
+          <span className="text-xs text-slate-500">Sunday PWT Mock Window (10:00 AM – 1:00 PM IST)</span>
         </div>
 
         <div className="overflow-x-auto">

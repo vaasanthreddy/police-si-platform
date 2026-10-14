@@ -87,6 +87,13 @@ export interface PreviousPaper {
   examId: string;
   title: string;
   state: TargetState;
+  board?: string;
+  post?: string;
+  examDate?: string;
+  paperType?: string;
+  archiveSource?: string;
+  answerKeyStatus?: string;
+  lastVerifiedDate?: string;
   year: number;
   examShift: string;
   totalMarks: number;

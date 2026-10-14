@@ -81,6 +81,10 @@ function AuthContent() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [showRecoveryModal, setShowRecoveryModal] = useState(false);
+  const [recoveryEmail, setRecoveryEmail] = useState('');
+  const [recoveryDone, setRecoveryDone] = useState(false);
 
   // Countdown timer for OTP
   useEffect(() => {
@@ -107,13 +111,17 @@ function AuthContent() {
 
   const handleSendOtp = (isForAdmin = false) => {
     setErrorMessage(null);
-    const targetPhone = isForAdmin ? phone : phone;
+    const errors: Record<string, string> = {};
+    const targetPhone = phone;
     if (!targetPhone || !isValidIndianMobile(targetPhone)) {
-      setErrorMessage('Please enter a valid 10-digit Indian mobile number (e.g. 9848022338).');
+      errors.phone = 'Please enter a valid 10-digit Indian mobile number starting with 6, 7, 8, or 9.';
+      setFieldErrors(errors);
+      setErrorMessage('Please correct the highlighted mobile number.');
       return;
     }
+    setFieldErrors({});
     setOtpSent(true);
-    setCountdown(60);
+    setCountdown(30);
     setSuccessMessage(`One Time Password (OTP) dispatched to +91-${targetPhone}. (Demo Hint: Use 542918)`);
   };
 
@@ -121,19 +129,29 @@ function AuthContent() {
   const handleStudentEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
-    setLoading(true);
+    const errors: Record<string, string> = {};
 
-    if (!email) {
-      setErrorMessage('Please enter your registered email address.');
-      setLoading(false);
+    if (!email || !email.includes('@')) {
+      errors.email = 'Please enter a valid registered email address.';
+    }
+    if (!password || password.length < 4) {
+      errors.password = 'Password must be at least 4 characters.';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      setErrorMessage('Please fix the highlighted field errors before continuing.');
       return;
     }
+
+    setFieldErrors({});
+    setLoading(true);
 
     try {
       await loginStudentWithEmail(sanitizeInput(email), password);
       window.location.href = redirectParam || '/dashboard';
     } catch {
-      setErrorMessage('Unable to log in. Please check credentials.');
+      setErrorMessage('Unable to log in. Please check credentials or register.');
     } finally {
       setLoading(false);
     }
@@ -143,13 +161,23 @@ function AuthContent() {
   const handleStudentOtpLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
-    setLoading(true);
+    const errors: Record<string, string> = {};
 
+    if (!phone || !isValidIndianMobile(phone)) {
+      errors.phone = 'Valid 10-digit mobile number required.';
+    }
     if (!otp || otp.length < 6) {
-      setErrorMessage('Please enter the 6-digit OTP received on your mobile.');
-      setLoading(false);
+      errors.otp = 'Please enter the full 6-digit OTP code received on your mobile.';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      setErrorMessage('Please fix the highlighted field errors.');
       return;
     }
+
+    setFieldErrors({});
+    setLoading(true);
 
     try {
       const ok = await loginStudentWithOtp(phone, otp);
@@ -182,13 +210,26 @@ function AuthContent() {
   const handleStudentSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
-    setLoading(true);
+    const errors: Record<string, string> = {};
 
-    if (!name || (!email && !phone)) {
-      setErrorMessage('Please provide your name and either an email or mobile number.');
-      setLoading(false);
+    if (!name || name.trim().length < 2) {
+      errors.name = 'Please enter candidate full name as per SSC memo.';
+    }
+    if (!email || !email.includes('@')) {
+      errors.email = 'Please provide a valid email address.';
+    }
+    if (!phone || !isValidIndianMobile(phone)) {
+      errors.phone = 'Valid 10-digit mobile number required.';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      setErrorMessage('Please fill in all required fields accurately.');
       return;
     }
+
+    setFieldErrors({});
+    setLoading(true);
 
     try {
       await signupStudent({
@@ -406,19 +447,36 @@ function AuthContent() {
                         </span>
                         <input
                           type="email"
-                          required
                           value={email}
-                          onChange={(e) => setEmail(e.target.value)}
+                          onChange={(e) => {
+                            setEmail(e.target.value);
+                            if (fieldErrors.email) setFieldErrors((prev) => ({ ...prev, email: '' }));
+                          }}
                           placeholder="aspirant@gmail.com"
-                          className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-500 focus:bg-white transition-colors"
+                          className={`w-full bg-slate-50 border rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white transition-colors ${
+                            fieldErrors.email ? 'border-red-400 ring-1 ring-red-300' : 'border-slate-200 focus:border-amber-500'
+                          }`}
                         />
                       </div>
+                      {fieldErrors.email && (
+                        <p className="text-[11px] text-red-600 font-medium mt-1">{fieldErrors.email}</p>
+                      )}
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1">
-                        Password
-                      </label>
+                      <div className="flex items-center justify-between mb-1">
+                        <label className="text-xs font-bold text-slate-700">Password</label>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setShowRecoveryModal(true);
+                            setRecoveryDone(false);
+                          }}
+                          className="text-[11px] text-amber-700 hover:text-amber-800 font-semibold underline"
+                        >
+                          Forgot Password?
+                        </button>
+                      </div>
                       <div className="relative">
                         <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                           <Lock className="w-4 h-4" />
@@ -426,20 +484,37 @@ function AuthContent() {
                         <input
                           type="password"
                           value={password}
-                          onChange={(e) => setPassword(e.target.value)}
+                          onChange={(e) => {
+                            setPassword(e.target.value);
+                            if (fieldErrors.password) setFieldErrors((prev) => ({ ...prev, password: '' }));
+                          }}
                           placeholder="Enter your password"
-                          className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-500 focus:bg-white transition-colors"
+                          className={`w-full bg-slate-50 border rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white transition-colors ${
+                            fieldErrors.password ? 'border-red-400 ring-1 ring-red-300' : 'border-slate-200 focus:border-amber-500'
+                          }`}
                         />
                       </div>
+                      {fieldErrors.password && (
+                        <p className="text-[11px] text-red-600 font-medium mt-1">{fieldErrors.password}</p>
+                      )}
                     </div>
 
                     <button
                       type="submit"
                       disabled={loading}
-                      className="w-full py-3 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2"
+                      className="w-full py-3 rounded-xl bg-amber-600 hover:bg-amber-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-xs uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
                     >
-                      <span>Sign In as Candidate</span>
-                      <ArrowRight className="w-4 h-4" />
+                      {loading ? (
+                        <span className="inline-flex items-center gap-2">
+                          <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                          <span>Signing In...</span>
+                        </span>
+                      ) : (
+                        <>
+                          <span>Sign In as Candidate</span>
+                          <ArrowRight className="w-4 h-4" />
+                        </>
+                      )}
                     </button>
                   </form>
                 )}
@@ -460,20 +535,28 @@ function AuthContent() {
                             type="tel"
                             maxLength={10}
                             value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
+                            onChange={(e) => {
+                              setPhone(e.target.value);
+                              if (fieldErrors.phone) setFieldErrors((prev) => ({ ...prev, phone: '' }));
+                            }}
                             placeholder="9848022338"
-                            className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-12 pr-4 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-500 focus:bg-white font-mono"
+                            className={`w-full bg-slate-50 border rounded-xl pl-12 pr-4 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white font-mono ${
+                              fieldErrors.phone ? 'border-red-400 ring-1 ring-red-300' : 'border-slate-200 focus:border-amber-500'
+                            }`}
                           />
                         </div>
                         <button
                           type="button"
                           onClick={() => handleSendOtp(false)}
                           disabled={countdown > 0}
-                          className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold border border-slate-200 transition-colors whitespace-nowrap"
+                          className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 disabled:opacity-60 text-slate-800 text-xs font-bold border border-slate-200 transition-colors whitespace-nowrap"
                         >
-                          {countdown > 0 ? `${countdown}s` : otpSent ? 'Resend' : 'Send OTP'}
+                          {countdown > 0 ? `Resend (${countdown}s)` : otpSent ? 'Resend OTP' : 'Send OTP'}
                         </button>
                       </div>
+                      {fieldErrors.phone && (
+                        <p className="text-[11px] text-red-600 font-medium mt-1">{fieldErrors.phone}</p>
+                      )}
                     </div>
 
                     {otpSent && (
@@ -489,24 +572,42 @@ function AuthContent() {
                             type="text"
                             maxLength={6}
                             value={otp}
-                            onChange={(e) => setOtp(e.target.value)}
+                            onChange={(e) => {
+                              setOtp(e.target.value);
+                              if (fieldErrors.otp) setFieldErrors((prev) => ({ ...prev, otp: '' }));
+                            }}
                             placeholder="542918"
-                            className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-500 focus:bg-white tracking-widest font-mono text-center font-bold"
+                            className={`w-full bg-slate-50 border rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white tracking-widest font-mono text-center font-bold ${
+                              fieldErrors.otp ? 'border-red-400 ring-1 ring-red-300' : 'border-slate-200 focus:border-amber-500'
+                            }`}
                           />
                         </div>
-                        <p className="text-[10px] text-slate-500 mt-1">
-                          Demo OTP: <strong className="text-amber-700">542918</strong>
-                        </p>
+                        {fieldErrors.otp ? (
+                          <p className="text-[11px] text-red-600 font-medium mt-1">{fieldErrors.otp}</p>
+                        ) : (
+                          <p className="text-[10px] text-slate-500 mt-1">
+                            Demo OTP: <strong className="text-amber-700">542918</strong>
+                          </p>
+                        )}
                       </div>
                     )}
 
                     <button
                       type="submit"
                       disabled={loading || !otpSent}
-                      className="w-full py-3 rounded-xl bg-amber-600 hover:bg-amber-700 disabled:bg-slate-300 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2"
+                      className="w-full py-3 rounded-xl bg-amber-600 hover:bg-amber-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-xs uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
                     >
-                      <span>Verify OTP & Open Dashboard</span>
-                      <ArrowRight className="w-4 h-4" />
+                      {loading ? (
+                        <span className="inline-flex items-center gap-2">
+                          <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                          <span>Verifying OTP...</span>
+                        </span>
+                      ) : (
+                        <>
+                          <span>Verify OTP & Open Dashboard</span>
+                          <ArrowRight className="w-4 h-4" />
+                        </>
+                      )}
                     </button>
                   </form>
                 )}
@@ -560,12 +661,19 @@ function AuthContent() {
                   </label>
                   <input
                     type="text"
-                    required
                     value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    onChange={(e) => {
+                      setName(e.target.value);
+                      if (fieldErrors.name) setFieldErrors((prev) => ({ ...prev, name: '' }));
+                    }}
                     placeholder="e.g. Ramesh Reddy"
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-500 focus:bg-white"
+                    className={`w-full bg-slate-50 border rounded-xl px-4 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white ${
+                      fieldErrors.name ? 'border-red-400 ring-1 ring-red-300' : 'border-slate-200 focus:border-amber-500'
+                    }`}
                   />
+                  {fieldErrors.name && (
+                    <p className="text-[11px] text-red-600 font-medium mt-1">{fieldErrors.name}</p>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -575,12 +683,19 @@ function AuthContent() {
                     </label>
                     <input
                       type="email"
-                      required
                       value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      onChange={(e) => {
+                        setEmail(e.target.value);
+                        if (fieldErrors.email) setFieldErrors((prev) => ({ ...prev, email: '' }));
+                      }}
                       placeholder="aspirant@gmail.com"
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-500 focus:bg-white"
+                      className={`w-full bg-slate-50 border rounded-xl px-4 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white ${
+                        fieldErrors.email ? 'border-red-400 ring-1 ring-red-300' : 'border-slate-200 focus:border-amber-500'
+                      }`}
                     />
+                    {fieldErrors.email && (
+                      <p className="text-[11px] text-red-600 font-medium mt-1">{fieldErrors.email}</p>
+                    )}
                   </div>
 
                   <div>
@@ -589,13 +704,20 @@ function AuthContent() {
                     </label>
                     <input
                       type="tel"
-                      required
                       maxLength={10}
                       value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
+                      onChange={(e) => {
+                        setPhone(e.target.value);
+                        if (fieldErrors.phone) setFieldErrors((prev) => ({ ...prev, phone: '' }));
+                      }}
                       placeholder="9848022338"
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-500 focus:bg-white font-mono"
+                      className={`w-full bg-slate-50 border rounded-xl px-4 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white font-mono ${
+                        fieldErrors.phone ? 'border-red-400 ring-1 ring-red-300' : 'border-slate-200 focus:border-amber-500'
+                      }`}
                     />
+                    {fieldErrors.phone && (
+                      <p className="text-[11px] text-red-600 font-medium mt-1">{fieldErrors.phone}</p>
+                    )}
                   </div>
                 </div>
 
@@ -669,10 +791,19 @@ function AuthContent() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2"
+                  className="w-full py-3 rounded-xl bg-amber-600 hover:bg-amber-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-xs uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  <span>Complete Registration & Open Dashboard</span>
-                  <ArrowRight className="w-4 h-4" />
+                  {loading ? (
+                    <span className="inline-flex items-center gap-2">
+                      <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                      <span>Creating Aspirant Profile...</span>
+                    </span>
+                  ) : (
+                    <>
+                      <span>Complete Registration & Open Dashboard</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </>
+                  )}
                 </button>
               </form>
             )}
@@ -844,6 +975,93 @@ function AuthContent() {
         )}
 
       </div>
+
+      {/* Account Recovery Modal (Item 9) */}
+      {showRecoveryModal && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl border border-slate-200 relative animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center">
+                  <KeyRound className="w-4 h-4" />
+                </div>
+                <h3 className="text-base font-bold text-slate-900">Account & Password Recovery</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowRecoveryModal(false)}
+                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 font-bold flex items-center justify-center text-sm transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+
+            {recoveryDone ? (
+              <div className="py-6 text-center space-y-3">
+                <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto">
+                  <CheckCircle2 className="w-6 h-6" />
+                </div>
+                <h4 className="text-sm font-bold text-slate-900">Recovery Instructions Dispatched!</h4>
+                <p className="text-xs text-slate-600 leading-relaxed max-w-xs mx-auto">
+                  A secure password reset link has been dispatched to <strong>{recoveryEmail || 'your registered contact'}</strong>. Please check your inbox or SMS.
+                </p>
+                <div className="pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowRecoveryModal(false)}
+                    className="px-5 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase"
+                  >
+                    Back to Sign In
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (!recoveryEmail) return;
+                  setRecoveryDone(true);
+                }}
+                className="space-y-4 pt-4"
+              >
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Enter your registered email address or mobile number. We will send you an OTP verification link to reset your password and restore access to your mock tests.
+                </p>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Registered Email or 10-Digit Mobile Number
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={recoveryEmail}
+                    onChange={(e) => setRecoveryEmail(e.target.value)}
+                    placeholder="aspirant@gmail.com or 9848022338"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-500 focus:bg-white"
+                  />
+                </div>
+
+                <div className="flex items-center justify-end gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowRecoveryModal(false)}
+                    className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-sm"
+                  >
+                    Send Recovery Link
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

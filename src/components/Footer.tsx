@@ -1,37 +1,86 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ShieldCheck, Lock, Phone, Mail, Clock, MapPin } from 'lucide-react';
+import { 
+  ShieldCheck, 
+  Lock, 
+  Mail, 
+  Clock, 
+  Send, 
+  CheckCircle2, 
+  FileText, 
+  HelpCircle, 
+  AlertCircle,
+  X
+} from 'lucide-react';
 
 export const Footer: React.FC = () => {
+  // Support ticket modal state
+  const [supportModalOpen, setSupportModalOpen] = useState(false);
+  const [supportForm, setSupportForm] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    category: 'MOCK_TEST_ISSUE',
+    description: '',
+  });
+  const [ticketSubmitted, setTicketSubmitted] = useState(false);
+  const [ticketId, setTicketId] = useState('');
+
+  // Policy Modals: 'PRIVACY' | 'TERMS' | 'REFUND' | 'ERRATA' | null
+  const [activePolicyModal, setActivePolicyModal] = useState<'PRIVACY' | 'TERMS' | 'REFUND' | 'ERRATA' | null>(null);
+
+  const handleSupportSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const generatedId = `TKT-${Math.floor(100000 + Math.random() * 900000)}`;
+    setTicketId(generatedId);
+    setTicketSubmitted(true);
+  };
+
+  const closeSupportModal = () => {
+    setSupportModalOpen(false);
+    setTicketSubmitted(false);
+    setSupportForm({
+      name: '',
+      email: '',
+      phone: '',
+      category: 'MOCK_TEST_ISSUE',
+      description: '',
+    });
+  };
+
   return (
     <footer className="bg-white border-t border-slate-200 text-slate-600 text-sm relative z-20 font-sans">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         
-        {/* Candidate Support Center Banner (PRD Candidate Helpdesk) */}
+        {/* Candidate Support Center Banner (Item 8) */}
         <div className="bg-amber-50/70 border border-amber-200/80 rounded-3xl p-6 sm:p-8 mb-10 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-1">
-            <span className="text-[11px] font-bold text-amber-800 uppercase tracking-wider bg-amber-100/70 px-2.5 py-0.5 rounded-full border border-amber-300">
-              Official Candidate Support Center
+          <div className="space-y-1.5 max-w-xl">
+            <span className="text-[11px] font-bold text-amber-800 uppercase tracking-wider bg-amber-100 px-2.5 py-0.5 rounded-full border border-amber-300">
+              Candidate Support Helpdesk
             </span>
             <h3 className="text-lg sm:text-xl font-bold text-slate-900 mt-1">
-              Need Help with Recruitment Mocks or Ground Milestones?
+              Have Questions Regarding Mock Tests, Answers, or PET Tracking?
             </h3>
-            <p className="text-xs text-slate-600">
-              Our technical help desk assists aspirants with examination portal logins, PET milestone logging, and OTP verification.
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Our academic and technical support team is available to assist aspirants with exam queries, timer resets, and score discrepancies.
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-4 text-xs font-medium">
+          <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs font-medium">
             <div className="flex items-center gap-3 bg-white p-3.5 rounded-2xl border border-amber-200 shadow-sm">
               <div className="w-10 h-10 rounded-xl bg-amber-600 text-white flex items-center justify-center shrink-0">
-                <Phone className="w-5 h-5" />
+                <Mail className="w-5 h-5" />
               </div>
               <div>
-                <span className="text-[11px] text-slate-500 font-semibold">Toll-Free Candidate Helpline</span>
-                <p className="text-base font-black text-slate-900 font-mono">1800-425-7788</p>
+                <span className="text-[11px] text-slate-500 font-semibold">Verified Support Email</span>
+                <p className="text-xs sm:text-sm font-bold text-slate-900 font-mono">
+                  <a href="mailto:support@police-si-prep.in" className="hover:text-amber-700 underline">
+                    support@police-si-prep.in
+                  </a>
+                </p>
               </div>
             </div>
 
@@ -40,10 +89,28 @@ export const Footer: React.FC = () => {
                 <Clock className="w-5 h-5" />
               </div>
               <div>
-                <span className="text-[11px] text-slate-500 font-semibold">Support Desk Timings</span>
-                <p className="text-xs font-bold text-slate-900">Mon - Sat: 9:00 AM - 6:00 PM</p>
+                <span className="text-[11px] text-slate-500 font-semibold">Operating Hours</span>
+                <p className="text-xs font-bold text-slate-900">Mon–Sat: 9:00 AM – 6:00 PM IST</p>
               </div>
             </div>
+
+            <button
+              type="button"
+              onClick={() => setSupportModalOpen(true)}
+              className="px-5 py-3 rounded-2xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider shadow-sm transition-all flex items-center gap-2 cursor-pointer"
+            >
+              <Send className="w-4 h-4" />
+              <span>Raise Support Ticket</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Independent Platform Disclaimer Banner (Item 1) */}
+        <div className="p-4 rounded-2xl bg-slate-100 border border-slate-300 text-slate-700 text-xs mb-10 flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+          <div className="leading-relaxed">
+            <strong className="text-slate-900">Independent Preparation Platform Disclaimer:</strong>{' '}
+            This is an independent exam preparation platform. We are not affiliated with, endorsed by, or operated by the Telangana State Level Police Recruitment Board (TSLPRB), the Andhra Pradesh State Level Police Recruitment Board (AP SLPRB), or any government police agency. All official notifications, syllabi, and criteria are referenced from public domain government gazettes.
           </div>
         </div>
 
@@ -87,7 +154,7 @@ export const Footer: React.FC = () => {
             <ul className="space-y-2.5 text-xs text-slate-600">
               <li>
                 <Link href="/exam/tslprb-si-pwt-mock-01" className="hover:text-amber-700 transition-colors">
-                  Preliminary Written Test (200 M)
+                  Preliminary Written Test (PWT 200M)
                 </Link>
               </li>
               <li>
@@ -125,13 +192,18 @@ export const Footer: React.FC = () => {
                 </Link>
               </li>
               <li>
+                <Link href="/previous-papers" className="hover:text-amber-700 transition-colors">
+                  Official Previous Papers (PYQ)
+                </Link>
+              </li>
+              <li>
                 <Link href="/pet-tracker" className="hover:text-amber-700 transition-colors">
                   Physical Milestone Tracker (PET)
                 </Link>
               </li>
               <li>
-                <Link href="/descriptive" className="hover:text-amber-700 transition-colors">
-                  Descriptive Answer Upload
+                <Link href="/upgrade" className="hover:text-amber-700 font-bold text-amber-800 transition-colors">
+                  SI Pro Pass (₹999 / 12 Months)
                 </Link>
               </li>
               <li>
@@ -139,39 +211,55 @@ export const Footer: React.FC = () => {
                   State-Wide Leaderboard
                 </Link>
               </li>
-              <li>
-                <Link href="/auth" className="hover:text-amber-700 font-bold text-amber-800 transition-colors">
-                  Candidate Login & Registration
-                </Link>
-              </li>
             </ul>
           </div>
 
-          {/* Target Police Wings */}
+          {/* Policies & Institutional Disclosures (Item 15) */}
           <div>
             <h4 className="text-slate-900 font-bold text-xs uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">
-              Target Cadres
+              Policies & Compliance
             </h4>
-            <ul className="space-y-2 text-xs text-slate-500 font-medium">
-              <li className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-                Sub-Inspector (Civil)
+            <ul className="space-y-2.5 text-xs text-slate-600">
+              <li>
+                <button
+                  type="button"
+                  onClick={() => setActivePolicyModal('PRIVACY')}
+                  className="hover:text-amber-700 transition-colors text-left font-medium"
+                >
+                  Privacy Policy & Answer Sheet Security
+                </button>
               </li>
-              <li className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-                Reserve Sub-Inspector (AR)
+              <li>
+                <button
+                  type="button"
+                  onClick={() => setActivePolicyModal('TERMS')}
+                  className="hover:text-amber-700 transition-colors text-left font-medium"
+                >
+                  Terms of Service & Test Integrity
+                </button>
               </li>
-              <li className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-                SAR CPL (Men)
+              <li>
+                <button
+                  type="button"
+                  onClick={() => setActivePolicyModal('REFUND')}
+                  className="hover:text-amber-700 transition-colors text-left font-medium"
+                >
+                  7-Day Refund & Cancellation Policy
+                </button>
               </li>
-              <li className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-                TSSP / APSP Battalions
+              <li>
+                <button
+                  type="button"
+                  onClick={() => setActivePolicyModal('ERRATA')}
+                  className="hover:text-amber-700 transition-colors text-left font-medium"
+                >
+                  Content Corrections & Errata Policy
+                </button>
               </li>
-              <li className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-                Police Communications SI
+              <li>
+                <span className="text-[11px] text-slate-400 block pt-1">
+                  Support: Mon–Sat 9am–6pm IST
+                </span>
               </li>
             </ul>
           </div>
@@ -181,14 +269,244 @@ export const Footer: React.FC = () => {
         {/* Bottom bar */}
         <div className="pt-6 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <p>© {new Date().getFullYear()} Police SI Exam & Practice Platform. All rights reserved.</p>
-          <div className="flex items-center gap-6">
-            <span>Adheres to TSLPRB & AP Police Recruitment Guidelines</span>
-            <span className="text-amber-800 font-semibold flex items-center gap-1">
-              Built with dedication for Police SI Aspirants
+          <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+            <button onClick={() => setActivePolicyModal('PRIVACY')} className="hover:underline">Privacy</button>
+            <button onClick={() => setActivePolicyModal('TERMS')} className="hover:underline">Terms</button>
+            <button onClick={() => setActivePolicyModal('REFUND')} className="hover:underline">Refunds</button>
+            <button onClick={() => setActivePolicyModal('ERRATA')} className="hover:underline">Errata</button>
+            <span className="text-amber-800 font-semibold">
+              Independent Preparation Suite for Police Aspirants
             </span>
           </div>
         </div>
       </div>
+
+      {/* ========================================================================= */}
+      {/* 1. CANDIDATE SUPPORT TICKET MODAL (Item 8)                                */}
+      {/* ========================================================================= */}
+      {supportModalOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-7 shadow-2xl border border-slate-200 relative animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center">
+                  <Mail className="w-4 h-4" />
+                </div>
+                <h3 className="text-base font-bold text-slate-900">Candidate Support Helpdesk</h3>
+              </div>
+              <button
+                type="button"
+                onClick={closeSupportModal}
+                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 font-bold flex items-center justify-center text-sm transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {ticketSubmitted ? (
+              <div className="py-8 text-center space-y-3">
+                <div className="w-14 h-14 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto">
+                  <CheckCircle2 className="w-8 h-8" />
+                </div>
+                <h4 className="text-base font-bold text-slate-900">Support Ticket Created Successfully!</h4>
+                <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200 max-w-xs mx-auto text-xs font-mono">
+                  <span className="text-slate-500">Ticket Reference:</span>
+                  <p className="text-sm font-black text-amber-700">{ticketId}</p>
+                </div>
+                <p className="text-xs text-slate-600 max-w-sm mx-auto leading-relaxed">
+                  Our academic helpdesk has logged your request. We will review your query and reply directly to <strong>{supportForm.email}</strong> within 12–24 business hours.
+                </p>
+                <div className="pt-2">
+                  <button
+                    type="button"
+                    onClick={closeSupportModal}
+                    className="px-6 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider"
+                  >
+                    Close Window
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <form onSubmit={handleSupportSubmit} className="space-y-4 pt-4 text-xs">
+                <p className="text-slate-600">
+                  Please provide details about the issue you are experiencing. You can also reach us directly at <a href="mailto:support@police-si-prep.in" className="text-amber-700 underline font-bold">support@police-si-prep.in</a>.
+                </p>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Your Full Name</label>
+                    <input
+                      type="text"
+                      required
+                      value={supportForm.name}
+                      onChange={(e) => setSupportForm({ ...supportForm, name: e.target.value })}
+                      placeholder="e.g. Ramesh Reddy"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-slate-900 focus:outline-none focus:border-amber-500 focus:bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Registered Email</label>
+                    <input
+                      type="email"
+                      required
+                      value={supportForm.email}
+                      onChange={(e) => setSupportForm({ ...supportForm, email: e.target.value })}
+                      placeholder="aspirant@gmail.com"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-slate-900 focus:outline-none focus:border-amber-500 focus:bg-white"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Mobile Number (Optional)</label>
+                    <input
+                      type="tel"
+                      value={supportForm.phone}
+                      onChange={(e) => setSupportForm({ ...supportForm, phone: e.target.value })}
+                      placeholder="9848022338"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-slate-900 focus:outline-none focus:border-amber-500 focus:bg-white font-mono"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Query Category</label>
+                    <select
+                      value={supportForm.category}
+                      onChange={(e) => setSupportForm({ ...supportForm, category: e.target.value })}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-amber-500 focus:bg-white font-medium"
+                    >
+                      <option value="MOCK_TEST_ISSUE">Mock Test & Timer Discrepancy</option>
+                      <option value="PET_TRACKER">PET Milestone Calculation</option>
+                      <option value="DESCRIPTIVE_EVALUATION">Descriptive Paper Evaluation</option>
+                      <option value="PAYMENT_PRO_PASS">Payment / SI Pro Pass Subscription</option>
+                      <option value="QUESTION_ERRATA">Question or Answer Key Correction</option>
+                      <option value="OTHER">Other Technical Query</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Description of Issue</label>
+                  <textarea
+                    rows={4}
+                    required
+                    value={supportForm.description}
+                    onChange={(e) => setSupportForm({ ...supportForm, description: e.target.value })}
+                    placeholder="Describe the problem, question number, or error message you encountered..."
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-900 focus:outline-none focus:border-amber-500 focus:bg-white"
+                  />
+                </div>
+
+                <div className="flex items-center justify-end gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={closeSupportModal}
+                    className="px-4 py-2 rounded-xl font-bold text-slate-600 hover:bg-slate-100"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold uppercase tracking-wider transition-all shadow-sm"
+                  >
+                    Submit Support Ticket
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 2. POLICY MODALS (Item 15)                                                */}
+      {/* ========================================================================= */}
+      {activePolicyModal && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl border border-slate-200 max-h-[85vh] overflow-y-auto relative animate-in fade-in zoom-in-95 duration-150 text-slate-700">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+              <h3 className="text-base sm:text-lg font-bold text-slate-900">
+                {activePolicyModal === 'PRIVACY' && 'Privacy Policy & Answer Sheet Security'}
+                {activePolicyModal === 'TERMS' && 'Terms of Service & Test Integrity'}
+                {activePolicyModal === 'REFUND' && '7-Day Refund & Cancellation Policy'}
+                {activePolicyModal === 'ERRATA' && 'Content Corrections & Errata Policy'}
+              </h3>
+              <button
+                type="button"
+                onClick={() => setActivePolicyModal(null)}
+                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 font-bold flex items-center justify-center text-sm"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="py-4 text-xs space-y-4 leading-relaxed">
+              {activePolicyModal === 'PRIVACY' && (
+                <>
+                  <p>
+                    <strong>1. Candidate Identity & Data Handling:</strong> We collect only essential candidate identifiers (Name, Email, Mobile Number, Target State, Cadre Preference, and Ground Fitness records) to provide accurate mock tests and state percentiles. We never sell or lease candidate details to third parties.
+                  </p>
+                  <p>
+                    <strong>2. Uploaded Answer Sheets Security:</strong> Scanned handwritten descriptive answer papers uploaded for Paper I (English) and Paper II (Telugu/Urdu) are stored in secure, private encrypted object storage. Only verified faculty evaluators have access to read and score candidate scripts.
+                  </p>
+                  <p>
+                    <strong>3. Data Retention & Erasure:</strong> Candidates may request complete erasure of their account, test attempts, and uploaded images by contacting <a href="mailto:support@police-si-prep.in" className="text-amber-700 underline font-bold">support@police-si-prep.in</a> at any time.
+                  </p>
+                </>
+              )}
+
+              {activePolicyModal === 'TERMS' && (
+                <>
+                  <p>
+                    <strong>1. Test Integrity & Fair Use:</strong> Mock test materials, questions, and explanations provided on this platform are proprietary or curated under public domain fair use for educational purposes. Candidates are prohibited from automated scraping or re-distributing paid mock papers.
+                  </p>
+                  <p>
+                    <strong>2. Independent Platform Standing:</strong> This platform is an educational tool and does not guarantee appointment or qualification in the official TSLPRB or AP SLPRB selection processes. Selection is determined solely by the respective state police recruitment boards.
+                  </p>
+                  <p>
+                    <strong>3. Account Security:</strong> Candidates are responsible for maintaining the confidentiality of their credentials and OTPs. Simultaneous logins from distinct geographical locations may trigger security lockouts.
+                  </p>
+                </>
+              )}
+
+              {activePolicyModal === 'REFUND' && (
+                <>
+                  <p>
+                    <strong>1. 7-Day Money-Back Guarantee:</strong> We offer a 100% unconditional refund for SI Pro Pass subscriptions within 7 calendar days of purchase, provided that fewer than 2 full-length PWT CBT mocks have been completed and no descriptive scripts have undergone faculty evaluation.
+                  </p>
+                  <p>
+                    <strong>2. Refund Process:</strong> To claim a refund, email <a href="mailto:support@police-si-prep.in" className="text-amber-700 underline font-bold">support@police-si-prep.in</a> with your registered email and payment transaction ID. Approved refunds are credited back to the original payment source within 3–5 banking days.
+                  </p>
+                  <p>
+                    <strong>3. GST Invoicing:</strong> In accordance with Indian tax regulations, all subscription fees (₹999) include 18% GST. A valid tax invoice is generated upon successful payment.
+                  </p>
+                </>
+              )}
+
+              {activePolicyModal === 'ERRATA' && (
+                <>
+                  <p>
+                    <strong>1. Academic Discrepancy Reporting:</strong> While our questions are rigorously validated against official state police answer keys, candidates may report any disputed question or rationale using our candidate support form or via email.
+                  </p>
+                  <p>
+                    <strong>2. Review Committee:</strong> Our panel of retired IPS educators and subject experts reviews all reported discrepancies against official government gazettes within 48 hours. If an errata is confirmed, scores across all attempted users are automatically recalculated and credited.
+                  </p>
+                </>
+              )}
+            </div>
+
+            <div className="pt-3 border-t border-slate-100 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setActivePolicyModal(null)}
+                className="px-5 py-2 rounded-xl bg-slate-900 text-white font-bold text-xs"
+              >
+                Close Policy
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </footer>
   );
 };
