@@ -48,3 +48,32 @@ body {
     text-wrap: balance;
   }
 }
+
+/* Slide and float animations inspired by MockNest */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes floatGentle {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.animate-slide-up {
+  animation: slideInUp 0.35s ease-out forwards;
+}
+
+.animate-float {
+  animation: floatGentle 3.5s ease-in-out infinite;
+}

@@ -363,38 +363,35 @@ export default function HomePage() {
       </section>
 
       {/* ========================================================================= */}
-      {/* FEATURED MOCK TEST SERIES (Inspired by MockNest)                          */}
+      {/* FEATURED MOCK TEST SERIES (In Our Warm Professional Theme)                */}
       {/* ========================================================================= */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-slate-900 rounded-3xl p-6 sm:p-10 shadow-xl border border-slate-800 text-white relative overflow-hidden">
-          {/* Subtle Ambient Background Glow */}
-          <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
-
+        <div className="bg-gradient-to-b from-amber-50/70 via-white to-amber-50/40 rounded-3xl p-6 sm:p-10 shadow-sm border border-amber-200/90 text-slate-800 relative overflow-hidden">
+          
           {/* Section Heading & Category Filter Header */}
-          <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-slate-800">
+          <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-slate-200">
             <div>
-              <div className="inline-flex items-center gap-2 bg-amber-500/20 text-amber-300 border border-amber-500/30 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-2">
-                <Sparkles className="w-3.5 h-3.5" />
+              <div className="inline-flex items-center gap-2 bg-amber-100 text-amber-800 border border-amber-300 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-2">
+                <Sparkles className="w-3.5 h-3.5 text-amber-600" />
                 <span>State Police Exam Series</span>
               </div>
-              <h2 className="text-2xl sm:text-4xl font-black tracking-tight text-white">
+              <h2 className="text-2xl sm:text-4xl font-black tracking-tight text-slate-900">
                 Featured CBT Mock Tests & Live Test Series
               </h2>
-              <p className="text-xs sm:text-sm text-slate-400 mt-2 max-w-2xl">
+              <p className="text-xs sm:text-sm text-slate-600 mt-2 max-w-2xl">
                 Real-time timed Computer-Based Tests with official negative marking (-0.25), bilingual question papers, and instant state-level rank predictions.
               </p>
             </div>
 
-            {/* Category Filter Pills (Inspired by MockNest) */}
-            <div className="flex flex-wrap items-center gap-2 text-xs font-bold bg-slate-800/80 p-1.5 rounded-2xl border border-slate-700">
+            {/* Category Filter Pills (In Our Theme) */}
+            <div className="flex flex-wrap items-center gap-2 text-xs font-bold bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
               <button
                 type="button"
                 onClick={() => setTestCategoryFilter('ALL')}
                 className={`px-3.5 py-1.5 rounded-xl transition-all ${
                   testCategoryFilter === 'ALL'
-                    ? 'bg-amber-500 text-slate-950 font-black shadow-sm'
-                    : 'text-slate-300 hover:text-white hover:bg-slate-700'
+                    ? 'bg-amber-600 text-white font-black shadow-sm'
+                    : 'text-slate-700 hover:text-slate-900 hover:bg-slate-200/70'
                 }`}
               >
                 All Tests
@@ -404,8 +401,8 @@ export default function HomePage() {
                 onClick={() => setTestCategoryFilter('TSLPRB')}
                 className={`px-3.5 py-1.5 rounded-xl transition-all ${
                   testCategoryFilter === 'TSLPRB'
-                    ? 'bg-amber-500 text-slate-950 font-black shadow-sm'
-                    : 'text-slate-300 hover:text-white hover:bg-slate-700'
+                    ? 'bg-amber-600 text-white font-black shadow-sm'
+                    : 'text-slate-700 hover:text-slate-900 hover:bg-slate-200/70'
                 }`}
               >
                 TSLPRB SI
@@ -415,8 +412,8 @@ export default function HomePage() {
                 onClick={() => setTestCategoryFilter('AP')}
                 className={`px-3.5 py-1.5 rounded-xl transition-all ${
                   testCategoryFilter === 'AP'
-                    ? 'bg-amber-500 text-slate-950 font-black shadow-sm'
-                    : 'text-slate-300 hover:text-white hover:bg-slate-700'
+                    ? 'bg-amber-600 text-white font-black shadow-sm'
+                    : 'text-slate-700 hover:text-slate-900 hover:bg-slate-200/70'
                 }`}
               >
                 AP Police SI
@@ -426,8 +423,8 @@ export default function HomePage() {
                 onClick={() => setTestCategoryFilter('FREE')}
                 className={`px-3.5 py-1.5 rounded-xl transition-all ${
                   testCategoryFilter === 'FREE'
-                    ? 'bg-emerald-500 text-slate-950 font-black shadow-sm'
-                    : 'text-slate-300 hover:text-white hover:bg-slate-700'
+                    ? 'bg-emerald-600 text-white font-black shadow-sm'
+                    : 'text-slate-700 hover:text-slate-900 hover:bg-slate-200/70'
                 }`}
               >
                 Free Mocks
@@ -437,8 +434,8 @@ export default function HomePage() {
                 onClick={() => setTestCategoryFilter('SUBJECT')}
                 className={`px-3.5 py-1.5 rounded-xl transition-all ${
                   testCategoryFilter === 'SUBJECT'
-                    ? 'bg-purple-500 text-white font-black shadow-sm'
-                    : 'text-slate-300 hover:text-white hover:bg-slate-700'
+                    ? 'bg-purple-600 text-white font-black shadow-sm'
+                    : 'text-slate-700 hover:text-slate-900 hover:bg-slate-200/70'
                 }`}
               >
                 Speed Practice
@@ -451,7 +448,7 @@ export default function HomePage() {
             {filteredFeaturedTests.map((test) => (
               <div
                 key={test.id}
-                className="bg-slate-800/90 hover:bg-slate-800 border border-slate-700 hover:border-amber-400/60 rounded-3xl p-6 transition-all duration-200 flex flex-col justify-between space-y-5 shadow-lg group"
+                className="bg-white hover:bg-amber-50/20 border-2 border-slate-200 hover:border-amber-400 rounded-3xl p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg flex flex-col justify-between space-y-5 shadow-sm group animate-slide-up"
               >
                 <div className="space-y-4">
                   {/* Top Badges Row */}
@@ -459,46 +456,46 @@ export default function HomePage() {
                     <span className={`text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full border ${test.badgeColor}`}>
                       {test.badge}
                     </span>
-                    <span className="text-[11px] font-mono text-slate-400 bg-slate-900/80 px-2.5 py-1 rounded-lg border border-slate-700">
+                    <span className="text-[11px] font-mono font-semibold text-slate-600 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200">
                       {test.board}
                     </span>
                   </div>
 
                   {/* Title & Pattern */}
                   <div>
-                    <h3 className="text-base font-extrabold text-white group-hover:text-amber-400 transition-colors leading-snug">
+                    <h3 className="text-base font-extrabold text-slate-900 group-hover:text-amber-700 transition-colors leading-snug">
                       {test.title}
                     </h3>
-                    <p className="text-xs text-slate-400 font-medium italic mt-1">
+                    <p className="text-xs text-slate-500 font-medium italic mt-1">
                       {test.titleTelugu}
                     </p>
                   </div>
 
                   {/* Test Specs Grid (4 chips) */}
                   <div className="grid grid-cols-2 gap-2 text-[11px] font-mono">
-                    <div className="bg-slate-900/60 border border-slate-700/80 rounded-xl p-2 flex items-center gap-1.5 text-slate-300">
-                      <Clock className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                    <div className="bg-slate-50 border border-slate-200 rounded-xl p-2 flex items-center gap-1.5 text-slate-700">
+                      <Clock className="w-3.5 h-3.5 text-amber-600 shrink-0" />
                       <span>{test.duration}</span>
                     </div>
-                    <div className="bg-slate-900/60 border border-slate-700/80 rounded-xl p-2 flex items-center gap-1.5 text-slate-300">
-                      <FileText className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                    <div className="bg-slate-50 border border-slate-200 rounded-xl p-2 flex items-center gap-1.5 text-slate-700">
+                      <FileText className="w-3.5 h-3.5 text-blue-600 shrink-0" />
                       <span>{test.questions} Questions</span>
                     </div>
-                    <div className="bg-slate-900/60 border border-slate-700/80 rounded-xl p-2 flex items-center gap-1.5 text-slate-300">
-                      <Target className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                    <div className="bg-slate-50 border border-slate-200 rounded-xl p-2 flex items-center gap-1.5 text-slate-700">
+                      <Target className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                       <span>{test.marks} Marks ({test.negative})</span>
                     </div>
-                    <div className="bg-slate-900/60 border border-slate-700/80 rounded-xl p-2 flex items-center gap-1.5 text-slate-300">
-                      <BookOpen className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+                    <div className="bg-slate-50 border border-slate-200 rounded-xl p-2 flex items-center gap-1.5 text-slate-700">
+                      <BookOpen className="w-3.5 h-3.5 text-purple-600 shrink-0" />
                       <span>{test.medium}</span>
                     </div>
                   </div>
 
                   {/* Features Checklist */}
-                  <ul className="space-y-2 text-xs text-slate-300 pt-2 border-t border-slate-700/60">
+                  <ul className="space-y-2 text-xs text-slate-600 pt-2 border-t border-slate-100">
                     {test.highlights.map((h, i) => (
                       <li key={i} className="flex items-start gap-2">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
                         <span className="leading-tight">{h}</span>
                       </li>
                     ))}
@@ -509,11 +506,7 @@ export default function HomePage() {
                 <div className="pt-2">
                   <Link
                     href={getProtectedHref(test.href)}
-                    className={`w-full py-3 px-4 rounded-xl font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-md min-h-[44px] cursor-pointer ${
-                      test.isFree
-                        ? 'bg-amber-500 hover:bg-amber-400 text-slate-950 hover:shadow-amber-500/20'
-                        : 'bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black'
-                    }`}
+                    className="w-full py-3 px-4 rounded-xl font-extrabold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-md min-h-[44px] cursor-pointer bg-amber-600 hover:bg-amber-700 text-white"
                   >
                     <span>{test.ctaText}</span>
                     <ArrowRight className="w-4 h-4" />
@@ -524,14 +517,14 @@ export default function HomePage() {
           </div>
 
           {/* Quick Footer inside Test Series */}
-          <div className="relative z-10 mt-10 pt-6 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+          <div className="relative z-10 mt-10 pt-6 border-t border-amber-200/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-600">
             <div className="flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-emerald-400" />
+              <ShieldCheck className="w-4 h-4 text-emerald-600" />
               <span>Full CBT compliance with official TSLPRB & AP SLPRB negative marking guidelines</span>
             </div>
             <Link
               href={getProtectedHref('/previous-papers')}
-              className="text-amber-400 hover:text-amber-300 font-bold inline-flex items-center gap-1 hover:underline"
+              className="text-amber-700 hover:text-amber-900 font-bold inline-flex items-center gap-1 hover:underline"
             >
               <span>Explore All Verified PYQ Papers</span>
               <ChevronRight className="w-4 h-4" />

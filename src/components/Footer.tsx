@@ -57,8 +57,19 @@ export const Footer: React.FC = () => {
     });
   };
 
-  // Do not render footer during active exam / CBT test simulator session
-  if (isExamPage) {
+  // Remove footer on test simulators, previous papers, student dashboard, admin, and internal tools
+  // to deliver an ultra-clean, distraction-free, professional app experience
+  const isHiddenPage = 
+    pathname?.startsWith('/exam') || 
+    pathname === '/previous-papers' || 
+    pathname === '/dashboard' || 
+    pathname?.startsWith('/admin') ||
+    pathname === '/descriptive' ||
+    pathname === '/results' ||
+    pathname === '/performance';
+
+  // Do not render footer on internal/exam/tool routes
+  if (isHiddenPage) {
     return null;
   }
 

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../context/AuthContext';
 import { MOCK_EXAMS, MOCK_PREVIOUS_PAPERS, MOCK_USER_ATTEMPTS } from '../../lib/mockData';
@@ -64,62 +65,50 @@ export default function StudentDashboard() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 font-sans">
       
-      {/* Candidate Profile Header Card */}
-      <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm relative overflow-hidden">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
-          
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-amber-600 flex items-center justify-center text-white font-black text-2xl shadow-sm ring-4 ring-amber-100">
-              {user?.name ? user.name.slice(0, 2).toUpperCase() : 'SI'}
-            </div>
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <h1 className="text-xl sm:text-2xl font-black text-slate-900">{user?.name || 'Aspirant Vasu Reddy'}</h1>
-                {user?.subscriptionTier === 'PREMIUM' ? (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300 text-[11px] font-bold">
-                    <Crown className="w-3 h-3 text-amber-600" /> PRO PASS ACTIVE
-                  </span>
-                ) : (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200 text-[11px] font-bold">
-                    FREE ASPIRANT
-                  </span>
-                )}
-              </div>
-              <p className="text-xs text-amber-900 font-medium">
-                Target Exam: <strong className="text-slate-900">{user?.targetExam?.replace(/_/g, ' ') || 'TSLPRB SI Civil & AR'}</strong> • State: <strong className="text-slate-900">{user?.targetState || 'TELANGANA'}</strong>
-              </p>
-              <p className="text-xs text-slate-500 font-mono">
-                Roll Number: <span className="text-slate-800 font-semibold">{user?.rollNumber || 'TS-SI-2026-8841'}</span> • Second Language: <span className="text-amber-800 font-bold">{user?.primaryLanguage || 'TELUGU'}</span>
-              </p>
-            </div>
-          </div>
+      {/* Minimalist Dashboard Action Header (Profile box removed per user feedback in Image 2) */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-slate-200">
+        <div>
+          <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
+            <span>Aspirant Learning Dashboard</span>
+            {user?.subscriptionTier === 'PREMIUM' ? (
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300 text-[10px] font-bold">
+                <Crown className="w-3 h-3 text-amber-600" /> PRO PASS ACTIVE
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200 text-[10px] font-bold">
+                FREE ASPIRANT
+              </span>
+            )}
+          </h1>
+          <p className="text-xs text-slate-500 mt-0.5">
+            Candidate: <strong className="text-slate-800">{user?.name}</strong> • Target: <strong>{user?.targetExam?.replace(/_/g, ' ') || 'TSLPRB SI Civil & AR'}</strong> • Roll No: <span className="font-mono text-slate-700">{user?.rollNumber || 'TS-SI-2026-8841'}</span>
+          </p>
+        </div>
 
-          <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2.5 sm:gap-3 w-full sm:w-auto">
-            <Link
-              href="/results"
-              className="px-3.5 sm:px-4 py-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-300 font-bold text-xs uppercase tracking-wider transition-all shadow-sm flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer"
-            >
-              <Award className="w-4 h-4 text-emerald-700" />
-              <span>Results Tool</span>
-            </Link>
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          <Link
+            href="/results"
+            className="px-3.5 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-300 font-bold text-xs uppercase tracking-wider transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
+          >
+            <Award className="w-3.5 h-3.5 text-emerald-700" />
+            <span>Results Tool</span>
+          </Link>
 
-            <Link
-              href="/performance"
-              className="px-3.5 sm:px-4 py-2.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-900 border border-purple-300 font-bold text-xs uppercase tracking-wider transition-all shadow-sm flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer"
-            >
-              <BarChart3 className="w-4 h-4 text-purple-700" />
-              <span>Performance</span>
-            </Link>
+          <Link
+            href="/performance"
+            className="px-3.5 py-2 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-900 border border-purple-300 font-bold text-xs uppercase tracking-wider transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
+          >
+            <BarChart3 className="w-3.5 h-3.5 text-purple-700" />
+            <span>Performance</span>
+          </Link>
 
-            <Link
-              href="/upgrade"
-              className="col-span-2 sm:col-span-1 px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-sm flex items-center justify-center gap-1.5 cursor-pointer"
-            >
-              <Crown className="w-4 h-4" />
-              <span>{user?.subscriptionTier === 'PREMIUM' ? 'Pro Active' : 'Upgrade Plan'}</span>
-            </Link>
-          </div>
-
+          <Link
+            href="/upgrade"
+            className="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
+          >
+            <Crown className="w-3.5 h-3.5" />
+            <span>{user?.subscriptionTier === 'PREMIUM' ? 'Pro Pass Active' : 'Upgrade Plan'}</span>
+          </Link>
         </div>
       </div>
 
@@ -497,8 +486,38 @@ export default function StudentDashboard() {
 
         </div>
 
-        {/* Right 1 Col: Diagnostics & Shortcuts */}
-        <div className="space-y-6">
+        {/* Right 1 Col: Diagnostics & Shortcuts (Sticky scrolling side rail with floating emblem) */}
+        <div className="space-y-6 lg:sticky lg:top-24 lg:self-start transition-all duration-300">
+          
+          {/* Sticky Aspirant Benchmark Card with Floating Emblem (Follows user on scroll) */}
+          <div className="bg-gradient-to-br from-amber-500 via-amber-600 to-amber-700 text-white rounded-3xl p-5 shadow-md space-y-3 relative overflow-hidden">
+            <div className="flex items-center gap-3 relative z-10">
+              <div className="w-12 h-12 rounded-2xl bg-white/20 p-1.5 backdrop-blur-sm border border-white/30 flex items-center justify-center shrink-0 animate-float">
+                <Image
+                  src="/logo.png"
+                  alt="Police SI Emblem"
+                  width={36}
+                  height={36}
+                  className="object-contain"
+                />
+              </div>
+              <div>
+                <span className="text-[10px] font-black tracking-widest uppercase bg-white/20 px-2 py-0.5 rounded-full">
+                  SI BENCHMARK STATUS
+                </span>
+                <h4 className="text-sm font-extrabold text-white mt-0.5">
+                  Top 1.8% State Percentile
+                </h4>
+              </div>
+            </div>
+            <p className="text-xs text-amber-100 leading-relaxed relative z-10">
+              Current Mock Score: <strong className="text-white font-mono">146.5 / 200</strong>. Your preparation pace matches candidates qualifying for TSLPRB & AP SI Final Written Exams.
+            </p>
+            <div className="pt-2 flex items-center justify-between text-[11px] font-bold text-amber-100 border-t border-white/20 relative z-10">
+              <span>Next Sunday Grand Mock:</span>
+              <span className="bg-white text-amber-900 px-2 py-0.5 rounded font-mono font-black">10:00 AM IST</span>
+            </div>
+          </div>
           
           {/* Subject-Wise Strong & Weak Areas */}
           <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm space-y-4">
