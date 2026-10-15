@@ -77,55 +77,6 @@ export const Footer: React.FC = () => {
     <footer className="bg-white border-t border-slate-200 text-slate-600 text-sm relative z-20 font-sans">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         
-        {/* Candidate Support Center Banner (Item 8) */}
-        <div className="bg-amber-50/70 border border-amber-200/80 rounded-3xl p-6 sm:p-8 mb-10 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-1.5 max-w-xl">
-            <span className="text-[11px] font-bold text-amber-800 uppercase tracking-wider bg-amber-100 px-2.5 py-0.5 rounded-full border border-amber-300">
-              Candidate Support Helpdesk
-            </span>
-            <h3 className="text-lg sm:text-xl font-bold text-slate-900 mt-1">
-              Have Questions Regarding Mock Tests, Answers, or PET Tracking?
-            </h3>
-            <p className="text-xs text-slate-600 leading-relaxed">
-              Our academic and technical support team is available to assist aspirants with exam queries, timer resets, and score discrepancies.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs font-medium">
-            <div className="flex items-center gap-3 bg-white p-3.5 rounded-2xl border border-amber-200 shadow-sm">
-              <div className="w-10 h-10 rounded-xl bg-amber-600 text-white flex items-center justify-center shrink-0">
-                <Mail className="w-5 h-5" />
-              </div>
-              <div>
-                <span className="text-[11px] text-slate-500 font-semibold">Verified Support Email</span>
-                <p className="text-xs sm:text-sm font-bold text-slate-900 font-mono">
-                  <a href="mailto:support@police-si-prep.in" className="hover:text-amber-700 underline">
-                    support@police-si-prep.in
-                  </a>
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 bg-white p-3.5 rounded-2xl border border-amber-200 shadow-sm">
-              <div className="w-10 h-10 rounded-xl bg-slate-900 text-amber-400 flex items-center justify-center shrink-0">
-                <Clock className="w-5 h-5" />
-              </div>
-              <div>
-                <span className="text-[11px] text-slate-500 font-semibold">Operating Hours</span>
-                <p className="text-xs font-bold text-slate-900">Mon–Sat: 9:00 AM – 6:00 PM IST</p>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => setSupportModalOpen(true)}
-              className="px-5 py-3 rounded-2xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider shadow-sm transition-all flex items-center gap-2 cursor-pointer"
-            >
-              <Send className="w-4 h-4" />
-              <span>Raise Support Ticket</span>
-            </button>
-          </div>
-        </div>
 
         {/* Independent Platform Disclaimer Banner (Item 1) */}
         <div className="p-4 rounded-2xl bg-slate-100 border border-slate-300 text-slate-700 text-xs mb-10 flex items-start gap-3">
