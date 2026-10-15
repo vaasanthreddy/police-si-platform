@@ -52,17 +52,17 @@ export const Navbar: React.FC = () => {
                 priority
               />
             </div>
-            <div>
+            <div className="flex flex-col">
               <div className="flex items-center gap-1.5 sm:gap-2">
-                <span className="font-extrabold text-base sm:text-xl tracking-tight text-slate-900 group-hover:text-amber-700 transition-colors">
-                  POLICE <span className="text-amber-600">SI</span>
+                <span className="font-extrabold text-xs sm:text-base lg:text-lg tracking-tight text-slate-900 group-hover:text-amber-700 transition-colors uppercase leading-tight">
+                  POLICE SI <span className="text-amber-600">EXAM PREPARATION PLATFORM</span>
                 </span>
-                <span className="bg-amber-100 text-amber-800 border border-amber-300 text-[9px] sm:text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider">
+                <span className="bg-amber-100 text-amber-800 border border-amber-300 text-[9px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider hidden sm:inline-block shrink-0">
                   TSLPRB & AP
                 </span>
               </div>
-              <p className="text-[10px] sm:text-[11px] text-slate-500 tracking-wide font-medium truncate max-w-[130px] sm:max-w-none">
-                Exam Preparation & PET Suite
+              <p className="text-[10px] sm:text-[11px] text-slate-500 tracking-wide font-medium truncate max-w-[200px] sm:max-w-none">
+                Exam Preparation & Physical Efficiency Testing Portal
               </p>
             </div>
           </Link>

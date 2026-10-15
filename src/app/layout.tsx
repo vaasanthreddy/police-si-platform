@@ -19,7 +19,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: 'Police SI Exam & Practice Platform | TSLPRB & AP Police Preparation',
+  title: 'Police SI Exam Preparation Platform | TSLPRB & AP Police Preparation',
   description: 'Official recruitment examination and physical efficiency testing platform for Police Sub-Inspector (Civil, AR, TSSP) and Constable aspirants.',
   icons: {
     icon: '/logo.png',

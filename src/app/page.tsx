@@ -52,6 +52,141 @@ export default function HomePage() {
     setOpenFaq(openFaq === idx ? null : idx);
   };
 
+  // Mock Test Series Filter State (Inspired by MockNest)
+  const [testCategoryFilter, setTestCategoryFilter] = useState<'ALL' | 'TSLPRB' | 'AP' | 'FREE' | 'SUBJECT'>('ALL');
+
+  const FEATURED_TESTS = [
+    {
+      id: 'tslprb-si-pwt-mock-01',
+      title: 'TSLPRB SI Preliminary Written Test (PWT) - Full Grand Mock 1',
+      titleTelugu: 'తెలంగాణ ఎస్సై ప్రిలిమినరీ రాత పరీక్ష (PWT) - గ్రాండ్ మాక్ టెస్ట్ 1',
+      category: 'TSLPRB' as const,
+      isFree: true,
+      badge: 'FREE MOCK TEST',
+      badgeColor: 'bg-emerald-100 text-emerald-800 border-emerald-300',
+      board: 'Telangana Police (TSLPRB)',
+      pattern: 'Prelims PWT Full Length',
+      questions: 200,
+      marks: 200,
+      duration: '180 Mins (3 Hrs)',
+      negative: '-0.25 Mark',
+      medium: 'Bilingual (EN + TE)',
+      highlights: [
+        'Full 200-question authentic PWT blueprint',
+        'Real CBT simulator with palette & countdown timer',
+        'Instant State-wide Rank & Accuracy Percentile',
+        'Complete bilingual step-by-step solutions',
+      ],
+      href: '/exam/tslprb-si-pwt-mock-01',
+      ctaText: 'Attempt Free Test Now',
+    },
+    {
+      id: 'ap-si-pwt-mock-01',
+      title: 'AP Police SI Preliminary Written Test - Grand Mock Test 1',
+      titleTelugu: 'ఆంధ్రప్రదేశ్ పోలీస్ ఎస్సై ప్రిలిమినరీ గ్రాండ్ మాక్ టెస్ట్ 1',
+      category: 'AP' as const,
+      isFree: true,
+      badge: 'FREE MOCK TEST',
+      badgeColor: 'bg-emerald-100 text-emerald-800 border-emerald-300',
+      board: 'Andhra Pradesh Police (AP SLPRB)',
+      pattern: 'Prelims PWT Full Length',
+      questions: 200,
+      marks: 200,
+      duration: '180 Mins (3 Hrs)',
+      negative: 'As Per AP SLPRB Rules',
+      medium: 'Bilingual (EN + TE)',
+      highlights: [
+        'AP SLPRB standard Paper I & II combined simulation',
+        'Official interface matching AP police recruitment standards',
+        'Immediate detailed answer key and explanations',
+        'Comparative topic-wise speed analysis',
+      ],
+      href: '/exam/ap-si-pwt-mock-01',
+      ctaText: 'Attempt Free Test Now',
+    },
+    {
+      id: 'pyq-tslprb-si-2022',
+      title: 'TSLPRB SI Prelims 2022 Official Solved Paper (Authentic PYQ)',
+      titleTelugu: 'తెలంగాణ ఎస్సై ప్రిలిమ్స్ 2022 అధికారిక సాల్వ్డ్ పేపర్',
+      category: 'TSLPRB' as const,
+      isFree: true,
+      badge: 'OFFICIAL PYQ',
+      badgeColor: 'bg-amber-100 text-amber-800 border-amber-300',
+      board: 'TSLPRB Rc No. 42 Archive',
+      pattern: 'Previous Year Exam Paper',
+      questions: 200,
+      marks: 200,
+      duration: '180 Mins (3 Hrs)',
+      negative: '-0.25 Mark',
+      medium: 'Bilingual (EN + TE)',
+      highlights: [
+        'Original questions from 07-Aug-2022 official exam',
+        'Official final answer key cross-verified',
+        'Benchmark your current score against historical cutoffs',
+        'Detailed shortcut methods for Arithmetic questions',
+      ],
+      href: '/exam/pyq-tslprb-si-2022',
+      ctaText: 'Attempt Solved Paper',
+    },
+    {
+      id: 'practice-arithmetic-01',
+      title: 'Topic Speed Booster: Arithmetic, Time & Distance (Police Chasing)',
+      titleTelugu: 'టాపిక్ స్పీడ్ బూస్టర్: అర్థమెటిక్, సమయం & దూరం (పోలీస్ చేజింగ్)',
+      category: 'SUBJECT' as const,
+      isFree: true,
+      badge: 'SPEED BOOSTER',
+      badgeColor: 'bg-purple-100 text-purple-800 border-purple-300',
+      board: 'TSLPRB & AP SLPRB',
+      pattern: 'Paper III Sectional Practice',
+      questions: 25,
+      marks: 25,
+      duration: '30 Mins',
+      negative: '-0.25 Mark',
+      medium: 'Bilingual (EN + TE)',
+      highlights: [
+        'Special focus on SI core chasing and speed calculations',
+        'Instant step-by-step formula explanations',
+        'Accuracy and speed benchmarking per question',
+        'Perfect for daily morning practice sprints',
+      ],
+      href: '/exam/practice-arithmetic-01',
+      ctaText: 'Start Speed Practice',
+    },
+    {
+      id: 'tslprb-si-pwt-mock-02',
+      title: 'TSLPRB SI Preliminary Written Test (PWT) - Full Grand Mock 2',
+      titleTelugu: 'తెలంగాణ ఎస్సై ప్రిలిమినరీ రాత పరీక్ష (PWT) - గ్రాండ్ మాక్ టెస్ట్ 2',
+      category: 'TSLPRB' as const,
+      isFree: false,
+      badge: 'SI PRO PASS',
+      badgeColor: 'bg-amber-600 text-white border-amber-700',
+      board: 'TSLPRB Advanced Series',
+      pattern: 'Prelims PWT Advanced Mock',
+      questions: 200,
+      marks: 200,
+      duration: '180 Mins (3 Hrs)',
+      negative: '-0.25 Mark',
+      medium: 'Bilingual (EN + TE)',
+      highlights: [
+        'High-difficulty simulated questions aligned with recent trends',
+        'Advanced Indian Polity & Telangana Movement sections',
+        'All-India and State-level ranking leaderboard',
+        'Unlimited re-attempts with error book analysis',
+      ],
+      href: '/exam/tslprb-si-pwt-mock-02',
+      ctaText: 'Unlock with Pro Pass',
+    },
+  ];
+
+  const filteredFeaturedTests = FEATURED_TESTS.filter((t) => {
+    if (testCategoryFilter === 'ALL') return true;
+    if (testCategoryFilter === 'TSLPRB') return t.category === 'TSLPRB';
+    if (testCategoryFilter === 'AP') return t.category === 'AP';
+    if (testCategoryFilter === 'FREE') return t.isFree;
+    if (testCategoryFilter === 'SUBJECT') return t.category === 'SUBJECT';
+    return true;
+  });
+
   return (
     <div className="space-y-20 py-4 pb-20 font-sans overflow-x-hidden">
       
@@ -60,6 +195,25 @@ export default function HomePage() {
       {/* ========================================================================= */}
       <section className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-4 text-center">
         
+        {/* Urgent Live Exam Alert Ribbon (Inspired by MockNest) */}
+        <div className="max-w-4xl mx-auto mb-3 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-amber-600 via-amber-700 to-amber-800 text-white text-xs font-bold flex items-center justify-between shadow-md">
+          <div className="flex items-center gap-2">
+            <span className="bg-white/20 text-white text-[10px] font-black uppercase px-2 py-0.5 rounded-full tracking-wider animate-pulse">
+              LIVE MOCK SERIES
+            </span>
+            <span className="text-left font-medium">
+              TSLPRB & AP Police SI Prelims Full-Length Free CBT Tests Are Active • Test Your Readiness Today!
+            </span>
+          </div>
+          <Link
+            href={getProtectedHref('/exam/tslprb-si-pwt-mock-01')}
+            className="hidden sm:inline-flex items-center gap-1 bg-white text-amber-900 px-3 py-1 rounded-xl text-[11px] font-black uppercase hover:bg-amber-50 transition-colors shrink-0"
+          >
+            <span>Attempt Now</span>
+            <ChevronRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+
         {/* Prominent Independent Platform Disclaimer Banner (Item 1 & P0) */}
         <div className="max-w-4xl mx-auto mb-6 p-3 sm:p-3.5 rounded-2xl bg-amber-50/90 border border-amber-300 text-amber-950 text-xs flex items-center justify-center gap-2 shadow-sm">
           <AlertCircle className="w-4 h-4 text-amber-700 shrink-0" />
@@ -111,6 +265,42 @@ export default function HomePage() {
               <UserCheck className="w-4 h-4 text-amber-600" />
               <span>{user ? 'My Dashboard' : 'Sign In'}</span>
             </Link>
+          </div>
+
+          {/* Platform Performance & Credibility Metrics (Inspired by MockNest) */}
+          <div className="pt-8 w-full max-w-4xl grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 text-left">
+            <div className="bg-white/80 backdrop-blur-sm border border-slate-200/80 rounded-2xl p-4 shadow-sm hover:border-amber-300 transition-all">
+              <div className="flex items-center gap-2 text-amber-700 font-black text-xl sm:text-2xl font-mono">
+                <Sparkles className="w-5 h-5 text-amber-500" />
+                <span>50,000+</span>
+              </div>
+              <p className="text-xs font-bold text-slate-800 mt-1">Questions Solved</p>
+              <p className="text-[10px] text-slate-500">By TS & AP SI aspirants</p>
+            </div>
+            <div className="bg-white/80 backdrop-blur-sm border border-slate-200/80 rounded-2xl p-4 shadow-sm hover:border-emerald-300 transition-all">
+              <div className="flex items-center gap-2 text-emerald-700 font-black text-xl sm:text-2xl font-mono">
+                <ShieldCheck className="w-5 h-5 text-emerald-500" />
+                <span>100% CBT</span>
+              </div>
+              <p className="text-xs font-bold text-slate-800 mt-1">Real Exam Simulator</p>
+              <p className="text-[10px] text-slate-500">Exact 180 min timer & -0.25 marks</p>
+            </div>
+            <div className="bg-white/80 backdrop-blur-sm border border-slate-200/80 rounded-2xl p-4 shadow-sm hover:border-blue-300 transition-all">
+              <div className="flex items-center gap-2 text-blue-700 font-black text-xl sm:text-2xl font-mono">
+                <BookOpen className="w-5 h-5 text-blue-500" />
+                <span>తెలుగు / EN</span>
+              </div>
+              <p className="text-xs font-bold text-slate-800 mt-1">Bilingual Solutions</p>
+              <p className="text-[10px] text-slate-500">Step-by-step formula explanations</p>
+            </div>
+            <div className="bg-white/80 backdrop-blur-sm border border-slate-200/80 rounded-2xl p-4 shadow-sm hover:border-purple-300 transition-all">
+              <div className="flex items-center gap-2 text-purple-700 font-black text-xl sm:text-2xl font-mono">
+                <Trophy className="w-5 h-5 text-purple-500" />
+                <span>AIR / State</span>
+              </div>
+              <p className="text-xs font-bold text-slate-800 mt-1">Instant Rank Analysis</p>
+              <p className="text-[10px] text-slate-500">State-wide benchmark & percentile</p>
+            </div>
           </div>
         </div>
 
@@ -168,6 +358,184 @@ export default function HomePage() {
             <p className="text-xs text-slate-600 leading-relaxed">
               Upload handwritten answer scripts for Paper I (English) and Paper II (Telugu) evaluated by retired educators within 48–72 hours.
             </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* FEATURED MOCK TEST SERIES (Inspired by MockNest)                          */}
+      {/* ========================================================================= */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-slate-900 rounded-3xl p-6 sm:p-10 shadow-xl border border-slate-800 text-white relative overflow-hidden">
+          {/* Subtle Ambient Background Glow */}
+          <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
+
+          {/* Section Heading & Category Filter Header */}
+          <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-slate-800">
+            <div>
+              <div className="inline-flex items-center gap-2 bg-amber-500/20 text-amber-300 border border-amber-500/30 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-2">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>State Police Exam Series</span>
+              </div>
+              <h2 className="text-2xl sm:text-4xl font-black tracking-tight text-white">
+                Featured CBT Mock Tests & Live Test Series
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-400 mt-2 max-w-2xl">
+                Real-time timed Computer-Based Tests with official negative marking (-0.25), bilingual question papers, and instant state-level rank predictions.
+              </p>
+            </div>
+
+            {/* Category Filter Pills (Inspired by MockNest) */}
+            <div className="flex flex-wrap items-center gap-2 text-xs font-bold bg-slate-800/80 p-1.5 rounded-2xl border border-slate-700">
+              <button
+                type="button"
+                onClick={() => setTestCategoryFilter('ALL')}
+                className={`px-3.5 py-1.5 rounded-xl transition-all ${
+                  testCategoryFilter === 'ALL'
+                    ? 'bg-amber-500 text-slate-950 font-black shadow-sm'
+                    : 'text-slate-300 hover:text-white hover:bg-slate-700'
+                }`}
+              >
+                All Tests
+              </button>
+              <button
+                type="button"
+                onClick={() => setTestCategoryFilter('TSLPRB')}
+                className={`px-3.5 py-1.5 rounded-xl transition-all ${
+                  testCategoryFilter === 'TSLPRB'
+                    ? 'bg-amber-500 text-slate-950 font-black shadow-sm'
+                    : 'text-slate-300 hover:text-white hover:bg-slate-700'
+                }`}
+              >
+                TSLPRB SI
+              </button>
+              <button
+                type="button"
+                onClick={() => setTestCategoryFilter('AP')}
+                className={`px-3.5 py-1.5 rounded-xl transition-all ${
+                  testCategoryFilter === 'AP'
+                    ? 'bg-amber-500 text-slate-950 font-black shadow-sm'
+                    : 'text-slate-300 hover:text-white hover:bg-slate-700'
+                }`}
+              >
+                AP Police SI
+              </button>
+              <button
+                type="button"
+                onClick={() => setTestCategoryFilter('FREE')}
+                className={`px-3.5 py-1.5 rounded-xl transition-all ${
+                  testCategoryFilter === 'FREE'
+                    ? 'bg-emerald-500 text-slate-950 font-black shadow-sm'
+                    : 'text-slate-300 hover:text-white hover:bg-slate-700'
+                }`}
+              >
+                Free Mocks
+              </button>
+              <button
+                type="button"
+                onClick={() => setTestCategoryFilter('SUBJECT')}
+                className={`px-3.5 py-1.5 rounded-xl transition-all ${
+                  testCategoryFilter === 'SUBJECT'
+                    ? 'bg-purple-500 text-white font-black shadow-sm'
+                    : 'text-slate-300 hover:text-white hover:bg-slate-700'
+                }`}
+              >
+                Speed Practice
+              </button>
+            </div>
+          </div>
+
+          {/* Test Cards Grid */}
+          <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-8">
+            {filteredFeaturedTests.map((test) => (
+              <div
+                key={test.id}
+                className="bg-slate-800/90 hover:bg-slate-800 border border-slate-700 hover:border-amber-400/60 rounded-3xl p-6 transition-all duration-200 flex flex-col justify-between space-y-5 shadow-lg group"
+              >
+                <div className="space-y-4">
+                  {/* Top Badges Row */}
+                  <div className="flex items-center justify-between gap-2">
+                    <span className={`text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full border ${test.badgeColor}`}>
+                      {test.badge}
+                    </span>
+                    <span className="text-[11px] font-mono text-slate-400 bg-slate-900/80 px-2.5 py-1 rounded-lg border border-slate-700">
+                      {test.board}
+                    </span>
+                  </div>
+
+                  {/* Title & Pattern */}
+                  <div>
+                    <h3 className="text-base font-extrabold text-white group-hover:text-amber-400 transition-colors leading-snug">
+                      {test.title}
+                    </h3>
+                    <p className="text-xs text-slate-400 font-medium italic mt-1">
+                      {test.titleTelugu}
+                    </p>
+                  </div>
+
+                  {/* Test Specs Grid (4 chips) */}
+                  <div className="grid grid-cols-2 gap-2 text-[11px] font-mono">
+                    <div className="bg-slate-900/60 border border-slate-700/80 rounded-xl p-2 flex items-center gap-1.5 text-slate-300">
+                      <Clock className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                      <span>{test.duration}</span>
+                    </div>
+                    <div className="bg-slate-900/60 border border-slate-700/80 rounded-xl p-2 flex items-center gap-1.5 text-slate-300">
+                      <FileText className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                      <span>{test.questions} Questions</span>
+                    </div>
+                    <div className="bg-slate-900/60 border border-slate-700/80 rounded-xl p-2 flex items-center gap-1.5 text-slate-300">
+                      <Target className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                      <span>{test.marks} Marks ({test.negative})</span>
+                    </div>
+                    <div className="bg-slate-900/60 border border-slate-700/80 rounded-xl p-2 flex items-center gap-1.5 text-slate-300">
+                      <BookOpen className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+                      <span>{test.medium}</span>
+                    </div>
+                  </div>
+
+                  {/* Features Checklist */}
+                  <ul className="space-y-2 text-xs text-slate-300 pt-2 border-t border-slate-700/60">
+                    {test.highlights.map((h, i) => (
+                      <li key={i} className="flex items-start gap-2">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                        <span className="leading-tight">{h}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Bottom Action CTA */}
+                <div className="pt-2">
+                  <Link
+                    href={getProtectedHref(test.href)}
+                    className={`w-full py-3 px-4 rounded-xl font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-md min-h-[44px] cursor-pointer ${
+                      test.isFree
+                        ? 'bg-amber-500 hover:bg-amber-400 text-slate-950 hover:shadow-amber-500/20'
+                        : 'bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black'
+                    }`}
+                  >
+                    <span>{test.ctaText}</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Quick Footer inside Test Series */}
+          <div className="relative z-10 mt-10 pt-6 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+            <div className="flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-emerald-400" />
+              <span>Full CBT compliance with official TSLPRB & AP SLPRB negative marking guidelines</span>
+            </div>
+            <Link
+              href={getProtectedHref('/previous-papers')}
+              className="text-amber-400 hover:text-amber-300 font-bold inline-flex items-center gap-1 hover:underline"
+            >
+              <span>Explore All Verified PYQ Papers</span>
+              <ChevronRight className="w-4 h-4" />
+            </Link>
           </div>
         </div>
       </section>

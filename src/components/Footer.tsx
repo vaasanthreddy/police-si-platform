@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import { 
   ShieldCheck, 
   Lock, 
@@ -17,6 +18,11 @@ import {
 } from 'lucide-react';
 
 export const Footer: React.FC = () => {
+  const pathname = usePathname();
+
+  // Hide footer on test/exam CBT simulator pages where distraction-free mode is critical
+  const isExamPage = pathname?.startsWith('/exam');
+
   // Support ticket modal state
   const [supportModalOpen, setSupportModalOpen] = useState(false);
   const [supportForm, setSupportForm] = useState({
@@ -50,6 +56,11 @@ export const Footer: React.FC = () => {
       description: '',
     });
   };
+
+  // Do not render footer during active exam / CBT test simulator session
+  if (isExamPage) {
+    return null;
+  }
 
   return (
     <footer className="bg-white border-t border-slate-200 text-slate-600 text-sm relative z-20 font-sans">
@@ -129,7 +140,9 @@ export const Footer: React.FC = () => {
                 />
               </div>
               <div>
-                <span className="font-extrabold text-lg text-slate-900">POLICE SI PLATFORM</span>
+                <span className="font-extrabold text-lg text-slate-900">
+                  POLICE SI <span className="text-amber-600">EXAM PREPARATION PLATFORM</span>
+                </span>
                 <p className="text-xs text-amber-700 font-semibold">State Sub-Inspector Exam Preparation & PET Tracker</p>
               </div>
             </div>
@@ -268,7 +281,7 @@ export const Footer: React.FC = () => {
 
         {/* Bottom bar */}
         <div className="pt-6 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-          <p>© {new Date().getFullYear()} Police SI Exam & Practice Platform. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Police SI Exam Preparation Platform. All rights reserved.</p>
           <div className="flex flex-wrap items-center gap-4 sm:gap-6">
             <button onClick={() => setActivePolicyModal('PRIVACY')} className="hover:underline">Privacy</button>
             <button onClick={() => setActivePolicyModal('TERMS')} className="hover:underline">Terms</button>
