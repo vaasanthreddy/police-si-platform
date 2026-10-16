@@ -30,7 +30,8 @@ import {
   CheckCircle2,
   Send,
   ExternalLink,
-  Sparkles
+  Sparkles,
+  UserCheck
 } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
@@ -155,9 +156,6 @@ export const Navbar: React.FC = () => {
                     TSLPRB & AP
                   </span>
                 </div>
-                <p className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 tracking-wide font-medium truncate max-w-[200px] sm:max-w-none">
-                  State Sub-Inspector Exam Preparation & Physical Efficiency Testing Portal
-                </p>
               </div>
             </Link>
 
@@ -548,7 +546,7 @@ export const Navbar: React.FC = () => {
                   )}
                 </div>
               ) : (
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-2">
                   {!isDashboardPage && (
                     <button
                       type="button"
@@ -561,10 +559,18 @@ export const Navbar: React.FC = () => {
                   )}
 
                   <Link
+                    href="/auth?mode=login"
+                    className="px-3.5 sm:px-4 py-2 rounded-xl bg-white dark:bg-slate-800 hover:bg-amber-50 dark:hover:bg-slate-700 text-amber-800 dark:text-amber-400 font-bold text-xs uppercase tracking-wider border border-amber-300 dark:border-amber-700/80 transition-all shadow-sm flex items-center gap-1.5 focus:ring-2 focus:ring-amber-500 focus:outline-none min-h-[40px]"
+                  >
+                    <LogIn className="w-4 h-4" />
+                    <span>Log In</span>
+                  </Link>
+
+                  <Link
                     href="/auth"
                     className="px-4 sm:px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-sm flex items-center gap-1.5 focus:ring-2 focus:ring-amber-500 focus:outline-none min-h-[40px]"
                   >
-                    <LogIn className="w-4 h-4" />
+                    <UserCheck className="w-4 h-4" />
                     <span>Sign In</span>
                   </Link>
                 </div>

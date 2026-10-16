@@ -1,27 +1,45 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { 
   FileText, 
   Archive, 
   Activity, 
-  Calendar, 
   BookOpen, 
   CheckCircle2, 
-  ArrowRight
+  ArrowRight,
+  Shield,
+  Star,
+  Award,
+  ChevronRight,
+  X,
+  Target,
+  UserCheck,
+  Sparkles
 } from 'lucide-react';
 
 export default function DashboardWireframe() {
   // Hero section carousel active slide state (3 slides)
   const [heroSlide, setHeroSlide] = useState<number>(0);
 
-  // Section 5 (Stats Section): Active feature state
-  // 'MOCK_TESTS' | 'PREVIOUS_PAPERS' | 'PET_STANDARDS' | 'DESCRIPTIVE'
-  const [activeFeature, setActiveFeature] = useState<'MOCK_TESTS' | 'PREVIOUS_PAPERS' | 'PET_STANDARDS' | 'DESCRIPTIVE'>('MOCK_TESTS');
+  // Road to Police Officer animated sequence state (Stages 0 to 3)
+  const [activeRoadmapStep, setActiveRoadmapStep] = useState<number>(0);
 
-  // Hero section slides
+  // Pop-up modal state for Section 5 (Key Features & Specifications)
+  // When clicked, opens a pop-up modal like footer terms/disclaimer
+  const [popupFeature, setPopupFeature] = useState<'MOCK_TESTS' | 'PREVIOUS_PAPERS' | 'PET_STANDARDS' | 'DESCRIPTIVE' | null>(null);
+
+  // Auto-play the "Road to Police Officer" animated sequence every 3.5 seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveRoadmapStep((prev) => (prev + 1) % 4);
+    }, 3500);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Hero section slides with platform amber color theme
   const HERO_SLIDES = [
     {
       title: 'Telangana & Andhra Pradesh Police SI Preparation Suite',
@@ -52,6 +70,58 @@ export default function DashboardWireframe() {
     },
   ];
 
+  // Road to Police Officer sequence stages
+  const ROAD_STAGES = [
+    {
+      step: 1,
+      badge: 'STAGE 1',
+      title: 'Preliminary Written Test (PWT)',
+      examName: 'Preliminary CBT Exam',
+      tagline: 'First Stage to Clear',
+      duration: '3 Hours • 200 Questions',
+      score: '200 Marks Objective',
+      subjects: ['Arithmetic & Reasoning (100 Qs)', 'General Studies & Polity (100 Qs)'],
+      href: '/exam/tslprb-si-pwt-mock-01',
+      cta: 'Attempt Stage 1 Mock',
+    },
+    {
+      step: 2,
+      badge: 'STAGE 2',
+      title: 'Physical Measurement & Efficiency Test (PMT & PET)',
+      examName: 'Physical Efficiency Test',
+      tagline: 'Second Stage to Clear',
+      duration: 'Field Ground Evaluation',
+      score: 'Qualifying Standards',
+      subjects: ['1600m Run (Men 7m 15s) / 800m (Women 5m 20s)', 'Long Jump (3.80m / 2.75m) & Shot Put (5.60m / 3.75m)'],
+      href: '/pet-tracker',
+      cta: 'Open Stage 2 PET Tracker',
+    },
+    {
+      step: 3,
+      badge: 'STAGE 3',
+      title: 'Final Written Examination (FWE - Mains)',
+      examName: 'Mains 4-Paper Exam',
+      tagline: 'Third Stage to Clear',
+      duration: '4 Comprehensive Papers',
+      score: '400 Marks Total',
+      subjects: ['Paper I: English Descriptive & Precis', 'Paper II: Telugu / Urdu Language', 'Paper III: Arithmetic & Reasoning (100 Qs)', 'Paper IV: General Studies (100 Qs)'],
+      href: '/descriptive',
+      cta: 'View Stage 3 Descriptive Papers',
+    },
+    {
+      step: 4,
+      badge: 'STAGE 4',
+      title: 'Document Verification & Medical Board',
+      examName: 'Final Merit Selection',
+      tagline: 'Final Appointment Stage',
+      duration: 'Merit Ranks & Board Inspection',
+      score: 'Police Academy Cadet',
+      subjects: ['State Merit List Allotment (Civil, AR, TSSP)', 'Medical Fitness Verification & Formal Appointment Orders'],
+      href: '/results',
+      cta: 'View Cutoff & Merit Analytics',
+    },
+  ];
+
   // Section 5 Stats Feature Details: 4 highlighted points per feature
   const STATS_FEATURES = {
     MOCK_TESTS: {
@@ -59,6 +129,7 @@ export default function DashboardWireframe() {
       summary: 'High-fidelity test simulation matching official state police preliminary written exam standards.',
       href: '/exam/tslprb-si-pwt-mock-01',
       actionText: 'Launch Mock Test',
+      accentColor: 'text-amber-600 bg-amber-50 dark:bg-amber-950/50 border-amber-300 dark:border-amber-800',
       points: [
         {
           id: '01',
@@ -87,6 +158,7 @@ export default function DashboardWireframe() {
       summary: 'Authentic past examination papers with verified final keys and detailed bilingual explanations.',
       href: '/previous-papers',
       actionText: 'Browse Solved Papers',
+      accentColor: 'text-amber-700 bg-amber-50 dark:bg-amber-950/50 border-amber-300 dark:border-amber-800',
       points: [
         {
           id: '01',
@@ -115,6 +187,7 @@ export default function DashboardWireframe() {
       summary: 'On-ground athletic qualification milestones for Civil and Armed Reserve police cadres.',
       href: '/pet-tracker',
       actionText: 'Open PET Tracker',
+      accentColor: 'text-emerald-700 bg-emerald-50 dark:bg-emerald-950/50 border-emerald-300 dark:border-emerald-800',
       points: [
         {
           id: '01',
@@ -143,6 +216,7 @@ export default function DashboardWireframe() {
       summary: 'Curriculum requirements and answer sheet evaluation for Final Written Exam Papers I and II.',
       href: '/descriptive',
       actionText: 'View Descriptive Papers',
+      accentColor: 'text-indigo-700 bg-indigo-50 dark:bg-indigo-950/50 border-indigo-300 dark:border-indigo-800',
       points: [
         {
           id: '01',
@@ -169,21 +243,25 @@ export default function DashboardWireframe() {
   };
 
   const currentHero = HERO_SLIDES[heroSlide];
-  const currentFeatureData = STATS_FEATURES[activeFeature];
+  const activeRoadStage = ROAD_STAGES[activeRoadmapStep];
+  const activePopupData = popupFeature ? STATS_FEATURES[popupFeature] : null;
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6 sm:space-y-8 font-sans text-slate-800 dark:text-slate-100">
       
       {/* ========================================================================= */}
-      {/* 2. HERO SECTION (Wireframe Section 2: Strong heading + CTA + Visuals)     */}
-      {/* Single large card in layout separation, no gradients                      */}
+      {/* 2. HERO SECTION (With Amber Color Palette & Dynamic SI Visual)            */}
       {/* ========================================================================= */}
-      <section className="bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-sm">
+      <section className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-sm">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           
           {/* Left Column: Heading, Subtitle & Action Buttons */}
           <div className="lg:col-span-7 space-y-4 sm:space-y-5">
             <div className="space-y-1.5">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-800 text-amber-900 dark:text-amber-300 text-[11px] font-bold uppercase tracking-wider">
+                <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                <span>TSLPRB & AP SLPRB SI 2026</span>
+              </div>
               <h1 className="text-xl sm:text-2xl lg:text-3xl font-black text-slate-900 dark:text-white tracking-tight leading-snug">
                 {currentHero.title}
               </h1>
@@ -196,27 +274,25 @@ export default function DashboardWireframe() {
               {currentHero.description}
             </p>
 
-            {/* CTA Buttons side by side as in wireframe */}
+            {/* CTA Buttons side by side with original Amber Palette */}
             <div className="flex flex-wrap items-center gap-3 pt-1">
-              {/* Primary solid blue button matching wireframe */}
               <Link
                 href={currentHero.primaryBtnHref}
-                className="px-6 py-3 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs uppercase tracking-wider transition-colors shadow-sm flex items-center gap-2"
+                className="px-6 py-3 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-sm flex items-center gap-2 focus:ring-2 focus:ring-amber-500"
               >
                 <span>{currentHero.primaryBtnText}</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
 
-              {/* Secondary outlined button matching wireframe */}
               <Link
                 href={currentHero.secondaryBtnHref}
-                className="px-6 py-3 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-800 dark:text-white font-bold text-xs uppercase tracking-wider border-2 border-slate-700 dark:border-slate-500 transition-colors shadow-sm"
+                className="px-6 py-3 rounded-xl bg-white dark:bg-slate-800 hover:bg-amber-50 dark:hover:bg-slate-700 text-slate-800 dark:text-white font-bold text-xs uppercase tracking-wider border-2 border-slate-700 dark:border-slate-600 hover:border-amber-600 transition-all shadow-sm"
               >
                 {currentHero.secondaryBtnText}
               </Link>
             </div>
 
-            {/* Three Indicator Dots centered below content matching wireframe */}
+            {/* Three Indicator Dots centered below content */}
             <div className="flex items-center gap-2 pt-2">
               {HERO_SLIDES.map((_, idx) => (
                 <button
@@ -225,7 +301,7 @@ export default function DashboardWireframe() {
                   onClick={() => setHeroSlide(idx)}
                   className={`h-2.5 rounded-full transition-all cursor-pointer ${
                     heroSlide === idx 
-                      ? 'w-7 bg-slate-800 dark:bg-slate-200' 
+                      ? 'w-7 bg-amber-600' 
                       : 'w-2.5 bg-slate-300 dark:bg-slate-700 hover:bg-slate-400'
                   }`}
                   aria-label={`Go to slide ${idx + 1}`}
@@ -234,36 +310,59 @@ export default function DashboardWireframe() {
             </div>
           </div>
 
-          {/* Right Column: Visual Image Container matching wireframe */}
+          {/* Right Column: Hero Graphic Illustration for Police SI Selection */}
           <div className="lg:col-span-5 flex justify-center">
-            <div className="w-full max-w-sm aspect-square bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 flex flex-col items-center justify-center text-center shadow-sm relative overflow-hidden">
-              <div className="relative w-28 h-28 mb-4 flex items-center justify-center">
-                <Image
-                  src="/logo.png"
-                  alt="Police SI Emblem"
-                  width={112}
-                  height={112}
-                  className="object-contain"
-                  priority
-                />
+            <div className="w-full max-w-sm bg-white dark:bg-slate-800 rounded-2xl border-2 border-amber-400/60 dark:border-amber-600/50 p-6 flex flex-col items-center justify-between text-center shadow-lg relative overflow-hidden group">
+              
+              {/* Subtle background radar circles */}
+              <div className="absolute -top-10 -right-10 w-44 h-44 rounded-full bg-amber-500/10 animate-pulse pointer-events-none" />
+              <div className="absolute -bottom-10 -left-10 w-44 h-44 rounded-full bg-amber-500/10 pointer-events-none" />
+
+              {/* Status Header Pill */}
+              <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-[11px] font-bold tracking-wide z-10 mb-3">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+                <span>2026 Sub-Inspector Selection Portal</span>
               </div>
-              <h3 className="text-sm font-bold text-slate-900 dark:text-white">
-                Police Sub-Inspector Selection Portal
-              </h3>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
-                TSLPRB & AP SLPRB Recruitment Cadres
-              </p>
-              <div className="mt-3 flex items-center gap-2 text-[10px] font-mono font-bold text-slate-600 dark:text-slate-300">
-                <span className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600">
-                  Civil SI
-                </span>
-                <span className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600">
-                  AR SI
-                </span>
-                <span className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600">
-                  TSSP SI
-                </span>
+
+              {/* Center Emblem with SI Two Stars Insignia */}
+              <div className="relative my-2 flex flex-col items-center justify-center z-10">
+                <div className="w-24 h-24 rounded-2xl bg-amber-50/80 dark:bg-amber-950/40 p-2.5 border-2 border-amber-300 dark:border-amber-700 shadow-md flex items-center justify-center group-hover:scale-105 transition-transform">
+                  <Image
+                    src="/logo.png"
+                    alt="Police SI Emblem"
+                    width={80}
+                    height={80}
+                    className="object-contain"
+                    priority
+                  />
+                </div>
+
+                {/* Sub-Inspector 2 Golden Stars Insignia */}
+                <div className="flex items-center gap-3 mt-3 px-3 py-1 bg-slate-900 text-amber-400 rounded-full border border-amber-500/50 shadow-sm">
+                  <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+                  <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-white">
+                    Sub-Inspector Rank
+                  </span>
+                  <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+                </div>
               </div>
+
+              {/* Cadre Badges */}
+              <div className="w-full mt-4 pt-3 border-t border-slate-100 dark:border-slate-700 grid grid-cols-3 gap-1.5 z-10">
+                <div className="p-1.5 rounded-lg bg-slate-50 dark:bg-slate-750 border border-slate-200 dark:border-slate-700 text-center">
+                  <span className="text-[10px] font-bold text-slate-800 dark:text-slate-200 block">Civil SI</span>
+                  <span className="text-[9px] text-slate-500">Law & Order</span>
+                </div>
+                <div className="p-1.5 rounded-lg bg-slate-50 dark:bg-slate-750 border border-slate-200 dark:border-slate-700 text-center">
+                  <span className="text-[10px] font-bold text-slate-800 dark:text-slate-200 block">AR SI</span>
+                  <span className="text-[9px] text-slate-500">Armed Reserve</span>
+                </div>
+                <div className="p-1.5 rounded-lg bg-slate-50 dark:bg-slate-750 border border-slate-200 dark:border-slate-700 text-center">
+                  <span className="text-[10px] font-bold text-slate-800 dark:text-slate-200 block">TSSP SI</span>
+                  <span className="text-[9px] text-slate-500">Special Police</span>
+                </div>
+              </div>
+
             </div>
           </div>
 
@@ -271,17 +370,17 @@ export default function DashboardWireframe() {
       </section>
 
       {/* ========================================================================= */}
-      {/* 3. QUICK ACTIONS (Wireframe Section 3: 4 Main Feature Cards)               */}
-      {/* 4 separate cards in a row with icons, title, description                  */}
+      {/* 3. QUICK ACTIONS (Calendar Replaced by Descriptive Papers)                */}
+      {/* 4 Cards: Mock Tests, Previous Papers, Descriptive Papers, PET Standards   */}
       {/* ========================================================================= */}
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         
         {/* Card 1: Mock Tests */}
         <Link
           href="/exam/tslprb-si-pwt-mock-01"
-          className="bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-600 rounded-2xl p-6 text-center flex flex-col items-center justify-between space-y-4 shadow-sm transition-all group cursor-pointer"
+          className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-amber-500 dark:hover:border-amber-500 rounded-2xl p-6 text-center flex flex-col items-center justify-between space-y-4 shadow-sm hover:shadow-md transition-all group cursor-pointer"
         >
-          <div className="w-12 h-12 rounded-xl bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-blue-700 dark:text-blue-400 flex items-center justify-center font-bold shadow-sm group-hover:scale-105 transition-transform">
+          <div className="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold shadow-sm group-hover:scale-105 transition-transform">
             <FileText className="w-6 h-6" />
           </div>
           <div className="space-y-1">
@@ -292,7 +391,7 @@ export default function DashboardWireframe() {
               Full 200M CBT simulator with live countdown timer and negative marking.
             </p>
           </div>
-          <span className="text-[11px] font-bold text-blue-700 dark:text-blue-400 group-hover:underline">
+          <span className="text-[11px] font-bold text-amber-600 dark:text-amber-400 group-hover:underline">
             Launch Test →
           </span>
         </Link>
@@ -300,9 +399,9 @@ export default function DashboardWireframe() {
         {/* Card 2: Previous Papers */}
         <Link
           href="/previous-papers"
-          className="bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-600 rounded-2xl p-6 text-center flex flex-col items-center justify-between space-y-4 shadow-sm transition-all group cursor-pointer"
+          className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-amber-500 dark:hover:border-amber-500 rounded-2xl p-6 text-center flex flex-col items-center justify-between space-y-4 shadow-sm hover:shadow-md transition-all group cursor-pointer"
         >
-          <div className="w-12 h-12 rounded-xl bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-amber-700 dark:text-amber-400 flex items-center justify-center font-bold shadow-sm group-hover:scale-105 transition-transform">
+          <div className="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-400 flex items-center justify-center font-bold shadow-sm group-hover:scale-105 transition-transform">
             <Archive className="w-6 h-6" />
           </div>
           <div className="space-y-1">
@@ -318,33 +417,33 @@ export default function DashboardWireframe() {
           </span>
         </Link>
 
-        {/* Card 3: Exam Calendar */}
+        {/* Card 3: Descriptive Papers (Replaced Exam Calendar per Request 4) */}
         <Link
-          href="/calendar"
-          className="bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-600 rounded-2xl p-6 text-center flex flex-col items-center justify-between space-y-4 shadow-sm transition-all group cursor-pointer"
+          href="/descriptive"
+          className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-amber-500 dark:hover:border-amber-500 rounded-2xl p-6 text-center flex flex-col items-center justify-between space-y-4 shadow-sm hover:shadow-md transition-all group cursor-pointer"
         >
-          <div className="w-12 h-12 rounded-xl bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-purple-700 dark:text-purple-400 flex items-center justify-center font-bold shadow-sm group-hover:scale-105 transition-transform">
-            <Calendar className="w-6 h-6" />
+          <div className="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold shadow-sm group-hover:scale-105 transition-transform">
+            <BookOpen className="w-6 h-6" />
           </div>
           <div className="space-y-1">
             <h3 className="text-sm font-bold text-slate-900 dark:text-white">
-              Exam Calendar
+              Descriptive Papers
             </h3>
             <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-snug">
-              Track upcoming recruitment dates, gazette notifications, and alerts.
+              Mains Papers I & II English & Telugu language papers with rubric evaluation.
             </p>
           </div>
-          <span className="text-[11px] font-bold text-purple-700 dark:text-purple-400 group-hover:underline">
-            View Calendar →
+          <span className="text-[11px] font-bold text-amber-600 dark:text-amber-400 group-hover:underline">
+            View Descriptive Papers →
           </span>
         </Link>
 
         {/* Card 4: PET Standards */}
         <Link
           href="/pet-tracker"
-          className="bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-600 rounded-2xl p-6 text-center flex flex-col items-center justify-between space-y-4 shadow-sm transition-all group cursor-pointer"
+          className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-amber-500 dark:hover:border-amber-500 rounded-2xl p-6 text-center flex flex-col items-center justify-between space-y-4 shadow-sm hover:shadow-md transition-all group cursor-pointer"
         >
-          <div className="w-12 h-12 rounded-xl bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-emerald-700 dark:text-emerald-400 flex items-center justify-center font-bold shadow-sm group-hover:scale-105 transition-transform">
+          <div className="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold shadow-sm group-hover:scale-105 transition-transform">
             <Activity className="w-6 h-6" />
           </div>
           <div className="space-y-1">
@@ -355,7 +454,7 @@ export default function DashboardWireframe() {
               Official 1600m run (men) and 800m run (women) qualification cutoffs.
             </p>
           </div>
-          <span className="text-[11px] font-bold text-emerald-700 dark:text-emerald-400 group-hover:underline">
+          <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 group-hover:underline">
             Track Physicals →
           </span>
         </Link>
@@ -363,373 +462,295 @@ export default function DashboardWireframe() {
       </section>
 
       {/* ========================================================================= */}
-      {/* 4. KEY HIGHLIGHTS (Wireframe Section 4: Why choose us / Exams & Study)    */}
-      {/* Left visual box, right informative copy + solid action button             */}
+      {/* 4. ROAD TO POLICE OFFICER (Replaced Key Highlights per Request 6)         */}
+      {/* Big title + Animated sequence of what to clear first, second, etc.        */}
       {/* ========================================================================= */}
-      <section className="bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-sm">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-          
-          {/* Left Visual Box matching wireframe image box */}
-          <div className="lg:col-span-5">
-            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 space-y-4 shadow-sm">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-700">
-                <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-                  <BookOpen className="w-4 h-4 text-blue-700" />
-                  <span>Curriculum & Study Modules</span>
-                </span>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-700 border border-slate-300 text-slate-700 dark:text-slate-300">
-                  Bilingual
-                </span>
-              </div>
-
-              <div className="space-y-2.5 text-xs">
-                <div className="p-3 bg-slate-50 dark:bg-slate-750 rounded-xl border border-slate-200 dark:border-slate-700">
-                  <strong className="text-slate-900 dark:text-white block">Paper III: Arithmetic & Reasoning</strong>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
-                    100 Questions • Police chasing, ratios, time & distance, syllogisms, and coding-decoding.
-                  </p>
-                </div>
-
-                <div className="p-3 bg-slate-50 dark:bg-slate-750 rounded-xl border border-slate-200 dark:border-slate-700">
-                  <strong className="text-slate-900 dark:text-white block">Paper IV: General Studies & Polity</strong>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
-                    100 Questions • Constitution of India, modern Indian history, state movement, and ethics.
-                  </p>
-                </div>
-
-                <div className="p-3 bg-slate-50 dark:bg-slate-750 rounded-xl border border-slate-200 dark:border-slate-700">
-                  <strong className="text-slate-900 dark:text-white block">Mains Descriptive Papers I & II</strong>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
-                    Precis writing, formal letter drafting, English essay synthesis, and regional language translation.
-                  </p>
-                </div>
-              </div>
-
-              <p className="text-[10px] text-slate-400 italic">
-                *Aligned strictly with Telugu Akademi curriculum and official police recruitment board gazettes.
-              </p>
-            </div>
-          </div>
-
-          {/* Right Information Text + CTA Button */}
-          <div className="lg:col-span-7 space-y-4">
-            <div className="space-y-1">
-              <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
-                Key Highlights
-              </span>
-              <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
-                Authentic Exam Information & Standard Study Materials
-              </h2>
-            </div>
-
-            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-              Our preparation modules are engineered from the ground up to support Telangana (TSLPRB) and Andhra Pradesh (AP SLPRB) Sub-Inspector candidates throughout all three stages of the recruitment pipeline.
-            </p>
-
-            <ul className="space-y-2.5 text-xs text-slate-700 dark:text-slate-300">
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                <span>
-                  <strong>Full 200-Question Preliminary Blueprints:</strong> Comprehensive question banks matching official notification marks distribution with zero unverified questions.
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                <span>
-                  <strong>Bilingual Study Materials:</strong> Complete question explanations, mathematical formula derivations, and terms available in English and Telugu.
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                <span>
-                  <strong>Standard Ground Benchmarks:</strong> Track daily field running timings against 1600m and 800m qualification cutoffs to eliminate physical stage failure.
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                <span>
-                  <strong>Descriptive Answer Sheet Evaluation:</strong> Rubric-based scoring models for English and Telugu translation papers per official state guidelines.
-                </span>
-              </li>
-            </ul>
-
-            <div className="pt-2">
-              <Link
-                href="/previous-papers"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-slate-800 hover:bg-slate-900 dark:bg-slate-200 dark:hover:bg-white text-white dark:text-slate-900 font-bold text-xs uppercase tracking-wider transition-colors shadow-sm"
-              >
-                <span>Access Study Materials & PYQs</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-      {/* ========================================================================= */}
-      {/* 5. STATS SECTION (Wireframe Section 5: 4 Circles + Highlighted Box)       */}
-      {/* Clicking each feature opens its 4 respective points in a highlighted box  */}
-      {/* ========================================================================= */}
-      <section className="bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl sm:rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
+      <section className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl sm:rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
         
-        {/* Section Header */}
-        <div className="text-center max-w-xl mx-auto space-y-1">
-          <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight">
-            Key Features & Specifications
+        {/* Big Name Header */}
+        <div className="text-center max-w-2xl mx-auto space-y-1.5">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-800 text-amber-900 dark:text-amber-300 text-[11px] font-bold uppercase tracking-wider">
+            <span>Recruitment Pipeline Blueprint</span>
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight uppercase">
+            ROAD TO POLICE OFFICER
           </h2>
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            Click any feature circle below to open its 4 key operational points in the highlighted box.
+            Sequential stages every aspirant must clear to earn the Sub-Inspector badge.
           </p>
         </div>
 
-        {/* 4 Feature Circles matching wireframe circles */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
+        {/* Sequential 4-Stage Stepper with Live Animated Sequence */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 pt-2">
+          {ROAD_STAGES.map((stg, index) => {
+            const isActive = activeRoadmapStep === index;
+            const isCompleted = activeRoadmapStep > index;
+
+            return (
+              <button
+                key={stg.step}
+                type="button"
+                onClick={() => setActiveRoadmapStep(index)}
+                className={`p-4 rounded-2xl border text-left transition-all relative overflow-hidden cursor-pointer ${
+                  isActive
+                    ? 'bg-white dark:bg-slate-800 border-2 border-amber-600 shadow-md ring-2 ring-amber-400/50'
+                    : 'bg-white/70 dark:bg-slate-800/40 border-slate-200 dark:border-slate-700 hover:bg-white'
+                }`}
+              >
+                {/* Active Indicator Top Bar */}
+                {isActive && (
+                  <div className="absolute top-0 left-0 right-0 h-1 bg-amber-600 animate-pulse" />
+                )}
+
+                <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-700">
+                  <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase ${
+                    isActive 
+                      ? 'bg-amber-600 text-white' 
+                      : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
+                  }`}>
+                    {stg.badge}
+                  </span>
+                  <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400">
+                    {stg.tagline}
+                  </span>
+                </div>
+
+                <div className="pt-2.5 space-y-1">
+                  <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white leading-snug">
+                    {stg.examName}
+                  </h3>
+                  <p className="text-[11px] text-slate-500 font-medium">
+                    {stg.duration}
+                  </p>
+                </div>
+
+                <div className="mt-3 flex items-center justify-between text-[11px] font-semibold text-slate-600 dark:text-slate-300 pt-2 border-t border-slate-100 dark:border-slate-700">
+                  <span>{stg.score}</span>
+                  <span className={`font-bold transition-transform ${isActive ? 'text-amber-600 translate-x-1' : 'text-slate-400'}`}>
+                    →
+                  </span>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Animated Highlighted Detail Box for the Currently Selected Stage */}
+        <div className="bg-white dark:bg-slate-800 border-2 border-amber-500/40 dark:border-amber-600/50 rounded-2xl p-5 sm:p-6 shadow-sm transition-all">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-slate-100 dark:border-slate-700">
+            <div className="space-y-0.5">
+              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
+                {activeRoadStage.tagline} • Step {activeRoadStage.step} of 4
+              </span>
+              <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white">
+                {activeRoadStage.title}
+              </h3>
+            </div>
+
+            <Link
+              href={activeRoadStage.href}
+              className="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-sm flex items-center gap-1.5 shrink-0 self-start sm:self-auto"
+            >
+              <span>{activeRoadStage.cta}</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-3">
+            {activeRoadStage.subjects.map((subj, idx) => (
+              <div
+                key={idx}
+                className="flex items-start gap-2.5 p-3 rounded-xl bg-slate-50 dark:bg-slate-750 border border-slate-200 dark:border-slate-700"
+              >
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                <span className="text-xs font-semibold text-slate-800 dark:text-slate-200">
+                  {subj}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+      </section>
+
+      {/* ========================================================================= */}
+      {/* 5. KEY FEATURES & SPECIFICATIONS (With Pop-up Modal per Request 7 & 8)    */}
+      {/* Caption removed below heading. Clicking circle opens pop-up modal.        */}
+      {/* ========================================================================= */}
+      <section className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl sm:rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
+        
+        {/* Section Header: Caption REMOVED per Request 7 */}
+        <div className="text-center max-w-xl mx-auto">
+          <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight">
+            Key Features & Specifications
+          </h2>
+        </div>
+
+        {/* 4 Feature Circles: Clicking any circle OPENS the Pop-up Modal */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-1">
           
           {/* Circle 1: Mock Tests */}
           <button
             type="button"
-            onClick={() => setActiveFeature('MOCK_TESTS')}
-            className={`p-4 rounded-2xl border text-center flex flex-col items-center justify-center space-y-2 transition-all cursor-pointer ${
-              activeFeature === 'MOCK_TESTS'
-                ? 'bg-white dark:bg-slate-800 border-2 border-slate-800 dark:border-slate-300 shadow-md ring-2 ring-slate-400'
-                : 'bg-white/60 dark:bg-slate-800/40 border-slate-200 dark:border-slate-700 hover:bg-white'
-            }`}
+            onClick={() => setPopupFeature('MOCK_TESTS')}
+            className="p-4 rounded-2xl border text-center flex flex-col items-center justify-center space-y-2.5 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-amber-500 dark:hover:border-amber-500 shadow-sm hover:shadow-md transition-all cursor-pointer group"
           >
-            <div className={`w-14 h-14 rounded-full flex items-center justify-center transition-colors ${
-              activeFeature === 'MOCK_TESTS'
-                ? 'bg-blue-700 text-white'
-                : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
-            }`}>
+            <div className="w-14 h-14 rounded-full flex items-center justify-center bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-600 dark:text-amber-400 group-hover:scale-110 transition-transform">
               <FileText className="w-6 h-6" />
             </div>
             <div>
               <h3 className="text-xs font-bold text-slate-900 dark:text-white">Mock Tests</h3>
               <p className="text-[10px] text-slate-500 font-mono">200 Qs CBT Simulator</p>
             </div>
+            <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 group-hover:underline">
+              View Specs ↗
+            </span>
           </button>
 
           {/* Circle 2: Previous Papers */}
           <button
             type="button"
-            onClick={() => setActiveFeature('PREVIOUS_PAPERS')}
-            className={`p-4 rounded-2xl border text-center flex flex-col items-center justify-center space-y-2 transition-all cursor-pointer ${
-              activeFeature === 'PREVIOUS_PAPERS'
-                ? 'bg-amber-700 text-white'
-                : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
-            }`}
+            onClick={() => setPopupFeature('PREVIOUS_PAPERS')}
+            className="p-4 rounded-2xl border text-center flex flex-col items-center justify-center space-y-2.5 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-amber-500 dark:hover:border-amber-500 shadow-sm hover:shadow-md transition-all cursor-pointer group"
           >
-            <div className={`w-14 h-14 rounded-full flex items-center justify-center transition-colors ${
-              activeFeature === 'PREVIOUS_PAPERS'
-                ? 'bg-amber-700 text-white'
-                : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
-            }`}>
+            <div className="w-14 h-14 rounded-full flex items-center justify-center bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-400 group-hover:scale-110 transition-transform">
               <Archive className="w-6 h-6" />
             </div>
             <div>
               <h3 className="text-xs font-bold text-slate-900 dark:text-white">Previous Papers</h3>
               <p className="text-[10px] text-slate-500 font-mono">2018–2023 Solved PYQ</p>
             </div>
+            <span className="text-[10px] font-bold text-amber-700 dark:text-amber-400 group-hover:underline">
+              View Specs ↗
+            </span>
           </button>
 
           {/* Circle 3: PET Standards */}
           <button
             type="button"
-            onClick={() => setActiveFeature('PET_STANDARDS')}
-            className={`p-4 rounded-2xl border text-center flex flex-col items-center justify-center space-y-2 transition-all cursor-pointer ${
-              activeFeature === 'PET_STANDARDS'
-                ? 'bg-emerald-700 text-white'
-                : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
-            }`}
+            onClick={() => setPopupFeature('PET_STANDARDS')}
+            className="p-4 rounded-2xl border text-center flex flex-col items-center justify-center space-y-2.5 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-amber-500 dark:hover:border-amber-500 shadow-sm hover:shadow-md transition-all cursor-pointer group"
           >
-            <div className={`w-14 h-14 rounded-full flex items-center justify-center transition-colors ${
-              activeFeature === 'PET_STANDARDS'
-                ? 'bg-emerald-700 text-white'
-                : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
-            }`}>
+            <div className="w-14 h-14 rounded-full flex items-center justify-center bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform">
               <Activity className="w-6 h-6" />
             </div>
             <div>
               <h3 className="text-xs font-bold text-slate-900 dark:text-white">PET Standards</h3>
               <p className="text-[10px] text-slate-500 font-mono">1600m & 800m Cutoffs</p>
             </div>
+            <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 group-hover:underline">
+              View Specs ↗
+            </span>
           </button>
 
           {/* Circle 4: Descriptive Papers */}
           <button
             type="button"
-            onClick={() => setActiveFeature('DESCRIPTIVE')}
-            className={`p-4 rounded-2xl border text-center flex flex-col items-center justify-center space-y-2 transition-all cursor-pointer ${
-              activeFeature === 'DESCRIPTIVE'
-                ? 'bg-purple-700 text-white'
-                : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
-            }`}
+            onClick={() => setPopupFeature('DESCRIPTIVE')}
+            className="p-4 rounded-2xl border text-center flex flex-col items-center justify-center space-y-2.5 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-amber-500 dark:hover:border-amber-500 shadow-sm hover:shadow-md transition-all cursor-pointer group"
           >
-            <div className={`w-14 h-14 rounded-full flex items-center justify-center transition-colors ${
-              activeFeature === 'DESCRIPTIVE'
-                ? 'bg-purple-700 text-white'
-                : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
-            }`}>
+            <div className="w-14 h-14 rounded-full flex items-center justify-center bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-600 dark:text-amber-400 group-hover:scale-110 transition-transform">
               <BookOpen className="w-6 h-6" />
             </div>
             <div>
               <h3 className="text-xs font-bold text-slate-900 dark:text-white">Descriptive Papers</h3>
               <p className="text-[10px] text-slate-500 font-mono">Mains Papers I & II</p>
             </div>
+            <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 group-hover:underline">
+              View Specs ↗
+            </span>
           </button>
 
         </div>
 
-        {/* The Highlighted Box: Opens with 4 Points for the Selected Feature */}
-        <div className="bg-white dark:bg-slate-800 border-2 border-slate-800 dark:border-slate-300 rounded-2xl p-6 shadow-md space-y-4 animate-in fade-in duration-150">
-          
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200 dark:border-slate-700">
-            <div>
-              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                Highlighted Feature Specifications
-              </span>
-              <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white">
-                {currentFeatureData.name}
-              </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                {currentFeatureData.summary}
-              </p>
-            </div>
+      </section>
 
-            <Link
-              href={currentFeatureData.href}
-              className="px-5 py-2.5 rounded-xl bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 text-white dark:text-slate-900 font-bold text-xs uppercase tracking-wider transition-colors shadow-sm flex items-center gap-1.5 shrink-0"
-            >
-              <span>{currentFeatureData.actionText}</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-          </div>
-
-          {/* 4 Points in Highlighted Box */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
-            {currentFeatureData.points.map((pt) => (
-              <div
-                key={pt.id}
-                className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-750 border border-slate-200 dark:border-slate-700 space-y-1"
-              >
-                <div className="flex items-center gap-2">
-                  <span className="w-5 h-5 rounded bg-slate-800 dark:bg-slate-200 text-white dark:text-slate-900 font-mono font-bold text-[11px] flex items-center justify-center shrink-0">
-                    {pt.id}
-                  </span>
-                  <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
-                    {pt.title}
-                  </h4>
-                </div>
-                <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed pl-7">
-                  {pt.text}
+      {/* ========================================================================= */}
+      {/* POP-UP MODAL (Like footer terms/disclaimer popup per Request 8)           */}
+      {/* Appears when user clicks any of the 4 feature circles                     */}
+      {/* ========================================================================= */}
+      {popupFeature && activePopupData && (
+        <div 
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-150"
+          onClick={() => setPopupFeature(null)}
+        >
+          <div 
+            className="bg-white dark:bg-slate-900 border-2 border-amber-500 dark:border-amber-600 rounded-3xl max-w-2xl w-full p-6 sm:p-8 space-y-5 shadow-2xl relative animate-in zoom-in-95 duration-150"
+            onClick={(e) => e.stopPropagation()}
+          >
+            
+            {/* Modal Header */}
+            <div className="flex items-start justify-between gap-4 pb-3 border-b border-slate-100 dark:border-slate-800">
+              <div className="space-y-1">
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
+                  Feature Specifications & Standards
+                </span>
+                <h3 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white">
+                  {activePopupData.name}
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                  {activePopupData.summary}
                 </p>
               </div>
-            ))}
-          </div>
 
+              {/* Close Button */}
+              <button
+                type="button"
+                onClick={() => setPopupFeature(null)}
+                className="p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer shrink-0"
+                aria-label="Close modal"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Body: 4 Points in Highlighted Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 max-h-[60vh] overflow-y-auto pr-1">
+              {activePopupData.points.map((pt) => (
+                <div
+                  key={pt.id}
+                  className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="w-5 h-5 rounded bg-amber-600 text-white font-mono font-bold text-[11px] flex items-center justify-center shrink-0">
+                      {pt.id}
+                    </span>
+                    <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
+                      {pt.title}
+                    </h4>
+                  </div>
+                  <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed pl-7">
+                    {pt.text}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            {/* Modal Footer: Action & Close Buttons */}
+            <div className="flex items-center justify-between gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+              <button
+                type="button"
+                onClick={() => setPopupFeature(null)}
+                className="px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              >
+                Close Window
+              </button>
+
+              <Link
+                href={activePopupData.href}
+                onClick={() => setPopupFeature(null)}
+                className="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-sm flex items-center gap-1.5"
+              >
+                <span>{activePopupData.actionText}</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+
+          </div>
         </div>
-
-      </section>
-
-      {/* ========================================================================= */}
-      {/* 6. LATEST UPDATES (Wireframe Section 6: 2 Columns)                        */}
-      {/* Left Column: Latest Updates • Right Column: Important Notice              */}
-      {/* ========================================================================= */}
-      <section className="bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-sm">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
-          
-          {/* Column 1: Latest Updates matching wireframe */}
-          <div className="space-y-4">
-            <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-700 pb-2">
-              Latest Updates
-            </h3>
-
-            <ul className="space-y-3.5 text-xs text-slate-700 dark:text-slate-300">
-              <li className="flex items-start gap-2.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-slate-800 dark:bg-slate-200 mt-1 shrink-0" />
-                <div>
-                  <strong className="text-slate-900 dark:text-white block font-semibold">
-                    TSLPRB SI Notification 2026 Expected Timeline
-                  </strong>
-                  <p className="text-slate-600 dark:text-slate-400 mt-0.5 leading-relaxed">
-                    Official recruitment notification expected soon for Civil, AR, and TSSP wings. Preliminary 200M CBT mocks active.
-                  </p>
-                </div>
-              </li>
-
-              <li className="flex items-start gap-2.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-slate-800 dark:bg-slate-200 mt-1 shrink-0" />
-                <div>
-                  <strong className="text-slate-900 dark:text-white block font-semibold">
-                    AP Police SI Preliminary Grand Mock Test 1 Released
-                  </strong>
-                  <p className="text-slate-600 dark:text-slate-400 mt-0.5 leading-relaxed">
-                    Full-length bilingual test with standard AP SLPRB question patterns and instant solution keys available for free practice.
-                  </p>
-                </div>
-              </li>
-
-              <li className="flex items-start gap-2.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-slate-800 dark:bg-slate-200 mt-1 shrink-0" />
-                <div>
-                  <strong className="text-slate-900 dark:text-white block font-semibold">
-                    PET 1600m & 800m Pacing Standards Calibrated
-                  </strong>
-                  <p className="text-slate-600 dark:text-slate-400 mt-0.5 leading-relaxed">
-                    Field pace calculator updated to match official physical qualification standards for male (7m 15s) and female (5m 20s) aspirants.
-                  </p>
-                </div>
-              </li>
-            </ul>
-          </div>
-
-          {/* Column 2: Important Notice matching wireframe */}
-          <div className="space-y-4">
-            <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-700 pb-2">
-              Important Notice
-            </h3>
-
-            <ul className="space-y-3.5 text-xs text-slate-700 dark:text-slate-300">
-              <li className="flex items-start gap-2.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-slate-800 dark:bg-slate-200 mt-1 shrink-0" />
-                <div>
-                  <strong className="text-slate-900 dark:text-white block font-semibold">
-                    Negative Marking Directive (-0.25 Mark)
-                  </strong>
-                  <p className="text-slate-600 dark:text-slate-400 mt-0.5 leading-relaxed">
-                    In TSLPRB objective exams, each incorrect answer incurs a 0.25 mark penalty. Unattempted questions carry zero penalty.
-                  </p>
-                </div>
-              </li>
-
-              <li className="flex items-start gap-2.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-slate-800 dark:bg-slate-200 mt-1 shrink-0" />
-                <div>
-                  <strong className="text-slate-900 dark:text-white block font-semibold">
-                    Biometric & Photo ID Verification
-                  </strong>
-                  <p className="text-slate-600 dark:text-slate-400 mt-0.5 leading-relaxed">
-                    Candidates must carry original government photo identification (Aadhaar, Voter ID, or Driving License) to examination halls.
-                  </p>
-                </div>
-              </li>
-
-              <li className="flex items-start gap-2.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-slate-800 dark:bg-slate-200 mt-1 shrink-0" />
-                <div>
-                  <strong className="text-slate-900 dark:text-white block font-semibold">
-                    Independent Preparation Platform Advisory
-                  </strong>
-                  <p className="text-slate-600 dark:text-slate-400 mt-0.5 leading-relaxed">
-                    Always cross-verify formal gazette dates and download official hall tickets directly from <span className="font-mono text-blue-700 dark:text-blue-400 font-bold">tslprb.in</span> or <span className="font-mono text-blue-700 dark:text-blue-400 font-bold">slprb.ap.gov.in</span>.
-                  </p>
-                </div>
-              </li>
-            </ul>
-          </div>
-
-        </div>
-      </section>
+      )}
 
     </div>
   );
