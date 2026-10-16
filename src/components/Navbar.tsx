@@ -304,105 +304,109 @@ export const Navbar: React.FC = () => {
             )}
 
             {/* ========================================================================= */}
-            {/* RIGHT SIDE: Theme Toggle + Notification Bell + Profile Column             */}
+            {/* RIGHT SIDE: Only Sign In / Profile on Dashboard per Senior Instructions   */}
             {/* ========================================================================= */}
             <div className="flex items-center gap-2 sm:gap-2.5">
               
-              {/* 1. Theme Toggle (Light / Dark) */}
-              <button
-                type="button"
-                onClick={toggleTheme}
-                title={`Switch to ${theme === 'light' ? 'Dark' : 'Light'} theme`}
-                className="p-2 sm:p-2.5 rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-all focus:ring-2 focus:ring-amber-500 focus:outline-none min-h-[40px] min-w-[40px] flex items-center justify-center"
-                aria-label="Toggle theme"
-              >
-                {theme === 'light' ? (
-                  <Moon className="w-4 h-4 text-slate-700 hover:text-amber-600 transition-colors" />
-                ) : (
-                  <Sun className="w-4 h-4 text-amber-400 hover:text-amber-300 transition-colors" />
-                )}
-              </button>
-
-              {/* 2. Notification Symbol (Bell Icon beside profile) */}
-              <div className="relative">
-                <button
-                  type="button"
-                  onClick={() => setNotificationsOpen(!notificationsOpen)}
-                  title="Exam Notifications & Alerts"
-                  className="relative p-2 sm:p-2.5 rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-all focus:ring-2 focus:ring-amber-500 focus:outline-none min-h-[40px] min-w-[40px] flex items-center justify-center"
-                  aria-label="View exam notifications"
-                >
-                  <Bell className="w-4 h-4 text-slate-700 dark:text-slate-300" />
-                  {unreadCount > 0 && (
-                    <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-amber-600 rounded-full ring-2 ring-white dark:ring-slate-900 animate-pulse" />
-                  )}
-                </button>
-
-                {/* Notification Dropdown Popover */}
-                {notificationsOpen && (
-                  <div 
-                    onMouseLeave={() => setNotificationsOpen(false)}
-                    className="absolute right-0 top-full mt-2 w-80 sm:w-96 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl p-3 z-50 animate-in fade-in duration-100"
+              {!isDashboardPage && (
+                <>
+                  {/* 1. Theme Toggle (Light / Dark) */}
+                  <button
+                    type="button"
+                    onClick={toggleTheme}
+                    title={`Switch to ${theme === 'light' ? 'Dark' : 'Light'} theme`}
+                    className="p-2 sm:p-2.5 rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-all focus:ring-2 focus:ring-amber-500 focus:outline-none min-h-[40px] min-w-[40px] flex items-center justify-center"
+                    aria-label="Toggle theme"
                   >
-                    <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
-                      <div className="flex items-center gap-1.5">
-                        <Bell className="w-4 h-4 text-amber-600" />
-                        <h4 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
-                          Exam Alerts & Updates
-                        </h4>
-                      </div>
+                    {theme === 'light' ? (
+                      <Moon className="w-4 h-4 text-slate-700 hover:text-amber-600 transition-colors" />
+                    ) : (
+                      <Sun className="w-4 h-4 text-amber-400 hover:text-amber-300 transition-colors" />
+                    )}
+                  </button>
+
+                  {/* 2. Notification Symbol (Bell Icon beside profile) */}
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={() => setNotificationsOpen(!notificationsOpen)}
+                      title="Exam Notifications & Alerts"
+                      className="relative p-2 sm:p-2.5 rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-all focus:ring-2 focus:ring-amber-500 focus:outline-none min-h-[40px] min-w-[40px] flex items-center justify-center"
+                      aria-label="View exam notifications"
+                    >
+                      <Bell className="w-4 h-4 text-slate-700 dark:text-slate-300" />
                       {unreadCount > 0 && (
-                        <button
-                          type="button"
-                          onClick={markAllNotificationsAsRead}
-                          className="text-[10px] font-semibold text-amber-600 hover:text-amber-700 dark:text-amber-400"
-                        >
-                          Mark all read
-                        </button>
+                        <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-amber-600 rounded-full ring-2 ring-white dark:ring-slate-900 animate-pulse" />
                       )}
-                    </div>
+                    </button>
 
-                    <div className="py-2 space-y-2 max-h-72 overflow-y-auto">
-                      {notifications.map((item) => (
-                        <Link
-                          key={item.id}
-                          href={item.href}
-                          onClick={() => setNotificationsOpen(false)}
-                          className={`block p-2.5 rounded-xl border transition-all text-left ${
-                            item.unread 
-                              ? 'bg-amber-50/70 dark:bg-amber-950/30 border-amber-200 dark:border-amber-900/50' 
-                              : 'bg-slate-50/50 dark:bg-slate-800/40 border-slate-100 dark:border-slate-800 hover:border-slate-200'
-                          }`}
-                        >
-                          <div className="flex items-center justify-between gap-1 mb-1">
-                            <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-md bg-amber-200 text-amber-900 dark:bg-amber-900/60 dark:text-amber-300">
-                              {item.tag}
-                            </span>
-                            <span className="text-[10px] text-slate-400 font-mono">{item.time}</span>
-                          </div>
-                          <p className="text-xs font-bold text-slate-900 dark:text-white leading-snug">
-                            {item.title}
-                          </p>
-                          <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5 line-clamp-2">
-                            {item.desc}
-                          </p>
-                        </Link>
-                      ))}
-                    </div>
-
-                    <div className="pt-2 border-t border-slate-100 dark:border-slate-800 text-center">
-                      <Link
-                        href="/calendar"
-                        onClick={() => setNotificationsOpen(false)}
-                        className="inline-flex items-center gap-1 text-xs font-bold text-amber-700 dark:text-amber-400 hover:underline"
+                    {/* Notification Dropdown Popover */}
+                    {notificationsOpen && (
+                      <div 
+                        onMouseLeave={() => setNotificationsOpen(false)}
+                        className="absolute right-0 top-full mt-2 w-80 sm:w-96 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl p-3 z-50 animate-in fade-in duration-100"
                       >
-                        <span>Open Full Exam Calendar</span>
-                        <ExternalLink className="w-3 h-3" />
-                      </Link>
-                    </div>
+                        <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
+                          <div className="flex items-center gap-1.5">
+                            <Bell className="w-4 h-4 text-amber-600" />
+                            <h4 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+                              Exam Alerts & Updates
+                            </h4>
+                          </div>
+                          {unreadCount > 0 && (
+                            <button
+                              type="button"
+                              onClick={markAllNotificationsAsRead}
+                              className="text-[10px] font-semibold text-amber-600 hover:text-amber-700 dark:text-amber-400"
+                            >
+                              Mark all read
+                            </button>
+                          )}
+                        </div>
+
+                        <div className="py-2 space-y-2 max-h-72 overflow-y-auto">
+                          {notifications.map((item) => (
+                            <Link
+                              key={item.id}
+                              href={item.href}
+                              onClick={() => setNotificationsOpen(false)}
+                              className={`block p-2.5 rounded-xl border transition-all text-left ${
+                                item.unread 
+                                  ? 'bg-amber-50/70 dark:bg-amber-950/30 border-amber-200 dark:border-amber-900/50' 
+                                  : 'bg-slate-50/50 dark:bg-slate-800/40 border-slate-100 dark:border-slate-800 hover:border-slate-200'
+                              }`}
+                            >
+                              <div className="flex items-center justify-between gap-1 mb-1">
+                                <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-md bg-amber-200 text-amber-900 dark:bg-amber-900/60 dark:text-amber-300">
+                                  {item.tag}
+                                </span>
+                                <span className="text-[10px] text-slate-400 font-mono">{item.time}</span>
+                              </div>
+                              <p className="text-xs font-bold text-slate-900 dark:text-white leading-snug">
+                                {item.title}
+                              </p>
+                              <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5 line-clamp-2">
+                                {item.desc}
+                              </p>
+                            </Link>
+                          ))}
+                        </div>
+
+                        <div className="pt-2 border-t border-slate-100 dark:border-slate-800 text-center">
+                          <Link
+                            href="/calendar"
+                            onClick={() => setNotificationsOpen(false)}
+                            className="inline-flex items-center gap-1 text-xs font-bold text-amber-700 dark:text-amber-400 hover:underline"
+                          >
+                            <span>Open Full Exam Calendar</span>
+                            <ExternalLink className="w-3 h-3" />
+                          </Link>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
+                </>
+              )}
 
               {/* 3. Profile Column / Sign-in */}
               {user ? (
@@ -564,16 +568,18 @@ export const Navbar: React.FC = () => {
                 </div>
               )}
 
-              {/* Mobile Hamburger Toggle */}
-              <div className="flex lg:hidden items-center">
-                <button
-                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                  aria-label="Toggle navigation menu"
-                  className="p-2 rounded-xl text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 min-h-[40px] min-w-[40px] flex items-center justify-center focus:ring-2 focus:ring-amber-500 focus:outline-none"
-                >
-                  {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-                </button>
-              </div>
+              {/* Mobile Hamburger Toggle (Hidden on dashboard) */}
+              {!isDashboardPage && (
+                <div className="flex lg:hidden items-center">
+                  <button
+                    onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                    aria-label="Toggle navigation menu"
+                    className="p-2 rounded-xl text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 min-h-[40px] min-w-[40px] flex items-center justify-center focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                  >
+                    {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                  </button>
+                </div>
+              )}
             </div>
 
           </div>
