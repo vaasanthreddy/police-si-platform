@@ -125,6 +125,7 @@ export const Navbar: React.FC = () => {
   };
 
   const isHomePage = pathname === '/';
+  const isDashboardPage = pathname === '/dashboard';
   const unreadCount = notifications.filter(n => n.unread).length;
 
   return (
@@ -147,23 +148,24 @@ export const Navbar: React.FC = () => {
               </div>
               <div className="flex flex-col">
                 <div className="flex items-center gap-1.5 sm:gap-2">
-                  <span className="font-extrabold text-xs sm:text-base lg:text-lg tracking-tight text-slate-900 dark:text-white group-hover:text-amber-700 dark:group-hover:text-amber-400 transition-colors uppercase leading-tight">
-                    POLICE SI <span className="text-amber-600">EXAM PREPARATION PLATFORM</span>
+                  <span className="font-extrabold text-xs sm:text-base lg:text-lg tracking-tight text-slate-900 dark:text-white group-hover:text-amber-700 dark:group-hover:text-amber-400 transition-colors uppercase leading-tight whitespace-nowrap">
+                    POLICE SI <span className="text-amber-700 dark:text-amber-400">EXAM PREPARATION PLATFORM</span>
                   </span>
-                  <span className="bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-300 border border-amber-300 dark:border-amber-700 text-[9px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider hidden sm:inline-block shrink-0">
+                  <span className="bg-amber-100 text-amber-900 dark:bg-amber-950/80 dark:text-amber-300 border border-amber-300 dark:border-amber-700 text-[9px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider hidden sm:inline-block shrink-0">
                     TSLPRB & AP
                   </span>
                 </div>
                 <p className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 tracking-wide font-medium truncate max-w-[200px] sm:max-w-none">
-                  Exam Preparation & Physical Efficiency Testing Portal
+                  State Sub-Inspector Exam Preparation & Physical Efficiency Testing Portal
                 </p>
               </div>
             </Link>
 
             {/* ========================================================================= */}
-            {/* MAIN NAVIGATION DESKTOP                                                  */}
+            {/* MAIN NAVIGATION DESKTOP (Hidden on dashboard per senior instructions)     */}
             {/* ========================================================================= */}
-            <div className="hidden lg:flex items-center gap-1">
+            {!isDashboardPage && (
+              <div className="hidden lg:flex items-center gap-1">
               {/* If in dashboard, provide dashboard button */}
               {user && (
                 <Link
@@ -299,6 +301,7 @@ export const Navbar: React.FC = () => {
                 )}
               </div>
             </div>
+            )}
 
             {/* ========================================================================= */}
             {/* RIGHT SIDE: Theme Toggle + Notification Bell + Profile Column             */}
@@ -577,9 +580,10 @@ export const Navbar: React.FC = () => {
         </div>
 
         {/* ========================================================================= */}
-        {/* MOBILE HORIZONTAL QUICK CHIP BAR                                          */}
+        {/* MOBILE HORIZONTAL QUICK CHIP BAR (Hidden on dashboard)                    */}
         {/* ========================================================================= */}
-        <div className="lg:hidden flex items-center gap-1.5 overflow-x-auto px-4 py-2 bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 text-xs font-bold scrollbar-none">
+        {!isDashboardPage && (
+          <div className="lg:hidden flex items-center gap-1.5 overflow-x-auto px-4 py-2 bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 text-xs font-bold scrollbar-none">
           {user && (
             <Link
               href={role === 'ADMIN' ? '/admin' : '/dashboard'}
@@ -636,7 +640,8 @@ export const Navbar: React.FC = () => {
             <CreditCard className="w-3.5 h-3.5" />
             <span>Pricing</span>
           </Link>
-        </div>
+          </div>
+        )}
 
         {/* Mobile Drawer Menu */}
         {mobileMenuOpen && (

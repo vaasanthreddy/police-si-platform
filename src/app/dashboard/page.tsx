@@ -1,620 +1,828 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
 import { useAuth } from '../../context/AuthContext';
-import { MOCK_EXAMS, MOCK_PREVIOUS_PAPERS, MOCK_USER_ATTEMPTS } from '../../lib/mockData';
 import { 
-  BarChart3, 
-  Clock, 
-  Award, 
+  FileText, 
+  Archive, 
   Activity, 
-  Target, 
+  Calendar, 
+  Award, 
+  Clock, 
   CheckCircle2, 
-  AlertTriangle, 
   ArrowRight, 
-  Sparkles, 
-  Play, 
-  FileText,
-  TrendingUp,
-  Crown,
-  ChevronRight,
-  Archive,
-  BookOpen,
-  HelpCircle,
-  PlayCircle
+  ShieldCheck, 
+  BookOpen, 
+  Bell, 
+  AlertCircle, 
+  ChevronRight, 
+  Sparkles,
+  Layers,
+  ChevronDown,
+  User,
+  Info
 } from 'lucide-react';
 
 export default function StudentDashboard() {
-  const router = useRouter();
-  const { user, role, toggleSubscription } = useAuth();
-  const [examTab, setExamTab] = useState<'MOCKS' | 'PRACTICE' | 'PYQ'>('MOCKS');
+  const { user } = useAuth();
 
-  // Route guard: only authenticated students
-  useEffect(() => {
-    if (!user) {
-      router.push('/auth?redirect=/dashboard');
-    }
-  }, [user, router]);
+  // Hero carousel slide state (3 visual slides)
+  const [heroSlide, setHeroSlide] = useState<number>(0);
 
-  if (!user) {
-    return (
-      <div className="max-w-7xl mx-auto px-4 py-16 text-center">
-        <div className="inline-block p-4 rounded-full bg-amber-50 border border-amber-200 mb-4 animate-spin">
-          <Clock className="w-6 h-6 text-amber-600" />
-        </div>
-        <p className="text-sm font-semibold text-slate-600">Verifying Aspirant Credentials...</p>
-      </div>
-    );
-  }
+  // Stats Section: Selected Feature for the Highlighted 4-Point Box
+  // 'MOCK_TESTS' | 'PREVIOUS_PAPERS' | 'PET_STANDARDS' | 'DESCRIPTIVE'
+  const [selectedFeature, setSelectedFeature] = useState<'MOCK_TESTS' | 'PREVIOUS_PAPERS' | 'PET_STANDARDS' | 'DESCRIPTIVE'>('MOCK_TESTS');
 
-  // Subject proficiency breakdown (PRD 3.4)
-  const subjectProficiency = [
-    { subject: 'Indian Polity & Constitution', score: 88, status: 'STRONG', color: 'bg-emerald-500' },
-    { subject: 'Arithmetic & Number Systems', score: 82, status: 'STRONG', color: 'bg-emerald-500' },
-    { subject: 'Test of Reasoning & Logic', score: 76, status: 'MODERATE', color: 'bg-amber-500' },
-    { subject: 'State Movement & History (TS/AP)', score: 64, status: 'NEEDS_FOCUS', color: 'bg-amber-600' },
-    { subject: 'General Science & Forensics', score: 58, status: 'WEAK', color: 'bg-red-500' },
+  // Hero slides data (Solid colors, no gradients)
+  const HERO_SLIDES = [
+    {
+      tag: 'TSLPRB & AP SLPRB SI RECRUITMENT',
+      heading: 'Telangana & Andhra Pradesh Police SI Preparation Suite',
+      subtitle: 'Complete preparation platform with timed 200-question Computer-Based Tests (CBT), verified syllabus coverage, authentic previous solved papers, and Physical Efficiency Test (PET) tracking.',
+      primaryBtnText: 'Start Free Mock Test',
+      primaryBtnHref: '/exam/tslprb-si-pwt-mock-01',
+      secondaryBtnText: 'Browse Solved Papers',
+      secondaryBtnHref: '/previous-papers',
+      stage: 'PWT Prelims Stage 1 Active',
+    },
+    {
+      tag: 'OFFICIAL SOLVED ARCHIVES',
+      heading: 'Verified Previous Year Question Papers (2018–2023)',
+      subtitle: 'Practice authentic questions from TSLPRB 2022, 2018, and AP SLPRB 2023 exams with verified answer keys, detailed bilingual formula derivations, and shortcut arithmetic tricks.',
+      primaryBtnText: 'Attempt 2022 Solved Paper',
+      primaryBtnHref: '/exam/pyq-tslprb-si-2022',
+      secondaryBtnText: 'View All Solved Papers',
+      secondaryBtnHref: '/previous-papers',
+      stage: 'Authentic Gazette Archives',
+    },
+    {
+      tag: 'ON-GROUND PHYSICAL BENCHMARKS',
+      heading: 'Physical Efficiency Test (PET) Milestone Tracker',
+      subtitle: 'Log and calibrate daily running timings against official police recruitment cutoffs: 1600m for male candidates (7m 15s) and 800m for female candidates (5m 20s).',
+      primaryBtnText: 'Track Running Timings',
+      primaryBtnHref: '/pet-tracker',
+      secondaryBtnText: 'Check Official Standards',
+      secondaryBtnHref: '/pet-tracker',
+      stage: 'Mandatory Physical Stage 2',
+    },
   ];
 
-  const fullMocks = MOCK_EXAMS.filter(e => e.examType === 'PRELIMS_PWT' && !e.isPreviousPaper);
-  const practicePapers = MOCK_EXAMS.filter(e => e.examType === 'DAILY_QUIZ' || e.examType === 'MAINS_PAPER_3_ARITHMETIC_REASONING');
+  // Feature Points Data for Section 5 (Stats Section: 4 points per feature)
+  const FEATURE_DETAILS = {
+    MOCK_TESTS: {
+      name: 'Computer-Based Mock Tests (CBT Simulator)',
+      description: 'High-fidelity examination engine replicating real exam day conditions for Preliminary Written Tests (PWT).',
+      href: '/exam/tslprb-si-pwt-mock-01',
+      actionText: 'Launch Full Mock Test Now',
+      points: [
+        {
+          num: '01',
+          title: 'Full 200-Question Authentic Blueprint',
+          text: 'Comprehensive 3-hour examination covering Arithmetic & Test of Reasoning (100 Qs) and General Studies (100 Qs) with exact marks allocation.'
+        },
+        {
+          num: '02',
+          title: 'Official Negative Marking (-0.25)',
+          text: 'Algorithmic penalty calculation matching official TSLPRB norms to train candidates against indiscriminate guessing.'
+        },
+        {
+          num: '03',
+          title: 'Real-Time Bilingual Toggle (EN / TE)',
+          text: 'Switch instantly between English and Telugu for questions, answer choices, and explanations without resetting answers or timer.'
+        },
+        {
+          num: '04',
+          title: 'State-Wide Percentile & Rank Benchmarking',
+          text: 'Immediate scorecard generation with comparative state percentiles, topic-wise accuracy breakdowns, and speed diagnostics.'
+        }
+      ]
+    },
+    PREVIOUS_PAPERS: {
+      name: 'Official Previous Year Solved Papers (PYQ Archives)',
+      description: 'Authentic past examination papers with verified final keys and step-by-step formula explanations.',
+      href: '/previous-papers',
+      actionText: 'Browse Solved PYQ Repository',
+      points: [
+        {
+          num: '01',
+          title: 'Authentic Gazette Sourced Papers',
+          text: 'Original question sets from TSLPRB 07-Aug-2022, 26-Aug-2018, and AP SLPRB 19-Feb-2023 preliminary written exams.'
+        },
+        {
+          num: '02',
+          title: 'Cross-Verified Final Answer Keys',
+          text: 'Every question solution verified against official board notifications with zero ambiguous or unverified answers.'
+        },
+        {
+          num: '03',
+          title: 'Step-by-Step Mathematical Shortcuts',
+          text: 'Detailed formula explanations for train chasing, time & distance, work equations, and reasoning logic problems.'
+        },
+        {
+          num: '04',
+          title: 'Dual Mode: Interactive CBT or Study Mode',
+          text: 'Attempt papers under strict exam timer conditions or review question-by-question with immediate solution reveals.'
+        }
+      ]
+    },
+    PET_STANDARDS: {
+      name: 'Physical Efficiency Test (PET) Ground Standards',
+      description: 'Field performance tracker calibrated strictly with official police department qualification benchmarks.',
+      href: '/pet-tracker',
+      actionText: 'Open PET Ground Tracker',
+      points: [
+        {
+          num: '01',
+          title: '1600 Metres Run (Male Aspirants)',
+          text: 'Standard qualifying threshold of 7 minutes 15 seconds (TSLPRB & AP SLPRB Civil / AR Sub-Inspector cadre).'
+        },
+        {
+          num: '02',
+          title: '800 Metres Run (Female Aspirants)',
+          text: 'Official qualifying threshold of 5 minutes 20 seconds with timing interval pacing guidelines.'
+        },
+        {
+          num: '03',
+          title: 'Long Jump & Shot Put Events',
+          text: 'Long jump (3.80m for men, 2.75m for women) and shot put (5.60m for men with 7.26kg, 3.75m for women with 4kg).'
+        },
+        {
+          num: '04',
+          title: 'Daily Training Logs & Pace Calculator',
+          text: 'Track day-to-day lap times, split paces, and qualification probability to ensure peak fitness before ground call letters.'
+        }
+      ]
+    },
+    DESCRIPTIVE: {
+      name: 'Mains Descriptive Papers & Evaluation',
+      description: 'Evaluation criteria and answer sheet guidelines for Final Written Exam Paper I (English) and Paper II (Telugu/Urdu).',
+      href: '/descriptive',
+      actionText: 'View Descriptive Question Sheets',
+      points: [
+        {
+          num: '01',
+          title: 'Paper I: English Descriptive Comprehension',
+          text: 'Official 100-mark format covering precis writing, formal letter drafting, English essay synthesis, and comprehension.'
+        },
+        {
+          num: '02',
+          title: 'Paper II: Telugu / Urdu Language Paper',
+          text: 'Official qualifying paper testing translation from English to Telugu/Urdu, regional essay writing, and grammar.'
+        },
+        {
+          num: '03',
+          title: 'Handwritten Script Upload Portal',
+          text: 'Write answers on lined A4 paper, upload photo scans, and receive evaluated feedback within 48–72 hours.'
+        },
+        {
+          num: '04',
+          title: 'Rubric-Based Faculty Scoring',
+          text: 'Marking on vocabulary, logical flow, precis word limits, and presentation by experienced state civil educators.'
+        }
+      ]
+    }
+  };
+
+  const currentHero = HERO_SLIDES[heroSlide];
+  const activeFeatureData = FEATURE_DETAILS[selectedFeature];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 font-sans">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12 font-sans text-slate-800 dark:text-slate-100">
       
-      {/* Minimalist Dashboard Action Header (Profile box removed per user feedback in Image 2) */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-slate-200">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-            <span>Aspirant Learning Dashboard</span>
-            {user?.subscriptionTier === 'PREMIUM' ? (
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300 text-[10px] font-bold">
-                <Crown className="w-3 h-3 text-amber-600" /> PRO PASS ACTIVE
-              </span>
-            ) : (
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200 text-[10px] font-bold">
-                FREE ASPIRANT
-              </span>
-            )}
-          </h1>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Candidate: <strong className="text-slate-800">{user?.name}</strong> • Target: <strong>{user?.targetExam?.replace(/_/g, ' ') || 'TSLPRB SI Civil & AR'}</strong> • Roll No: <span className="font-mono text-slate-700">{user?.rollNumber || 'TS-SI-2026-8841'}</span>
-          </p>
+      {/* User Welcome Notice Bar (Solid styling, no gradients) */}
+      {user ? (
+        <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-full bg-amber-600 text-white font-bold flex items-center justify-center shrink-0 text-xs">
+              {user.name.slice(0, 2).toUpperCase()}
+            </div>
+            <div>
+              <p className="font-bold text-slate-900 dark:text-white">
+                Welcome, {user.name}
+              </p>
+              <p className="text-slate-600 dark:text-slate-400">
+                Roll No: <span className="font-mono text-slate-800 dark:text-slate-200 font-semibold">{user.rollNumber || 'TS-SI-2026-8841'}</span> • Target: <span className="font-semibold text-amber-800 dark:text-amber-300">{user.targetExam?.replace(/_/g, ' ') || 'TSLPRB SI Civil & AR'}</span>
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold text-[11px] text-slate-700 dark:text-slate-300">
+              {user.subscriptionTier === 'PREMIUM' ? 'SI Pro Pass Active' : 'Free Aspirant Plan'}
+            </span>
+            <Link
+              href="/upgrade"
+              className="px-3 py-1 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-bold text-[11px] uppercase tracking-wider transition-colors"
+            >
+              {user.subscriptionTier === 'PREMIUM' ? 'Manage Plan' : 'Upgrade Pass'}
+            </Link>
+          </div>
         </div>
-
-        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+      ) : (
+        <div className="p-3.5 rounded-2xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 flex items-center justify-between text-xs">
+          <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
+            <Info className="w-4 h-4 text-amber-600 shrink-0" />
+            <span>Viewing Student Preparation Dashboard. Sign in to track test history and state percentile rankings.</span>
+          </div>
           <Link
-            href="/results"
-            className="px-3.5 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-300 font-bold text-xs uppercase tracking-wider transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
+            href="/auth?redirect=/dashboard"
+            className="px-3 py-1 rounded-lg bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 font-bold text-[11px] uppercase tracking-wider shrink-0"
           >
-            <Award className="w-3.5 h-3.5 text-emerald-700" />
-            <span>Results Tool</span>
-          </Link>
-
-          <Link
-            href="/performance"
-            className="px-3.5 py-2 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-900 border border-purple-300 font-bold text-xs uppercase tracking-wider transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
-          >
-            <BarChart3 className="w-3.5 h-3.5 text-purple-700" />
-            <span>Performance</span>
-          </Link>
-
-          <Link
-            href="/upgrade"
-            className="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
-          >
-            <Crown className="w-3.5 h-3.5" />
-            <span>{user?.subscriptionTier === 'PREMIUM' ? 'Pro Pass Active' : 'Upgrade Plan'}</span>
+            Sign In
           </Link>
         </div>
-      </div>
+      )}
 
       {/* ========================================================================= */}
-      {/* 2ND IMAGE BOXES: COMPLETE THREE-STAGE RECRUITMENT EXAM PIPELINE          */}
-      {/* (PRD Section 4 - Exact boxes from User Image 2)                           */}
+      {/* 2. HERO SECTION (Wireframe Section 2: Strong heading + CTA + Visuals)     */}
+      {/* No gradients, solid colors, clean layout separation                      */}
       {/* ========================================================================= */}
-      <section className="space-y-4">
-        <div className="text-center max-w-3xl mx-auto">
-          <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-            Complete Three-Stage Recruitment Exam Pipeline
-          </h2>
-          <p className="text-xs text-slate-500 mt-1">
-            Structured in strict adherence to the official TSLPRB & Andhra Pradesh Police Recruitment Board syllabus and qualification phases.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Phase 1: PWT */}
-          <div className="bg-white border-2 border-slate-200 hover:border-amber-400 rounded-3xl p-6 shadow-sm transition-all flex flex-col justify-between">
+      <section className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-10 shadow-sm">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          
+          {/* Left Column: Heading, Subtitle & Action Buttons */}
+          <div className="lg:col-span-7 space-y-5">
             <div>
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-xs font-bold text-amber-700 uppercase tracking-widest font-mono bg-amber-50 px-2 py-1 rounded">
-                  STAGE 01
-                </span>
-                <span className="text-[11px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-bold">
-                  200 Marks
-                </span>
-              </div>
-              <h3 className="text-base font-bold text-slate-900">Preliminary Written Test (PWT)</h3>
-              <p className="text-xs text-slate-600 mt-2 leading-relaxed">
-                Single paper of 3 hours duration containing 200 objective questions covering Arithmetic & Test of Reasoning (100 Questions) and General Studies (100 Questions).
-              </p>
-              <ul className="mt-4 space-y-2 text-xs text-slate-600">
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>200 Questions • 3-Hour Countdown Timer</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>Negative marking calculation (0.25 penalty)</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>English & Telugu/Hindi/Urdu bilingual mode</span>
-                </li>
-              </ul>
+              <span className="inline-block px-3 py-1 rounded-md bg-amber-100 dark:bg-amber-950/60 text-amber-900 dark:text-amber-300 border border-amber-300 dark:border-amber-700 text-[11px] font-bold uppercase tracking-wider">
+                {currentHero.tag}
+              </span>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 dark:text-white tracking-tight leading-tight mt-3">
+                {currentHero.heading}
+              </h1>
             </div>
-            <div className="pt-6 mt-6 border-t border-slate-100">
+
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed max-w-xl">
+              {currentHero.subtitle}
+            </p>
+
+            {/* CTAs */}
+            <div className="flex flex-wrap items-center gap-3 pt-1">
               <Link
-                href="/exam/tslprb-si-pwt-mock-01"
-                className="w-full block text-center py-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 text-xs font-bold transition-colors border border-amber-200 cursor-pointer"
+                href={currentHero.primaryBtnHref}
+                className="px-6 py-3 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider transition-colors shadow-sm flex items-center gap-2"
               >
-                Attempt PWT CBT Exam
+                <span>{currentHero.primaryBtnText}</span>
+                <ArrowRight className="w-4 h-4" />
               </Link>
+
+              <Link
+                href={currentHero.secondaryBtnHref}
+                className="px-6 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-white font-bold text-xs uppercase tracking-wider border border-slate-300 dark:border-slate-700 transition-colors"
+              >
+                {currentHero.secondaryBtnText}
+              </Link>
+            </div>
+
+            {/* Carousel Indicator Dots */}
+            <div className="flex items-center gap-2 pt-3">
+              {HERO_SLIDES.map((_, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => setHeroSlide(idx)}
+                  className={`h-2.5 rounded-full transition-all ${
+                    heroSlide === idx 
+                      ? 'w-8 bg-amber-600' 
+                      : 'w-2.5 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300'
+                  }`}
+                  aria-label={`Go to slide ${idx + 1}`}
+                />
+              ))}
             </div>
           </div>
 
-          {/* Phase 2: PET / PMT */}
-          <div className="bg-white border-2 border-emerald-300 hover:border-emerald-500 rounded-3xl p-6 shadow-sm transition-all flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-xs font-bold text-emerald-700 uppercase tracking-widest font-mono bg-emerald-50 px-2 py-1 rounded">
-                  STAGE 02
+          {/* Right Column: Clean Visual Card in Layout Separation */}
+          <div className="lg:col-span-5">
+            <div className="bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 space-y-4 shadow-sm">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-700">
+                <span className="text-xs font-bold text-slate-900 dark:text-white">
+                  Official Exam Blueprint
                 </span>
-                <span className="text-[11px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-bold">
-                  Ground Fitness
+                <span className="text-[10px] font-bold font-mono px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-300">
+                  {currentHero.stage}
                 </span>
               </div>
-              <h3 className="text-base font-bold text-slate-900">Physical Efficiency & Measurement (PET/PMT)</h3>
-              <p className="text-xs text-slate-600 mt-2 leading-relaxed">
-                Log book and milestone tracker for qualifying physical measurements (Height/Chest) and performance in official track and field events.
-              </p>
-              <ul className="mt-4 space-y-2 text-xs text-slate-600">
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>1600m Run for Men (Target: &lt; 7m 15s)</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>800m Run for Women (Target: &lt; 5m 20s)</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>Long Jump & Shot Put qualifying metrics</span>
-                </li>
-              </ul>
-            </div>
-            <div className="pt-6 mt-6 border-t border-slate-100">
-              <Link
-                href="/pet-tracker"
-                className="w-full block text-center py-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-900 text-xs font-bold transition-colors border border-emerald-200 cursor-pointer"
-              >
-                Open PET Tracker Log
-              </Link>
+
+              <div className="space-y-2.5 text-xs">
+                <div className="p-3 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                  <span className="text-slate-600 dark:text-slate-400">Total Objective Questions:</span>
+                  <strong className="font-mono text-slate-900 dark:text-white">200 Questions (PWT)</strong>
+                </div>
+                <div className="p-3 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                  <span className="text-slate-600 dark:text-slate-400">Time Allocation:</span>
+                  <strong className="font-mono text-slate-900 dark:text-white">180 Mins (3.00 Hours)</strong>
+                </div>
+                <div className="p-3 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                  <span className="text-slate-600 dark:text-slate-400">Negative Penalty:</span>
+                  <strong className="font-mono text-red-600 dark:text-red-400">-0.25 Mark per wrong answer</strong>
+                </div>
+                <div className="p-3 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                  <span className="text-slate-600 dark:text-slate-400">Language Mediums:</span>
+                  <strong className="text-slate-900 dark:text-white">Bilingual (English & Telugu)</strong>
+                </div>
+              </div>
+
+              <div className="pt-2">
+                <Link
+                  href="/exam/tslprb-si-pwt-mock-01"
+                  className="w-full block text-center py-2.5 rounded-xl bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 text-white dark:text-slate-900 font-bold text-xs uppercase tracking-wider transition-colors"
+                >
+                  Attempt Live Sample Mock
+                </Link>
+              </div>
             </div>
           </div>
 
-          {/* Phase 3: FWE Mains */}
-          <div className="bg-white border-2 border-slate-200 hover:border-purple-400 rounded-3xl p-6 shadow-sm transition-all flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-xs font-bold text-purple-700 uppercase tracking-widest font-mono bg-purple-50 px-2 py-1 rounded">
-                  STAGE 03
-                </span>
-                <span className="text-[11px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-bold">
-                  4 Papers
-                </span>
-              </div>
-              <h3 className="text-base font-bold text-slate-900">Final Written Examination (FWE)</h3>
-              <p className="text-xs text-slate-600 mt-2 leading-relaxed">
-                Comprehensive 4-Paper final examination including descriptive evaluation for languages and objective testing for technical papers.
-              </p>
-              <ul className="mt-4 space-y-2 text-xs text-slate-600">
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>Paper I: English (Descriptive Essays & Precis)</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>Paper II: Telugu / Urdu (Descriptive)</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>Paper III & IV: 200 Questions Objective</span>
-                </li>
-              </ul>
-            </div>
-            <div className="pt-6 mt-6 border-t border-slate-100">
-              <Link
-                href="/descriptive"
-                className="w-full block text-center py-2.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-900 text-xs font-bold transition-colors border border-purple-200 cursor-pointer"
-              >
-                Submit Descriptive Paper
-              </Link>
-            </div>
-          </div>
         </div>
       </section>
 
-      {/* KPI Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
-          <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-semibold uppercase tracking-wider">Overall Accuracy</span>
-            <Target className="w-4 h-4 text-emerald-600" />
-          </div>
-          <p className="text-2xl font-black text-slate-900 font-mono">84.6%</p>
-          <p className="text-[11px] text-emerald-600 mt-1 flex items-center gap-1">
-            <TrendingUp className="w-3 h-3" /> +3.2% vs last week
-          </p>
-        </div>
-
-        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
-          <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-semibold uppercase tracking-wider">Avg Time / Question</span>
-            <Clock className="w-4 h-4 text-amber-600" />
-          </div>
-          <p className="text-2xl font-black text-slate-900 font-mono">48s</p>
-          <p className="text-[11px] text-slate-500 mt-1">Benchmark: &lt; 54s for 200 Qs</p>
-        </div>
-
-        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
-          <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-semibold uppercase tracking-wider">PET Ground Readiness</span>
-            <Activity className="w-4 h-4 text-blue-600" />
-          </div>
-          <p className="text-2xl font-black text-blue-600 font-mono">92%</p>
-          <p className="text-[11px] text-emerald-600 mt-1">1600m Run in 6m 45s (Qualified)</p>
-        </div>
-
-        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
-          <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-semibold uppercase tracking-wider">State Rank Estimate</span>
-            <Award className="w-4 h-4 text-amber-600" />
-          </div>
-          <p className="text-2xl font-black text-amber-600 font-mono">#142</p>
-          <p className="text-[11px] text-slate-500 mt-1">Top 1.8% in Telangana State</p>
-        </div>
-      </div>
-
-      {/* Main Grid: Exam Catalogue Tabs & Diagnostics */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
-        {/* Left 2 Cols: Exam Categories */}
-        <div className="lg:col-span-2 space-y-6">
-          
-          <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-              <div>
-                <h3 className="text-lg font-bold text-slate-900">Police SI Examination Suite</h3>
-                <p className="text-xs text-slate-500">Practice full mocks, topic tests, or real previous year papers</p>
-              </div>
-
-              {/* Tabs */}
-              <div className="flex items-center bg-slate-100 p-1 rounded-2xl border border-slate-200 text-xs font-bold">
-                <button
-                  type="button"
-                  onClick={() => setExamTab('MOCKS')}
-                  className={`px-3 py-1.5 rounded-xl transition-all ${
-                    examTab === 'MOCKS'
-                      ? 'bg-amber-600 text-white shadow-sm'
-                      : 'text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  Grand Mocks (200 M)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setExamTab('PRACTICE')}
-                  className={`px-3 py-1.5 rounded-xl transition-all ${
-                    examTab === 'PRACTICE'
-                      ? 'bg-amber-600 text-white shadow-sm'
-                      : 'text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  Topic Drills
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setExamTab('PYQ')}
-                  className={`px-3 py-1.5 rounded-xl transition-all ${
-                    examTab === 'PYQ'
-                      ? 'bg-amber-600 text-white shadow-sm'
-                      : 'text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  Previous Papers (PYQ)
-                </button>
-              </div>
-            </div>
-
-            {/* List for MOCKS */}
-            {examTab === 'MOCKS' && (
-              <div className="space-y-3">
-                {fullMocks.map((exam) => (
-                  <div
-                    key={exam.id}
-                    className="bg-slate-50 hover:bg-slate-100/80 border border-slate-200 rounded-2xl p-4 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4"
-                  >
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-slate-900">{exam.title}</span>
-                        {exam.isPremiumOnly && (
-                          <span className="px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-300 text-[10px] font-bold">
-                            PRO PASS
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-[11px] text-slate-500">
-                        {exam.totalQuestions} Questions • {exam.durationMins} Mins • Total Marks: {exam.totalMarks} • -0.25 Negative Marking
-                      </p>
-                    </div>
-
-                    <Link
-                      href={`/exam/${exam.id}`}
-                      className="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider transition-colors shadow-sm flex items-center gap-1.5 whitespace-nowrap cursor-pointer"
-                    >
-                      <Play className="w-3.5 h-3.5" />
-                      <span>Start Mock</span>
-                    </Link>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* List for PRACTICE */}
-            {examTab === 'PRACTICE' && (
-              <div className="space-y-3">
-                {practicePapers.map((exam) => (
-                  <div
-                    key={exam.id}
-                    className="bg-slate-50 hover:bg-slate-100/80 border border-slate-200 rounded-2xl p-4 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4"
-                  >
-                    <div className="space-y-1">
-                      <span className="text-xs font-bold text-slate-900">{exam.title}</span>
-                      <p className="text-[11px] text-slate-500">
-                        {exam.totalQuestions} Questions • {exam.durationMins} Mins • Instant Answer Keys
-                      </p>
-                    </div>
-
-                    <Link
-                      href={`/exam/${exam.id}`}
-                      className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-wider transition-colors shadow-sm flex items-center gap-1.5 whitespace-nowrap cursor-pointer"
-                    >
-                      <Play className="w-3.5 h-3.5" />
-                      <span>Take Quiz</span>
-                    </Link>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* List for PYQ */}
-            {examTab === 'PYQ' && (
-              <div className="space-y-3">
-                {MOCK_PREVIOUS_PAPERS.map((paper) => (
-                  <div
-                    key={paper.id}
-                    className="bg-amber-50/50 hover:bg-amber-50 border border-amber-200 rounded-2xl p-4 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4"
-                  >
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <span className="px-2 py-0.5 rounded-full bg-amber-200/60 text-amber-900 text-[10px] font-bold">
-                          Year {paper.year}
-                        </span>
-                        <span className="text-xs font-bold text-slate-900">{paper.title}</span>
-                      </div>
-                      <p className="text-[11px] text-slate-500">
-                        {paper.totalQuestions} Qs • {paper.totalMarks} Marks • Shift: {paper.examShift}
-                      </p>
-                    </div>
-
-                    <Link
-                      href={`/exam/${paper.examId}`}
-                      className="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider transition-colors shadow-sm flex items-center gap-1.5 whitespace-nowrap cursor-pointer"
-                    >
-                      <PlayCircle className="w-3.5 h-3.5" />
-                      <span>Solve CBT</span>
-                    </Link>
-                  </div>
-                ))}
-                <div className="pt-2 text-center">
-                  <Link
-                    href="/previous-papers"
-                    className="text-xs font-bold text-amber-700 hover:text-amber-900 underline"
-                  >
-                    View All State Previous Papers Archives & PDF Keys →
-                  </Link>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Results Tool Quick Preview (Recent Attempt) */}
-          <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                  <Award className="w-5 h-5 text-amber-600" />
-                  <span>Recent Examination Scorecard Preview</span>
-                </h3>
-                <p className="text-xs text-slate-500">Check comprehensive analysis, negative marking, and rank in the Results Tool</p>
-              </div>
-              <Link
-                href="/results"
-                className="text-xs font-bold text-amber-700 hover:text-amber-900 flex items-center gap-1"
-              >
-                <span>Full Results Tool</span>
-                <ChevronRight className="w-4 h-4" />
-              </Link>
-            </div>
-
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs">
-              <div>
-                <span className="font-bold text-slate-900">TSLPRB SI Preliminary Grand Mock 01</span>
-                <p className="text-slate-500 text-[11px]">Completed under TSLPRB CBT Pattern</p>
-              </div>
-              <div className="flex items-center gap-4 font-mono">
-                <div>
-                  <span className="text-slate-400 text-[10px] block">NET SCORE</span>
-                  <span className="font-black text-amber-700 text-sm">146.5 / 200</span>
-                </div>
-                <div>
-                  <span className="text-slate-400 text-[10px] block">ACCURACY</span>
-                  <span className="font-black text-emerald-700 text-sm">78.4%</span>
-                </div>
-                <div>
-                  <span className="text-slate-400 text-[10px] block">STATE RANK</span>
-                  <span className="font-black text-slate-800 text-sm">#142</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-        {/* Right 1 Col: Diagnostics & Shortcuts (Sticky scrolling side rail with floating emblem) */}
-        <div className="space-y-6 lg:sticky lg:top-24 lg:self-start transition-all duration-300">
-          
-          {/* Sticky Aspirant Benchmark Card with Floating Emblem (Follows user on scroll) */}
-          <div className="bg-gradient-to-br from-amber-500 via-amber-600 to-amber-700 text-white rounded-3xl p-5 shadow-md space-y-3 relative overflow-hidden">
-            <div className="flex items-center gap-3 relative z-10">
-              <div className="w-12 h-12 rounded-2xl bg-white/20 p-1.5 backdrop-blur-sm border border-white/30 flex items-center justify-center shrink-0 animate-float">
-                <Image
-                  src="/logo.png"
-                  alt="Police SI Emblem"
-                  width={36}
-                  height={36}
-                  className="object-contain"
-                />
-              </div>
-              <div>
-                <span className="text-[10px] font-black tracking-widest uppercase bg-white/20 px-2 py-0.5 rounded-full">
-                  SI BENCHMARK STATUS
-                </span>
-                <h4 className="text-sm font-extrabold text-white mt-0.5">
-                  Top 1.8% State Percentile
-                </h4>
-              </div>
-            </div>
-            <p className="text-xs text-amber-100 leading-relaxed relative z-10">
-              Current Mock Score: <strong className="text-white font-mono">146.5 / 200</strong>. Your preparation pace matches candidates qualifying for TSLPRB & AP SI Final Written Exams.
+      {/* ========================================================================= */}
+      {/* 3. QUICK ACTIONS (Wireframe Section 3: Main Features in 4 Cards)           */}
+      {/* Layout separation, solid borders, icons and links                         */}
+      {/* ========================================================================= */}
+      <section className="space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+              Quick Action Features
+            </h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              Direct access to candidate testing modules, question archives, and physical standards.
             </p>
-            <div className="pt-2 flex items-center justify-between text-[11px] font-bold text-amber-100 border-t border-white/20 relative z-10">
-              <span>Next Sunday Grand Mock:</span>
-              <span className="bg-white text-amber-900 px-2 py-0.5 rounded font-mono font-black">10:00 AM IST</span>
-            </div>
           </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           
-          {/* Subject-Wise Strong & Weak Areas */}
-          <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-base font-bold text-slate-900">Subject Diagnostics</h3>
-                <p className="text-xs text-slate-500">Proficiency by topic</p>
-              </div>
-              <Link
-                href="/performance"
-                className="text-xs font-bold text-purple-700 hover:text-purple-900 flex items-center gap-1"
-              >
-                <span>Analysis</span>
-                <ChevronRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-
+          {/* Card 1: Mock Tests */}
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-amber-400 dark:hover:border-amber-500 rounded-2xl p-5 shadow-sm transition-all flex flex-col justify-between space-y-4">
             <div className="space-y-3">
-              {subjectProficiency.map((item, idx) => (
-                <div key={idx} className="space-y-1">
-                  <div className="flex justify-between text-xs">
-                    <span className="text-slate-800 font-semibold">{item.subject}</span>
-                    <span className="font-mono font-bold text-slate-700">{item.score}%</span>
-                  </div>
-                  <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                    <div className={`${item.color} h-full rounded-full transition-all`} style={{ width: `${item.score}%` }}></div>
-                  </div>
-                </div>
-              ))}
+              <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-400 flex items-center justify-center font-bold">
+                <FileText className="w-5 h-5" />
+              </div>
+              <div>
+                <span className="text-[10px] font-mono font-bold text-blue-700 dark:text-blue-400 uppercase">
+                  PWT Simulation
+                </span>
+                <h3 className="text-base font-bold text-slate-900 dark:text-white mt-0.5">
+                  Mock Tests
+                </h3>
+                <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">
+                  Full 200-question timed Preliminary Written Tests with live countdown timers and official negative marks.
+                </p>
+              </div>
             </div>
 
-            <div className="p-3 bg-amber-50 rounded-2xl border border-amber-200 text-xs text-amber-900">
-              <span className="font-bold flex items-center gap-1.5 text-amber-800">
-                <AlertTriangle className="w-3.5 h-3.5" /> Recommendation
-              </span>
-              <p className="text-[11px] mt-1 text-slate-600">
-                Focus on <strong>General Science & Forensics</strong> and <strong>State Movement History</strong> to push your aggregate score past the 160+ mark.
-              </p>
-            </div>
+            <Link
+              href="/exam/tslprb-si-pwt-mock-01"
+              className="text-xs font-bold text-amber-700 dark:text-amber-400 hover:underline flex items-center gap-1"
+            >
+              <span>Launch Mock Test</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </Link>
           </div>
 
-          {/* PET Physical Fitness Readiness Card */}
-          <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-base font-bold text-slate-900">PET Ground Fitness</h3>
-                <p className="text-xs text-slate-500">Daily physical training progress</p>
+          {/* Card 2: Previous Papers */}
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-amber-400 dark:hover:border-amber-500 rounded-2xl p-5 shadow-sm transition-all flex flex-col justify-between space-y-4">
+            <div className="space-y-3">
+              <div className="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 flex items-center justify-center font-bold">
+                <Archive className="w-5 h-5" />
               </div>
-              <Activity className="w-5 h-5 text-emerald-600" />
+              <div>
+                <span className="text-[10px] font-mono font-bold text-amber-700 dark:text-amber-400 uppercase">
+                  Verified Archives
+                </span>
+                <h3 className="text-base font-bold text-slate-900 dark:text-white mt-0.5">
+                  Previous Papers
+                </h3>
+                <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">
+                  Official solved papers from 2018, 2022, and 2023 with verified answer keys and shortcut solutions.
+                </p>
+              </div>
             </div>
 
-            <div className="space-y-2 text-xs">
-              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex justify-between items-center">
-                <span className="font-medium text-slate-700">1600m Run Timing</span>
-                <span className="font-bold text-emerald-700 font-mono">6m 45s (Qualified)</span>
+            <Link
+              href="/previous-papers"
+              className="text-xs font-bold text-amber-700 dark:text-amber-400 hover:underline flex items-center gap-1"
+            >
+              <span>Browse Solved PYQs</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          {/* Card 3: PET Tracker */}
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-amber-400 dark:hover:border-amber-500 rounded-2xl p-5 shadow-sm transition-all flex flex-col justify-between space-y-4">
+            <div className="space-y-3">
+              <div className="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 flex items-center justify-center font-bold">
+                <Activity className="w-5 h-5" />
               </div>
-              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex justify-between items-center">
-                <span className="font-medium text-slate-700">Long Jump Distance</span>
-                <span className="font-bold text-emerald-700 font-mono">4.20m (Passed)</span>
-              </div>
-              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex justify-between items-center">
-                <span className="font-medium text-slate-700">Shot Put (7.26kg)</span>
-                <span className="font-bold text-emerald-700 font-mono">6.50m (Passed)</span>
+              <div>
+                <span className="text-[10px] font-mono font-bold text-emerald-700 dark:text-emerald-400 uppercase">
+                  Ground Standards
+                </span>
+                <h3 className="text-base font-bold text-slate-900 dark:text-white mt-0.5">
+                  PET Standards
+                </h3>
+                <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">
+                  Track 1600m run (men: 7m 15s) and 800m run (women: 5m 20s) with official physical qualification thresholds.
+                </p>
               </div>
             </div>
 
             <Link
               href="/pet-tracker"
-              className="w-full block text-center py-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-900 font-bold text-xs border border-emerald-200 transition-colors cursor-pointer"
+              className="text-xs font-bold text-emerald-700 dark:text-emerald-400 hover:underline flex items-center gap-1"
             >
-              Log Today's Ground Workouts
+              <span>Track Physicals</span>
+              <ChevronRight className="w-3.5 h-3.5" />
             </Link>
           </div>
 
-          {/* Descriptive Paper Module Shortcut */}
-          <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm space-y-3">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-base font-bold text-slate-900">Descriptive Evaluation</h3>
-                <p className="text-xs text-slate-500">Mains Paper I & II Essay & Precis</p>
+          {/* Card 4: Exam Calendar */}
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-amber-400 dark:hover:border-amber-500 rounded-2xl p-5 shadow-sm transition-all flex flex-col justify-between space-y-4">
+            <div className="space-y-3">
+              <div className="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-400 flex items-center justify-center font-bold">
+                <Calendar className="w-5 h-5" />
               </div>
-              <FileText className="w-5 h-5 text-purple-600" />
+              <div>
+                <span className="text-[10px] font-mono font-bold text-purple-700 dark:text-purple-400 uppercase">
+                  Recruitment Dates
+                </span>
+                <h3 className="text-base font-bold text-slate-900 dark:text-white mt-0.5">
+                  Exam Calendar
+                </h3>
+                <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">
+                  Upcoming recruitment dates, notification timelines, and alert preferences for TS & AP police exams.
+                </p>
+              </div>
             </div>
-            <p className="text-xs text-slate-600">
-              Submit your handwritten essay answers for evaluation and faculty feedback.
-            </p>
+
             <Link
-              href="/descriptive"
-              className="w-full block text-center py-2.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-900 font-bold text-xs border border-purple-200 transition-colors cursor-pointer"
+              href="/calendar"
+              className="text-xs font-bold text-purple-700 dark:text-purple-400 hover:underline flex items-center gap-1"
             >
-              Submit Descriptive Answer Sheet
+              <span>Open Calendar</span>
+              <ChevronRight className="w-3.5 h-3.5" />
             </Link>
           </div>
 
         </div>
+      </section>
 
-      </div>
+      {/* ========================================================================= */}
+      {/* 4. KEY HIGHLIGHTS (Wireframe Section 4: Exams & Study Materials)          */}
+      {/* Information about exams, study materials with layout separation           */}
+      {/* ========================================================================= */}
+      <section className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-10 shadow-sm">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          
+          {/* Left Column: Visual Representation of Study Materials & Syllabus */}
+          <div className="lg:col-span-5">
+            <div className="bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-700">
+                <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                  <BookOpen className="w-4 h-4 text-amber-600" />
+                  <span>Standard Study Material Modules</span>
+                </span>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-900 border border-amber-300">
+                  Bilingual
+                </span>
+              </div>
+
+              <div className="space-y-2.5 text-xs">
+                <div className="p-3 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700">
+                  <div className="flex justify-between items-center">
+                    <strong className="text-slate-900 dark:text-white">Paper III: Arithmetic & Reasoning</strong>
+                    <span className="text-[10px] text-slate-500 font-mono">100 Qs / 100 M</span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+                    Number systems, percentages, ratios, police chasing, syllogisms, and coding-decoding.
+                  </p>
+                </div>
+
+                <div className="p-3 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700">
+                  <div className="flex justify-between items-center">
+                    <strong className="text-slate-900 dark:text-white">Paper IV: General Studies & Polity</strong>
+                    <span className="text-[10px] text-slate-500 font-mono">100 Qs / 100 M</span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+                    Constitution of India, modern Indian history, state movement, ethics, and general science.
+                  </p>
+                </div>
+
+                <div className="p-3 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700">
+                  <div className="flex justify-between items-center">
+                    <strong className="text-slate-900 dark:text-white">Mains Descriptive (English & Telugu)</strong>
+                    <span className="text-[10px] text-slate-500 font-mono">200 Marks</span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+                    Precis writing, formal administrative letter drafts, comprehension, and translation.
+                  </p>
+                </div>
+              </div>
+
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 italic">
+                *Aligned with Telugu Akademi curriculum and official police gazettes.
+              </p>
+            </div>
+          </div>
+
+          {/* Right Column: Information about the Exams & Study Materials */}
+          <div className="lg:col-span-7 space-y-4">
+            <div>
+              <span className="text-xs font-bold text-amber-700 dark:text-amber-400 uppercase tracking-widest bg-amber-50 dark:bg-amber-950/60 px-3 py-1 rounded-full border border-amber-200 dark:border-amber-800">
+                Key Academic Highlights
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white mt-2 tracking-tight">
+                Authentic Exam Information & Structured Study Materials
+              </h2>
+            </div>
+
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+              Our preparation modules are meticulously structured to cover the complete recruitment cycle of Telangana State Level Police Recruitment Board (TSLPRB) and Andhra Pradesh State Level Police Recruitment Board (AP SLPRB) Sub-Inspector cadres.
+            </p>
+
+            <ul className="space-y-2.5 text-xs text-slate-700 dark:text-slate-300">
+              <li className="flex items-start gap-2.5">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                <span>
+                  <strong>Full 200-Question Preliminary Blueprints:</strong> Authentic question distributions covering all syllabus micro-topics with zero unverified questions.
+                </span>
+              </li>
+              <li className="flex items-start gap-2.5">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                <span>
+                  <strong>Complete Bilingual Materials:</strong> Questions, explanations, formula derivations, and terms available in both English and Telugu.
+                </span>
+              </li>
+              <li className="flex items-start gap-2.5">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                <span>
+                  <strong>Physical Test Calibrations:</strong> Exact track cutoffs for 1600m and 800m runs to help you qualify Stage 2 without disqualification risks.
+                </span>
+              </li>
+              <li className="flex items-start gap-2.5">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                <span>
+                  <strong>Descriptive Evaluation Rubrics:</strong> Scoring models matching official state evaluation boards for Paper I & II.
+                </span>
+              </li>
+            </ul>
+
+            <div className="pt-2">
+              <Link
+                href="/previous-papers"
+                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider transition-colors shadow-sm"
+              >
+                <span>Access Study Materials & PYQs</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* 5. STATS SECTION: KEY FEATURES WITH INTERACTIVE 4-POINT HIGHLIGHTED BOX    */}
+      {/* Wireframe Section 5: Clicking each feature opens its 4 points in a box    */}
+      {/* ========================================================================= */}
+      <section className="space-y-6">
+        <div className="text-center max-w-2xl mx-auto">
+          <span className="text-xs font-bold text-amber-700 dark:text-amber-400 uppercase tracking-widest bg-amber-50 dark:bg-amber-950/60 px-3 py-1 rounded-full border border-amber-200 dark:border-amber-800">
+            Interactive Feature Explorer
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white mt-2 tracking-tight">
+            Key Features of the Preparation Platform
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+            Click any feature below to inspect its 4 core operational specifications in the highlighted box.
+          </p>
+        </div>
+
+        {/* Feature Selector Tabs (4 Buttons/Cards) */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {[
+            { key: 'MOCK_TESTS' as const, label: 'Mock Tests (CBT)', icon: FileText, count: '25+ Grand Mocks' },
+            { key: 'PREVIOUS_PAPERS' as const, label: 'Previous Papers', icon: Archive, count: '2018–2023 Archives' },
+            { key: 'PET_STANDARDS' as const, label: 'PET Standards', icon: Activity, count: '1600m / 800m Norms' },
+            { key: 'DESCRIPTIVE' as const, label: 'Descriptive Papers', icon: BookOpen, count: 'Paper I & II Rubrics' },
+          ].map((tab) => {
+            const isSelected = selectedFeature === tab.key;
+            const Icon = tab.icon;
+            return (
+              <button
+                key={tab.key}
+                type="button"
+                onClick={() => setSelectedFeature(tab.key)}
+                className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between space-y-3 ${
+                  isSelected
+                    ? 'border-amber-600 bg-amber-50/80 dark:bg-amber-950/40 text-amber-950 dark:text-amber-200 shadow-md ring-2 ring-amber-300 dark:ring-amber-800'
+                    : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-slate-300 dark:hover:border-slate-700 text-slate-700 dark:text-slate-300'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                    isSelected ? 'bg-amber-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
+                  }`}>
+                    <Icon className="w-4 h-4" />
+                  </div>
+                  {isSelected && (
+                    <span className="w-2 h-2 rounded-full bg-amber-600 animate-pulse" />
+                  )}
+                </div>
+                <div>
+                  <h3 className="text-xs sm:text-sm font-bold leading-tight">
+                    {tab.label}
+                  </h3>
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 font-mono">
+                    {tab.count}
+                  </p>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* The Highlighted Box: Shows the 4 Points for the Selected Feature */}
+        <div className="bg-white dark:bg-slate-900 border-2 border-amber-600 dark:border-amber-500 rounded-3xl p-6 sm:p-8 shadow-lg space-y-6 animate-in fade-in duration-150">
+          
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100 dark:border-slate-800">
+            <div>
+              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400 bg-amber-100 dark:bg-amber-950/60 px-2.5 py-0.5 rounded-full">
+                Active Feature Specifications
+              </span>
+              <h3 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white mt-1">
+                {activeFeatureData.name}
+              </h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                {activeFeatureData.description}
+              </p>
+            </div>
+
+            <Link
+              href={activeFeatureData.href}
+              className="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider transition-colors shadow-sm flex items-center gap-1.5 shrink-0"
+            >
+              <span>{activeFeatureData.actionText}</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          {/* 4 Points Grid inside the Highlighted Box */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {activeFeatureData.points.map((pt) => (
+              <div
+                key={pt.num}
+                className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1.5"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-md bg-amber-600 text-white font-mono font-bold text-xs flex items-center justify-center shrink-0">
+                    {pt.num}
+                  </span>
+                  <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
+                    {pt.title}
+                  </h4>
+                </div>
+                <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed pl-8">
+                  {pt.text}
+                </p>
+              </div>
+            ))}
+          </div>
+
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* 6. LATEST UPDATES (Wireframe Section 6: Announcements & Important Notice)  */}
+      {/* 2-Column layout: Latest Updates on Left, Important Notice on Right        */}
+      {/* ========================================================================= */}
+      <section className="space-y-4">
+        <div>
+          <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+            Notices & Recruitment Updates
+          </h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            Verified state police recruitment gazette communications and candidate instructions.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          
+          {/* Column 1: Latest Updates (Announcements) */}
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-7 shadow-sm space-y-4">
+            <div className="flex items-center gap-2 pb-3 border-b border-slate-100 dark:border-slate-800">
+              <div className="p-2 rounded-xl bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-400">
+                <Bell className="w-4 h-4" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">Latest Updates</h3>
+                <p className="text-[11px] text-slate-500">Recent examination notifications & materials</p>
+              </div>
+            </div>
+
+            <ul className="space-y-3.5 text-xs text-slate-700 dark:text-slate-300">
+              <li className="flex items-start gap-2.5">
+                <span className="w-2 h-2 rounded-full bg-amber-600 mt-1.5 shrink-0" />
+                <div>
+                  <strong className="text-slate-900 dark:text-white block">TSLPRB SI Notification Timeline 2026:</strong>
+                  <p className="text-slate-600 dark:text-slate-400 mt-0.5">
+                    Official announcement expected for Civil, AR, and TSSP wings. Preliminary 200M tests active.
+                  </p>
+                </div>
+              </li>
+
+              <li className="flex items-start gap-2.5">
+                <span className="w-2 h-2 rounded-full bg-blue-600 mt-1.5 shrink-0" />
+                <div>
+                  <strong className="text-slate-900 dark:text-white block">AP Police SI Prelims Grand Mock 1 Live:</strong>
+                  <p className="text-slate-600 dark:text-slate-400 mt-0.5">
+                    Full-length bilingual test with standard AP SLPRB question patterns released for free practice.
+                  </p>
+                </div>
+              </li>
+
+              <li className="flex items-start gap-2.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-600 mt-1.5 shrink-0" />
+                <div>
+                  <strong className="text-slate-900 dark:text-white block">PET 1600m & 800m Pacing Standards:</strong>
+                  <p className="text-slate-600 dark:text-slate-400 mt-0.5">
+                    Updated pace calculator synced with physical qualification cutoffs for Civil and Armed Reserve posts.
+                  </p>
+                </div>
+              </li>
+
+              <li className="flex items-start gap-2.5">
+                <span className="w-2 h-2 rounded-full bg-purple-600 mt-1.5 shrink-0" />
+                <div>
+                  <strong className="text-slate-900 dark:text-white block">Daily Arithmetic Speed Practice Added:</strong>
+                  <p className="text-slate-600 dark:text-slate-400 mt-0.5">
+                    New topic tests covering police chasing, time & distance, and number systems available in library.
+                  </p>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          {/* Column 2: Important Notice */}
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-7 shadow-sm space-y-4">
+            <div className="flex items-center gap-2 pb-3 border-b border-slate-100 dark:border-slate-800">
+              <div className="p-2 rounded-xl bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400">
+                <AlertCircle className="w-4 h-4" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">Important Notice</h3>
+                <p className="text-[11px] text-slate-500">Official rules & exam hall compliance</p>
+              </div>
+            </div>
+
+            <ul className="space-y-3.5 text-xs text-slate-700 dark:text-slate-300">
+              <li className="flex items-start gap-2.5">
+                <span className="w-2 h-2 rounded-full bg-red-600 mt-1.5 shrink-0" />
+                <div>
+                  <strong className="text-slate-900 dark:text-white block">Negative Marking Algorithm (-0.25):</strong>
+                  <p className="text-slate-600 dark:text-slate-400 mt-0.5">
+                    In TSLPRB PWT, each wrong answer incurs a 0.25 mark penalty. Unattempted questions carry zero penalty.
+                  </p>
+                </div>
+              </li>
+
+              <li className="flex items-start gap-2.5">
+                <span className="w-2 h-2 rounded-full bg-amber-600 mt-1.5 shrink-0" />
+                <div>
+                  <strong className="text-slate-900 dark:text-white block">Biometric & Photo ID Verification:</strong>
+                  <p className="text-slate-600 dark:text-slate-400 mt-0.5">
+                    Candidates must carry original Aadhaar card or government identity proof to examination venues.
+                  </p>
+                </div>
+              </li>
+
+              <li className="flex items-start gap-2.5">
+                <span className="w-2 h-2 rounded-full bg-slate-600 mt-1.5 shrink-0" />
+                <div>
+                  <strong className="text-slate-900 dark:text-white block">PET Physical Measurement Strict Cutoffs:</strong>
+                  <p className="text-slate-600 dark:text-slate-400 mt-0.5">
+                    Minimum height (167.6 cm for men, 152.5 cm for women) is strictly checked before ground run participation.
+                  </p>
+                </div>
+              </li>
+
+              <li className="flex items-start gap-2.5">
+                <span className="w-2 h-2 rounded-full bg-slate-400 mt-1.5 shrink-0" />
+                <div>
+                  <strong className="text-slate-900 dark:text-white block">Independent Platform Notice:</strong>
+                  <p className="text-slate-600 dark:text-slate-400 mt-0.5">
+                    Cross-verify formal notifications and download official hall tickets directly from <span className="font-mono text-amber-700">tslprb.in</span> or <span className="font-mono text-amber-700">slprb.ap.gov.in</span>.
+                  </p>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </section>
 
     </div>
   );
